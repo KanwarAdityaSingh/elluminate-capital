@@ -1,36 +1,98 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Elluminate Capital - Investment Banking Website
+
+A luxury, professional investment banking website built with Next.js 15, TypeScript, and a sophisticated theme system.
+
+## Features
+
+- **Next.js 15** with TypeScript
+- **Static Site Generation** (SSG) for optimal SEO and performance
+- **Luxury Theme System** with light/dark mode switching
+- **SSR-Compatible** theme switching with no hydration mismatches
+- **Professional Design** with gold accents and modern typography
+- **Responsive Design** with mobile-first approach
+- **SEO Optimized** with proper metadata and Open Graph tags
+
+## Theme System
+
+The website features a comprehensive theme system with:
+
+- **CSS Variables**: All styling uses CSS custom properties for consistent theming
+- **Light/Dark Modes**: Seamless switching between professional light and luxury dark themes
+- **Luxury Color Palette**: Gold accents (#d4af37) with sophisticated color combinations
+- **Typography**: Professional font stack (Inter, Playfair Display, JetBrains Mono)
+- **Smooth Transitions**: All theme changes are animated for a polished experience
 
 ## Getting Started
 
-First, run the development server:
+### Development
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Opens [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### Build for Production
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```bash
+npm run build
+```
 
-## Learn More
+### Export Static Site
 
-To learn more about Next.js, take a look at the following resources:
+```bash
+npm run export
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+This creates a static export in the `out` directory, ready for deployment to any static hosting service.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Project Structure
 
-## Deploy on Vercel
+```
+src/
+├── app/
+│   ├── layout.tsx          # Root layout with theme provider
+│   ├── page.tsx            # Home page
+│   └── globals.css         # Global styles and theme imports
+├── components/
+│   ├── ThemeToggle.tsx     # Theme toggle button
+│   ├── ClientThemeToggle.tsx # SSR-safe theme toggle wrapper
+│   └── ServiceCard.tsx     # Interactive service cards
+├── contexts/
+│   └── ThemeContext.tsx    # Theme context and provider
+└── styles/
+    └── themes.css          # Theme variables and base styles
+```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## Theme Usage
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+All components use CSS variables for theming. Key variables include:
+
+- `--color-primary` / `--color-secondary`
+- `--bg-primary` / `--bg-secondary`
+- `--text-primary` / `--text-secondary`
+- `--color-accent` (gold)
+- `--font-family-primary` / `--font-family-heading`
+- `--shadow-*` (shadow system)
+- `--gradient-*` (gradient combinations)
+
+## Deployment
+
+The site is configured for static export and can be deployed to:
+
+- Vercel
+- Netlify
+- GitHub Pages
+- Any static hosting service
+
+## Technologies Used
+
+- **Next.js 15** - React framework with App Router
+- **TypeScript** - Type safety
+- **Tailwind CSS** - Utility-first CSS framework
+- **CSS Custom Properties** - Theme system
+- **Google Fonts** - Typography (Inter, Playfair Display, JetBrains Mono)
+
+## License
+
+Private project for Elluminate Capital.
