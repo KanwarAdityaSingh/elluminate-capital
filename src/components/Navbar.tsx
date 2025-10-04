@@ -2,12 +2,12 @@
 
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { Building2 } from 'lucide-react';
-import ClientThemeToggle from './ClientThemeToggle';
+import Image from 'next/image';
 
 const Navbar: React.FC = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isOverVideo, setIsOverVideo] = useState(false);
+  const [isLogoHovered, setIsLogoHovered] = useState(false);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -59,35 +59,31 @@ const Navbar: React.FC = () => {
             }}
             onMouseEnter={(e) => {
               e.currentTarget.style.transform = 'scale(1.02)';
+              setIsLogoHovered(true);
             }}
             onMouseLeave={(e) => {
               e.currentTarget.style.transform = 'scale(1)';
+              setIsLogoHovered(false);
             }}
           >
-            <div className="logo-icon">
-              <Building2 size={24} />
-            </div>
-            <span
-              style={{
-                fontSize: 'var(--text-2xl)',
-                fontWeight: 'var(--font-weight-bold)',
-                color: 'var(--text-primary)',
-                fontFamily: 'var(--font-family-heading)',
-                background: 'var(--gradient-primary)',
-                WebkitBackgroundClip: 'text',
-                WebkitTextFillColor: 'transparent',
-                backgroundClip: 'text',
+            <Image 
+              src="/usethis.png" 
+              alt="Elluminate Capital" 
+              width={200} 
+              height={60}
+              style={{ 
+                objectFit: 'contain',
+                height: 'auto',
+                maxHeight: '50px'
               }}
-            >
-              Elluminate Capital
-            </span>
+              priority
+            />
           </Link>
         </div>
 
 
-        {/* Right Section - Theme Toggle */}
+        {/* Right Section - Empty for now */}
         <div className="navbar-right">
-          <ClientThemeToggle />
         </div>
       </div>
 
@@ -95,54 +91,28 @@ const Navbar: React.FC = () => {
       <style jsx>{`
         .navbar {
           background: transparent;
-          border-bottom: 1px solid var(--border-primary);
+          border: none;
         }
         
         .navbar.scrolled {
-          backdrop-filter: blur(10px);
-          border-bottom: 1px solid var(--border-primary);
-        }
-        
-        [data-theme="light"] .navbar {
-          background: transparent;
-        }
-        
-        [data-theme="light"] .navbar.scrolled {
-          background: rgba(255, 255, 255, 0.95);
-        }
-        
-        [data-theme="dark"] .navbar {
-          background: transparent;
-        }
-        
-        [data-theme="dark"] .navbar.scrolled {
-          background: rgba(10, 10, 10, 0.95);
+          background: rgba(26, 15, 26, 0.95);
+          backdrop-filter: blur(20px);
+          border: none;
+          box-shadow: var(--shadow-luxury);
         }
         
         /* Over video section - always visible */
-        [data-theme="light"] .navbar.over-video {
-          background: rgba(255, 255, 255, 0.95);
-          backdrop-filter: blur(10px);
+        .navbar.over-video {
+          background: rgba(26, 15, 26, 0.95);
+          backdrop-filter: blur(20px);
+          box-shadow: var(--shadow-luxury);
         }
         
-        [data-theme="light"] .navbar.over-video .navbar-container {
+        .navbar.over-video .navbar-container {
           color: var(--text-primary);
         }
         
-        [data-theme="light"] .navbar.over-video .navbar-container span {
-          color: var(--text-primary) !important;
-        }
-        
-        [data-theme="dark"] .navbar.over-video {
-          background: rgba(10, 10, 10, 0.95);
-          backdrop-filter: blur(10px);
-        }
-        
-        [data-theme="dark"] .navbar.over-video .navbar-container {
-          color: var(--text-primary);
-        }
-        
-        [data-theme="dark"] .navbar.over-video .navbar-container span {
+        .navbar.over-video .navbar-container span {
           color: var(--text-primary) !important;
         }
         
@@ -162,30 +132,6 @@ const Navbar: React.FC = () => {
           align-items: center;
         }
         
-        .logo-icon {
-          width: 40px;
-          height: 40px;
-          background: var(--gradient-accent);
-          border-radius: var(--radius-lg);
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          box-shadow: var(--shadow-gold);
-        }
-        
-        .logo-icon svg {
-          color: var(--text-primary);
-        }
-        
-        [data-theme="dark"] .logo-icon {
-          box-shadow: none;
-          background: #000000;
-          border: 2px solid #D4AF37;
-        }
-        
-        [data-theme="dark"] .logo-icon svg {
-          color: #D4AF37 !important;
-        }
         
       `}</style>
     </nav>

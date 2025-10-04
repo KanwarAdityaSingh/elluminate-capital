@@ -6,8 +6,8 @@ A luxury, professional investment banking website built with Next.js 15, TypeScr
 
 - **Next.js 15** with TypeScript
 - **Static Site Generation** (SSG) for optimal SEO and performance
-- **Luxury Theme System** with light/dark mode switching
-- **SSR-Compatible** theme switching with no hydration mismatches
+- **Luxury Purple & Gold Theme System** with sophisticated dark mode design inspired by the company logo
+- **SSR-Compatible** dark theme with no hydration mismatches
 - **Professional Design** with gold accents and modern typography
 - **Responsive Design** with mobile-first approach
 - **SEO Optimized** with proper metadata and Open Graph tags
@@ -17,8 +17,8 @@ A luxury, professional investment banking website built with Next.js 15, TypeScr
 The website features a comprehensive theme system with:
 
 - **CSS Variables**: All styling uses CSS custom properties for consistent theming
-- **Light/Dark Modes**: Seamless switching between professional light and luxury dark themes
-- **Luxury Color Palette**: Gold accents (#d4af37) with sophisticated color combinations
+- **Luxury Purple & Gold Theme**: Sophisticated dark theme with purple and gold accents matching the company branding
+- **Luxury Color Palette**: Purple backgrounds (#4a2c5a) with gold accents (#d4af37) creating an elegant, modern aesthetic
 - **Typography**: Professional font stack (Inter, Playfair Display, JetBrains Mono)
 - **Smooth Transitions**: All theme changes are animated for a polished experience
 
@@ -55,11 +55,9 @@ src/
 │   ├── page.tsx            # Home page
 │   └── globals.css         # Global styles and theme imports
 ├── components/
-│   ├── ThemeToggle.tsx     # Theme toggle button
-│   ├── ClientThemeToggle.tsx # SSR-safe theme toggle wrapper
 │   └── ServiceCard.tsx     # Interactive service cards
 ├── contexts/
-│   └── ThemeContext.tsx    # Theme context and provider
+│   └── ThemeContext.tsx    # Purple & Gold luxury theme context and provider
 └── styles/
     └── themes.css          # Theme variables and base styles
 ```

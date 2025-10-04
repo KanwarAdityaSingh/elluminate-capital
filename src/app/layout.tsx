@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import { Inter, Playfair_Display, JetBrains_Mono } from 'next/font/google';
+import { Inter, Source_Serif_4, JetBrains_Mono } from 'next/font/google';
 import { ThemeProvider } from '@/contexts/ThemeContext';
 import SmoothScrollProvider from '@/components/SmoothScrollProvider';
 import Navbar from '@/components/Navbar';
@@ -12,9 +12,9 @@ const inter = Inter({
   display: 'swap',
 });
 
-const playfair = Playfair_Display({
+const sourceSerif = Source_Serif_4({
   subsets: ['latin'],
-  variable: '--font-playfair',
+  variable: '--font-source-serif',
   display: 'swap',
 });
 
@@ -55,7 +55,7 @@ export default function RootLayout({
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
       </head>
       <body
-        className={`${inter.variable} ${playfair.variable} ${jetbrainsMono.variable}`}
+        className={`${inter.variable} ${sourceSerif.variable} ${jetbrainsMono.variable}`}
         style={{
           fontFamily: 'var(--font-family-primary)',
         }}

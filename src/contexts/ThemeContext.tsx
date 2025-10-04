@@ -2,12 +2,10 @@
 
 import React, { createContext, useContext, useEffect, useState } from 'react';
 
-export type Theme = 'light' | 'dark';
+export type Theme = 'dark';
 
 interface ThemeContextType {
   theme: Theme;
-  toggleTheme: () => void;
-  setTheme: (theme: Theme) => void;
 }
 
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
@@ -25,34 +23,21 @@ interface ThemeProviderProps {
 }
 
 export const ThemeProvider: React.FC<ThemeProviderProps> = ({ children }) => {
-  const [theme, setThemeState] = useState<Theme>('light');
+  const [theme] = useState<Theme>('dark');
   const [mounted, setMounted] = useState(false);
 
-  // Initialize theme from localStorage or system preference
+  // Initialize dark theme
   useEffect(() => {
-    const savedTheme = localStorage.getItem('theme') as Theme;
-    const systemTheme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
-    const initialTheme = savedTheme || systemTheme;
-    
-    setThemeState(initialTheme);
     setMounted(true);
   }, []);
 
-  // Apply theme to document and localStorage
+  // Apply dark theme to document
   useEffect(() => {
     if (mounted) {
-      document.documentElement.setAttribute('data-theme', theme);
-      localStorage.setItem('theme', theme);
+      document.documentElement.setAttribute('data-theme', 'dark');
+      localStorage.setItem('theme', 'dark');
     }
-  }, [theme, mounted]);
-
-  const toggleTheme = () => {
-    setThemeState(prev => prev === 'light' ? 'dark' : 'light');
-  };
-
-  const setTheme = (newTheme: Theme) => {
-    setThemeState(newTheme);
-  };
+  }, [mounted]);
 
   // Prevent hydration mismatch by not rendering until mounted
   if (!mounted) {
@@ -71,7 +56,7 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({ children }) => {
   }
 
   return (
-    <ThemeContext.Provider value={{ theme, toggleTheme, setTheme }}>
+    <ThemeContext.Provider value={{ theme }}>
       {children}
     </ThemeContext.Provider>
   );

@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { Calendar, User, ArrowRight, TrendingUp, BarChart3, Globe, DollarSign } from 'lucide-react';
+import { Calendar, User, ArrowRight, TrendingUp, BarChart3, Globe, DollarSign, Clock, ExternalLink } from 'lucide-react';
 
 export default function InsightsPage() {
   const featuredArticle = {
@@ -92,6 +92,63 @@ export default function InsightsPage() {
       downloadCount: '1.2K',
       size: '2.8 MB',
       image: 'https://images.unsplash.com/photo-1559526324-4b87b5e36e44?w=300&h=200&fit=crop'
+    }
+  ];
+
+  const newsItems = [
+    {
+      title: 'Federal Reserve Signals Potential Rate Cuts in 2024',
+      summary: 'The Federal Reserve hints at possible interest rate reductions as inflation shows signs of cooling.',
+      source: 'Financial Times',
+      timeAgo: '2 hours ago',
+      category: 'Monetary Policy',
+      image: 'https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?w=400&h=250&fit=crop',
+      url: '#'
+    },
+    {
+      title: 'Tech Stocks Rally on Strong Q4 Earnings Reports',
+      summary: 'Major technology companies report better-than-expected quarterly results, driving market optimism.',
+      source: 'Bloomberg',
+      timeAgo: '4 hours ago',
+      category: 'Technology',
+      image: 'https://images.unsplash.com/photo-1518709268805-4e9042af2176?w=400&h=250&fit=crop',
+      url: '#'
+    },
+    {
+      title: 'European Markets Open Higher Amid Economic Recovery Signs',
+      summary: 'European stock markets show positive momentum as economic indicators suggest recovery.',
+      source: 'Reuters',
+      timeAgo: '6 hours ago',
+      category: 'Markets',
+      image: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=250&fit=crop',
+      url: '#'
+    },
+    {
+      title: 'Sustainable Investment Funds See Record Inflows',
+      summary: 'ESG-focused investment products attract unprecedented capital as investors prioritize sustainability.',
+      source: 'Wall Street Journal',
+      timeAgo: '8 hours ago',
+      category: 'ESG',
+      image: 'https://images.unsplash.com/photo-1559526324-4b87b5e36e44?w=400&h=250&fit=crop',
+      url: '#'
+    },
+    {
+      title: 'Cryptocurrency Market Shows Signs of Stabilization',
+      summary: 'Digital asset prices consolidate as regulatory clarity improves and institutional adoption grows.',
+      source: 'CoinDesk',
+      timeAgo: '10 hours ago',
+      category: 'Crypto',
+      image: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=400&h=250&fit=crop',
+      url: '#'
+    },
+    {
+      title: 'Real Estate Investment Trusts Post Strong Performance',
+      summary: 'REITs outperform broader market as commercial real estate shows resilience.',
+      source: 'Real Estate Weekly',
+      timeAgo: '12 hours ago',
+      category: 'Real Estate',
+      image: 'https://images.unsplash.com/photo-1560518883-ce09059eeffa?w=400&h=250&fit=crop',
+      url: '#'
     }
   ];
 
@@ -480,6 +537,198 @@ export default function InsightsPage() {
                       Read More
                       <ArrowRight size={14} />
                     </button>
+                  </div>
+                </div>
+              </article>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* News Section */}
+      <section
+        style={{
+          padding: 'var(--space-20) var(--space-6)',
+          background: 'var(--bg-primary)',
+        }}
+      >
+        <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
+          <div
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              marginBottom: 'var(--space-8)',
+              flexWrap: 'wrap',
+              gap: 'var(--space-4)',
+            }}
+          >
+            <h2
+              style={{
+                fontSize: 'var(--text-3xl)',
+                fontWeight: 'var(--font-weight-bold)',
+                color: 'var(--text-primary)',
+                fontFamily: 'var(--font-family-heading)',
+              }}
+            >
+              Latest News
+            </h2>
+            <button
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: 'var(--space-2)',
+                padding: 'var(--space-3) var(--space-6)',
+                background: 'var(--color-accent)',
+                color: 'var(--text-inverse)',
+                border: 'none',
+                borderRadius: 'var(--radius-lg)',
+                fontSize: 'var(--text-sm)',
+                fontWeight: 'var(--font-weight-semibold)',
+                cursor: 'pointer',
+                transition: 'all var(--transition-fast)',
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.background = 'var(--color-accent-dark)';
+                e.currentTarget.style.transform = 'translateY(-2px)';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.background = 'var(--color-accent)';
+                e.currentTarget.style.transform = 'translateY(0)';
+              }}
+            >
+              View All News
+              <ExternalLink size={16} />
+            </button>
+          </div>
+          
+          <div
+            style={{
+              display: 'grid',
+              gridTemplateColumns: 'repeat(auto-fit, minmax(350px, 1fr))',
+              gap: 'var(--space-6)',
+            }}
+          >
+            {newsItems.map((news, index) => (
+              <article
+                key={index}
+                style={{
+                  background: 'var(--bg-secondary)',
+                  borderRadius: 'var(--radius-xl)',
+                  overflow: 'hidden',
+                  border: '1px solid var(--border-primary)',
+                  transition: 'all var(--transition-normal)',
+                  cursor: 'pointer',
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.transform = 'translateY(-4px)';
+                  e.currentTarget.style.boxShadow = 'var(--shadow-xl)';
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.transform = 'translateY(0)';
+                  e.currentTarget.style.boxShadow = 'none';
+                }}
+                onClick={() => window.open(news.url, '_blank')}
+              >
+                <div style={{ position: 'relative' }}>
+                  <img
+                    src={news.image}
+                    alt={news.title}
+                    style={{
+                      width: '100%',
+                      height: '180px',
+                      objectFit: 'cover',
+                    }}
+                  />
+                  <div
+                    style={{
+                      position: 'absolute',
+                      top: 'var(--space-3)',
+                      left: 'var(--space-3)',
+                      background: 'var(--color-accent)',
+                      color: 'var(--text-inverse)',
+                      padding: 'var(--space-1) var(--space-3)',
+                      borderRadius: 'var(--radius-full)',
+                      fontSize: 'var(--text-xs)',
+                      fontWeight: 'var(--font-weight-medium)',
+                    }}
+                  >
+                    {news.category}
+                  </div>
+                  <div
+                    style={{
+                      position: 'absolute',
+                      top: 'var(--space-3)',
+                      right: 'var(--space-3)',
+                      background: 'rgba(0, 0, 0, 0.7)',
+                      color: 'white',
+                      padding: 'var(--space-1) var(--space-2)',
+                      borderRadius: 'var(--radius-md)',
+                      fontSize: 'var(--text-xs)',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: 'var(--space-1)',
+                    }}
+                  >
+                    <Clock size={12} />
+                    {news.timeAgo}
+                  </div>
+                </div>
+                
+                <div style={{ padding: 'var(--space-6)' }}>
+                  <h3
+                    style={{
+                      fontSize: 'var(--text-lg)',
+                      fontWeight: 'var(--font-weight-semibold)',
+                      color: 'var(--text-primary)',
+                      marginBottom: 'var(--space-3)',
+                      lineHeight: '1.4',
+                    }}
+                  >
+                    {news.title}
+                  </h3>
+                  <p
+                    style={{
+                      color: 'var(--text-secondary)',
+                      lineHeight: '1.5',
+                      marginBottom: 'var(--space-4)',
+                      fontSize: 'var(--text-sm)',
+                    }}
+                  >
+                    {news.summary}
+                  </p>
+                  
+                  <div
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'space-between',
+                      paddingTop: 'var(--space-4)',
+                      borderTop: '1px solid var(--border-primary)',
+                    }}
+                  >
+                    <span
+                      style={{
+                        color: 'var(--text-muted)',
+                        fontSize: 'var(--text-xs)',
+                        fontWeight: 'var(--font-weight-medium)',
+                      }}
+                    >
+                      {news.source}
+                    </span>
+                    <div
+                      style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: 'var(--space-1)',
+                        color: 'var(--text-accent)',
+                        fontSize: 'var(--text-xs)',
+                        fontWeight: 'var(--font-weight-medium)',
+                      }}
+                    >
+                      Read More
+                      <ExternalLink size={12} />
+                    </div>
                   </div>
                 </div>
               </article>
