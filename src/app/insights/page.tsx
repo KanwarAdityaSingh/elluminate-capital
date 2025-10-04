@@ -1,9 +1,17 @@
 'use client';
 
-import React from 'react';
-import { Calendar, User, ArrowRight, TrendingUp, BarChart3, Globe, DollarSign, Clock, ExternalLink } from 'lucide-react';
+import React, { useState, useEffect, useRef } from 'react';
+import { Calendar, User, ArrowRight, TrendingUp, BarChart3, Globe, DollarSign, Clock, ExternalLink, Pencil } from 'lucide-react';
+import { EditableText } from '../../components/EditableText';
+import { cmsService, PageContentData } from '../../services/cmsService';
+import { PageType } from '../../constants/pageTypes';
 
 export default function InsightsPage() {
+  // CMS State
+  const [insightsData, setInsightsData] = useState<PageContentData | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const hasLoadedRef = useRef(false);
+
   const featuredArticle = {
     title: 'Market Outlook 2024: Navigating Economic Uncertainty',
     excerpt: 'Our comprehensive analysis of global markets and investment opportunities in an uncertain economic environment.',
@@ -152,7 +160,66 @@ export default function InsightsPage() {
     }
   ];
 
-  const categories = ['All', 'Market Analysis', 'ESG', 'Private Equity', 'Technology', 'Real Estate', 'Emerging Markets', 'Fixed Income'];
+  const defaultCategories = ['All', 'Market Analysis', 'ESG', 'Private Equity', 'Technology', 'Real Estate', 'Emerging Markets', 'Fixed Income'];
+  const categories = insightsData?.btnTxt?.map(btn => btn.buttonText) || defaultCategories;
+
+  // Load insights data
+  useEffect(() => {
+    const loadInsightsData = async () => {
+      if (hasLoadedRef.current) return;
+      hasLoadedRef.current = true;
+      
+      try {
+        setIsLoading(true);
+        const response = await cmsService.getPageContent(PageType.INSIGHTS);
+        if (response.success && response.data) {
+          setInsightsData(response.data);
+        } else {
+          console.error('Failed to load insights page content:', response.message);
+        }
+      } catch (error) {
+        console.error('Error loading insights content:', error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    
+    loadInsightsData();
+  }, []);
+
+  // Handlers
+  const handleInsightsTitleSave = async (newTitle: string) => {
+    if (!insightsData) return;
+    const updatedData = { ...insightsData, title: newTitle };
+    setInsightsData(updatedData);
+    await saveToCMS(updatedData);
+  };
+
+  const handleInsightsSubtitleSave = async (newSubtitle: string) => {
+    if (!insightsData) return;
+    const updatedData = { ...insightsData, subtitle: newSubtitle };
+    setInsightsData(updatedData);
+    await saveToCMS(updatedData);
+  };
+
+  const handleInsightsBtnTxtSave = async (newBtnTxt: Array<{ buttonText: string }>) => {
+    if (!insightsData) return;
+    const updatedData = { ...insightsData, btnTxt: newBtnTxt };
+    setInsightsData(updatedData);
+    await saveToCMS(updatedData);
+  };
+
+  const saveToCMS = async (data: PageContentData) => {
+    try {
+      setIsLoading(true);
+      await cmsService.createOrUpdatePageContent(data);
+      console.log('Content saved successfully');
+    } catch (error) {
+      console.error('Error saving content:', error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   return (
     <div style={{ paddingTop: '80px' }}>
@@ -165,7 +232,10 @@ export default function InsightsPage() {
         }}
       >
         <div style={{ maxWidth: '800px', margin: '0 auto' }}>
-          <h1
+          <EditableText
+            value={insightsData?.title || 'Market Insights'}
+            onSave={handleInsightsTitleSave}
+            tag="h1"
             style={{
               fontSize: 'var(--text-6xl)',
               fontWeight: 'var(--font-weight-bold)',
@@ -173,20 +243,23 @@ export default function InsightsPage() {
               marginBottom: 'var(--space-6)',
               fontFamily: 'var(--font-family-heading)',
             }}
-          >
-            Market Insights
-          </h1>
-          <p
+            placeholder="Insights title"
+          />
+          <EditableText
+            value={insightsData?.subtitle || 'Stay informed with our latest research, market analysis, and investment insights\nfrom our team of financial experts.'}
+            onSave={handleInsightsSubtitleSave}
+            tag="p"
             style={{
               fontSize: 'var(--text-xl)',
               color: 'var(--text-secondary)',
               lineHeight: '1.6',
               marginBottom: 'var(--space-8)',
+              whiteSpace: 'pre-line',
+              textAlign: 'center',
             }}
-          >
-            Stay informed with our latest research, market analysis, and investment insights 
-            from our team of financial experts.
-          </p>
+            multiline={true}
+            placeholder="Insights description"
+          />
         </div>
       </section>
 
@@ -207,7 +280,7 @@ export default function InsightsPage() {
               justifyContent: 'center',
             }}
           >
-            {categories.map((category) => (
+            {categories.map((category, index) => (
               <button
                 key={category}
                 style={{
@@ -232,7 +305,17 @@ export default function InsightsPage() {
                   }
                 }}
               >
-                {category}
+                <EditableText
+                  value={category}
+                  onSave={(newText) => {
+                    const updatedBtnTxt = [...(insightsData?.btnTxt || defaultCategories.map(cat => ({ buttonText: cat })))];
+                    updatedBtnTxt[index] = { buttonText: newText };
+                    handleInsightsBtnTxtSave(updatedBtnTxt);
+                  }}
+                  tag="span"
+                  className={`btn-text btn-text-category-${index}`}
+                  placeholder="Category name"
+                />
               </button>
             ))}
           </div>
@@ -573,33 +656,61 @@ export default function InsightsPage() {
             >
               Latest News
             </h2>
-            <button
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: 'var(--space-2)',
-                padding: 'var(--space-3) var(--space-6)',
-                background: 'var(--color-accent)',
-                color: 'var(--text-inverse)',
-                border: 'none',
-                borderRadius: 'var(--radius-lg)',
-                fontSize: 'var(--text-sm)',
-                fontWeight: 'var(--font-weight-semibold)',
-                cursor: 'pointer',
-                transition: 'all var(--transition-fast)',
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.background = 'var(--color-accent-dark)';
-                e.currentTarget.style.transform = 'translateY(-2px)';
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.background = 'var(--color-accent)';
-                e.currentTarget.style.transform = 'translateY(0)';
-              }}
-            >
-              View All News
-              <ExternalLink size={16} />
-            </button>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-3)' }}>
+              <Pencil 
+                size={16} 
+                style={{
+                  cursor: 'pointer',
+                  color: 'var(--color-accent)',
+                  transition: 'all 0.2s ease',
+                  padding: '4px',
+                  borderRadius: '4px',
+                  background: 'rgba(212, 175, 55, 0.1)',
+                  border: '1px solid rgba(212, 175, 55, 0.3)',
+                }}
+                onClick={() => {
+                  const event = new Event('dblclick');
+                  document.querySelector('.btn-text-news')?.dispatchEvent(event);
+                }}
+              />
+              <button
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 'var(--space-2)',
+                  padding: 'var(--space-3) var(--space-6)',
+                  background: 'var(--color-accent)',
+                  color: 'var(--text-inverse)',
+                  border: 'none',
+                  borderRadius: 'var(--radius-lg)',
+                  fontSize: 'var(--text-sm)',
+                  fontWeight: 'var(--font-weight-semibold)',
+                  cursor: 'pointer',
+                  transition: 'all var(--transition-fast)',
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.background = 'var(--color-accent-dark)';
+                  e.currentTarget.style.transform = 'translateY(-2px)';
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.background = 'var(--color-accent)';
+                  e.currentTarget.style.transform = 'translateY(0)';
+                }}
+              >
+                <EditableText
+                  value={insightsData?.btnTxt?.[0]?.buttonText || 'View All News'}
+                  onSave={(newText) => {
+                    const updatedBtnTxt = [...(insightsData?.btnTxt || [{ buttonText: 'View All News' }])];
+                    updatedBtnTxt[0] = { buttonText: newText };
+                    handleInsightsBtnTxtSave(updatedBtnTxt);
+                  }}
+                  tag="span"
+                  className="btn-text btn-text-news"
+                  placeholder="Button text"
+                />
+                <ExternalLink size={16} />
+              </button>
+            </div>
           </div>
           
           <div

@@ -5,6 +5,7 @@ import SmoothScrollProvider from '@/components/SmoothScrollProvider';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import './globals.css';
+import '../styles/cms.css';
 
 const inter = Inter({
   subsets: ['latin'],

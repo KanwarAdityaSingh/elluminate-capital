@@ -1,0 +1,218 @@
+/* CMS Editable Components Styles */
+
+/* Editable Text Base Styles */
+.editable-text {
+  cursor: pointer;
+  position: relative;
+  transition: all 0.2s ease;
+  border-radius: 4px;
+  padding: 4px 8px;
+  margin: -4px -8px;
+  display: inline-block;
+  overflow: visible;
+  z-index: 1;
+}
+
+.editable-text:hover {
+  border: 1px dashed rgba(212, 175, 55, 0.5);
+  background-color: rgba(212, 175, 55, 0.05);
+}
+
+.editable-text.hovered {
+  border: 1px dashed rgba(212, 175, 55, 0.7);
+  background-color: rgba(212, 175, 55, 0.1);
+}
+
+/* Editable Input Styles */
+.editable-input {
+  background: rgba(255, 255, 255, 0.1);
+  border: 2px solid #d4af37;
+  border-radius: 4px;
+  padding: 8px;
+  outline: none;
+  color: inherit;
+  font-family: inherit;
+  font-size: inherit;
+  font-weight: inherit;
+  width: 100%;
+  min-height: auto;
+  resize: none;
+}
+
+/* Editable Numbers Container */
+.editable-numbers {
+  position: relative;
+  border-radius: 8px;
+  padding: 16px;
+  transition: all 0.2s ease;
+}
+
+.editable-numbers:hover {
+  border: 1px dashed rgba(212, 175, 55, 0.5);
+  background-color: rgba(212, 175, 55, 0.02);
+}
+
+/* Editable Numbers Grid */
+.editable-numbers-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 24px;
+  justify-content: center;
+}
+
+/* Individual Number Item */
+.editable-number-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-width: 120px;
+  position: relative;
+}
+
+/* Number Value */
+.editable-number-value {
+  font-size: 2.5rem;
+  font-weight: 800;
+  color: #d4af37;
+  text-align: center;
+  margin-bottom: 8px;
+}
+
+/* Number Label */
+.editable-number-label {
+  font-size: 0.9rem;
+  color: var(--text-primary);
+  text-align: center;
+  opacity: 0.9;
+}
+
+/* Remove Button */
+.editable-remove-btn {
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  background: rgba(255, 0, 0, 0.8);
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 20px;
+  height: 20px;
+  font-size: 12px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+
+.editable-remove-btn:hover {
+  background: rgba(255, 0, 0, 1);
+  transform: scale(1.1);
+}
+
+/* Add Item Button */
+.editable-add-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-width: 120px;
+  height: 80px;
+  background: rgba(212, 175, 55, 0.1);
+  border: 2px dashed transparent;
+  border-radius: 8px;
+  color: #d4af37;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.editable-add-btn:hover {
+  background: rgba(212, 175, 55, 0.2);
+  border: 2px dashed rgba(212, 175, 55, 0.8);
+  transform: scale(1.02);
+}
+
+.editable-add-icon {
+  font-size: 24px;
+  margin-bottom: 4px;
+}
+
+.editable-add-text {
+  font-size: 12px;
+}
+
+/* Tooltip */
+.editable-tooltip {
+  position: absolute;
+  top: -50px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(0, 0, 0, 0.95);
+  color: white;
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 500;
+  white-space: nowrap;
+  z-index: 9999;
+  pointer-events: none;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  min-width: max-content;
+  max-width: none;
+  width: auto;
+  height: auto;
+  line-height: 1.2;
+  letter-spacing: 0.3px;
+  text-align: center;
+  display: inline-block;
+  flex-shrink: 0;
+  flex-grow: 0;
+}
+
+/* Tooltip Arrow */
+.editable-tooltip::after {
+  content: '';
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  border: 5px solid transparent;
+  border-top-color: rgba(0, 0, 0, 0.95);
+}
+
+/* Ensure tooltip is always visible and not clipped */
+.editable-text:hover .editable-tooltip {
+  visibility: visible !important;
+  opacity: 1 !important;
+  display: block !important;
+}
+
+/* Loading Indicator */
+.cms-loading {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  background: rgba(0, 0, 0, 0.8);
+  color: white;
+  padding: 10px 20px;
+  border-radius: 4px;
+  z-index: 9999;
+  font-size: 14px;
+}
+
+/* Hide borders in production */
+.production .editable-text {
+  border: none;
+  padding: 0;
+  margin: 0;
+}
+
+.production .editable-numbers {
+  border: none;
+  padding: 0;
+}
+
+.production .editable-tooltip {
+  display: none;
+}
