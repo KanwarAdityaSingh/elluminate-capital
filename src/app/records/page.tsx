@@ -1,10 +1,20 @@
 'use client';
 
-import React, { useState } from 'react';
-import { TrendingUp, Award, Users, BarChart3, Star, Quote, CheckCircle, ArrowRight, Download, Calendar, Building2 } from 'lucide-react';
+import React, { useState, useEffect, useRef } from 'react';
+import { TrendingUp, Award, Users, BarChart3, Star, Quote, CheckCircle, ArrowRight, Download, Calendar, Building2, Pencil } from 'lucide-react';
+import { EditableText } from '../../components/EditableText';
+import { cmsService, PageContentData } from '../../services/cmsService';
+import { PageType } from '../../constants/pageTypes';
 
 export default function RecordsPage() {
   const [selectedYear, setSelectedYear] = useState('2024');
+  
+  // CMS State
+  const [successStoriesData, setSuccessStoriesData] = useState<PageContentData | null>(null);
+  const [performanceMetricsData, setPerformanceMetricsData] = useState<PageContentData | null>(null);
+  const [joinSuccessData, setJoinSuccessData] = useState<PageContentData | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const hasLoadedRef = useRef(false);
 
   const performanceMetrics = [
     {
@@ -140,6 +150,124 @@ export default function RecordsPage() {
 
   const currentYearData = performanceMetrics.find(metric => metric.year === selectedYear) || performanceMetrics[0];
 
+  // Load success stories data
+  useEffect(() => {
+    const loadSuccessStoriesData = async () => {
+      if (hasLoadedRef.current) return;
+      hasLoadedRef.current = true;
+      
+      try {
+        setIsLoading(true);
+        const response = await cmsService.getPageContent(PageType.SUCCESS_STORIES);
+        if (response.success && response.data) {
+          setSuccessStoriesData(response.data);
+        } else {
+          console.error('Failed to load success stories page content:', response.message);
+        }
+        
+        // Load PERFORMANCE_METRICS page content
+        const performanceResponse = await cmsService.getPageContent(PageType.PERFORMANCE_METRICS);
+        if (performanceResponse.success && performanceResponse.data) {
+          setPerformanceMetricsData(performanceResponse.data);
+        } else {
+          console.error('Failed to load performance metrics page content:', performanceResponse.message);
+        }
+        
+        // Load JOIN_SUCCESS page content
+        const joinSuccessResponse = await cmsService.getPageContent(PageType.JOIN_SUCCESS);
+        if (joinSuccessResponse.success && joinSuccessResponse.data) {
+          setJoinSuccessData(joinSuccessResponse.data);
+        } else {
+          console.error('Failed to load join success page content:', joinSuccessResponse.message);
+        }
+      } catch (error) {
+        console.error('Error loading success stories content:', error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    
+    loadSuccessStoriesData();
+  }, []);
+
+  // Handlers
+  const handleSuccessStoriesTitleSave = async (newTitle: string) => {
+    if (!successStoriesData) return;
+    const updatedData = { ...successStoriesData, title: newTitle };
+    setSuccessStoriesData(updatedData);
+    await saveToCMS(updatedData);
+  };
+
+  const handleSuccessStoriesSubtitleSave = async (newSubtitle: string) => {
+    if (!successStoriesData) return;
+    const updatedData = { ...successStoriesData, subtitle: newSubtitle };
+    setSuccessStoriesData(updatedData);
+    await saveToCMS(updatedData);
+  };
+
+  const handleSuccessStoriesBtnTxtSave = async (newBtnTxt: Array<{ buttonText: string }>) => {
+    if (!successStoriesData) return;
+    const updatedData = { ...successStoriesData, btnTxt: newBtnTxt };
+    setSuccessStoriesData(updatedData);
+    await saveToCMS(updatedData);
+  };
+
+  // Performance metrics handlers
+  const handlePerformanceMetricsTitleSave = async (newTitle: string) => {
+    if (!performanceMetricsData) return;
+    const updatedData = { ...performanceMetricsData, title: newTitle };
+    setPerformanceMetricsData(updatedData);
+    await saveToCMS(updatedData);
+  };
+
+  const handlePerformanceMetricsBtnTxtSave = async (newBtnTxt: Array<{ buttonText: string }>) => {
+    if (!performanceMetricsData) return;
+    const updatedData = { ...performanceMetricsData, btnTxt: newBtnTxt };
+    setPerformanceMetricsData(updatedData);
+    await saveToCMS(updatedData);
+  };
+
+  const handlePerformanceMetricsNumbersSave = async (newNumbers: Array<{ value: string; label: string }>) => {
+    if (!performanceMetricsData) return;
+    const updatedData = { ...performanceMetricsData, numbers: newNumbers };
+    setPerformanceMetricsData(updatedData);
+    await saveToCMS(updatedData);
+  };
+
+  // Join success handlers
+  const handleJoinSuccessTitleSave = async (newTitle: string) => {
+    if (!joinSuccessData) return;
+    const updatedData = { ...joinSuccessData, title: newTitle };
+    setJoinSuccessData(updatedData);
+    await saveToCMS(updatedData);
+  };
+
+  const handleJoinSuccessSubtitleSave = async (newSubtitle: string) => {
+    if (!joinSuccessData) return;
+    const updatedData = { ...joinSuccessData, subtitle: newSubtitle };
+    setJoinSuccessData(updatedData);
+    await saveToCMS(updatedData);
+  };
+
+  const handleJoinSuccessBtnTxtSave = async (newBtnTxt: Array<{ buttonText: string }>) => {
+    if (!joinSuccessData) return;
+    const updatedData = { ...joinSuccessData, btnTxt: newBtnTxt };
+    setJoinSuccessData(updatedData);
+    await saveToCMS(updatedData);
+  };
+
+  const saveToCMS = async (data: PageContentData) => {
+    try {
+      setIsLoading(true);
+      await cmsService.createOrUpdatePageContent(data);
+      console.log('Content saved successfully');
+    } catch (error) {
+      console.error('Error saving content:', error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   return (
     <div style={{ paddingTop: '80px' }}>
       {/* Hero Section */}
@@ -151,27 +279,57 @@ export default function RecordsPage() {
         }}
       >
         <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
-          <div
-            style={{
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: 'var(--space-2)',
-              padding: 'var(--space-3) var(--space-6)',
-              background: 'var(--bg-secondary)',
-              border: '1px solid var(--border-primary)',
-              borderRadius: 'var(--radius-full)',
-              color: 'var(--text-accent)',
-              fontSize: 'var(--text-sm)',
-              fontWeight: 'var(--font-weight-semibold)',
-              marginBottom: 'var(--space-8)',
-              boxShadow: 'var(--shadow-md)',
-            }}
-          >
-            <Award size={20} />
-            Proven Track Record
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 'var(--space-3)', marginBottom: 'var(--space-8)' }}>
+            <Pencil 
+              size={16} 
+              style={{
+                cursor: 'pointer',
+                color: 'var(--color-accent)',
+                transition: 'all 0.2s ease',
+                padding: '4px',
+                borderRadius: '4px',
+                background: 'rgba(212, 175, 55, 0.1)',
+                border: '1px solid rgba(212, 175, 55, 0.3)',
+              }}
+              onClick={() => {
+                const event = new Event('dblclick');
+                document.querySelector('.btn-text-track-record')?.dispatchEvent(event);
+              }}
+            />
+            <div
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: 'var(--space-2)',
+                padding: 'var(--space-3) var(--space-6)',
+                background: 'var(--bg-secondary)',
+                border: '1px solid var(--border-primary)',
+                borderRadius: 'var(--radius-full)',
+                color: 'var(--text-accent)',
+                fontSize: 'var(--text-sm)',
+                fontWeight: 'var(--font-weight-semibold)',
+                boxShadow: 'var(--shadow-md)',
+              }}
+            >
+              <Award size={20} />
+              <EditableText
+                value={successStoriesData?.btnTxt?.[0]?.buttonText || 'Proven Track Record'}
+                onSave={(newText) => {
+                  const updatedBtnTxt = [...(successStoriesData?.btnTxt || [{ buttonText: 'Proven Track Record' }])];
+                  updatedBtnTxt[0] = { buttonText: newText };
+                  handleSuccessStoriesBtnTxtSave(updatedBtnTxt);
+                }}
+                tag="span"
+                className="btn-text btn-text-track-record"
+                placeholder="Button text"
+              />
+            </div>
           </div>
           
-          <h1
+          <EditableText
+            value={successStoriesData?.title || 'Our Success Stories'}
+            onSave={handleSuccessStoriesTitleSave}
+            tag="h1"
             style={{
               fontSize: 'var(--text-6xl)',
               fontWeight: 'var(--font-weight-bold)',
@@ -179,16 +337,13 @@ export default function RecordsPage() {
               marginBottom: 'var(--space-6)',
               fontFamily: 'var(--font-family-heading)',
             }}
-          >
-            Our <span style={{
-              background: 'var(--gradient-accent)',
-              WebkitBackgroundClip: 'text',
-              WebkitTextFillColor: 'transparent',
-              backgroundClip: 'text',
-            }}>Success Stories</span>
-          </h1>
+            placeholder="Success stories title"
+          />
           
-          <p
+          <EditableText
+            value={successStoriesData?.subtitle || 'Discover our proven track record of delivering exceptional results for clients across\ndiverse industries. Our success is measured by the success of our clients.'}
+            onSave={handleSuccessStoriesSubtitleSave}
+            tag="p"
             style={{
               fontSize: 'var(--text-xl)',
               color: 'var(--text-secondary)',
@@ -196,11 +351,12 @@ export default function RecordsPage() {
               marginBottom: 'var(--space-8)',
               maxWidth: '800px',
               margin: '0 auto var(--space-8)',
+              whiteSpace: 'pre-line',
+              textAlign: 'center',
             }}
-          >
-            Discover our proven track record of delivering exceptional results for clients across 
-            diverse industries. Our success is measured by the success of our clients.
-          </p>
+            multiline={true}
+            placeholder="Success stories description"
+          />
         </div>
       </section>
 
@@ -212,18 +368,24 @@ export default function RecordsPage() {
         }}
       >
         <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
-          <h2
-            style={{
-              fontSize: 'var(--text-4xl)',
-              fontWeight: 'var(--font-weight-bold)',
-              color: 'var(--text-primary)',
-              marginBottom: 'var(--space-8)',
-              fontFamily: 'var(--font-family-heading)',
-              textAlign: 'center',
-            }}
-          >
-            Performance Metrics
-          </h2>
+          <div style={{ textAlign: 'center', width: '100%' }}>
+            <EditableText
+              value={performanceMetricsData?.title || 'Performance Metrics'}
+              onSave={handlePerformanceMetricsTitleSave}
+              tag="h2"
+              style={{
+                fontSize: 'var(--text-4xl)',
+                fontWeight: 'var(--font-weight-bold)',
+                color: 'var(--text-primary)',
+                marginBottom: 'var(--space-8)',
+                fontFamily: 'var(--font-family-heading)',
+                textAlign: 'center',
+                width: '100%',
+                display: 'block',
+              }}
+              placeholder="Performance metrics title"
+            />
+          </div>
           
           <div
             style={{
@@ -234,7 +396,7 @@ export default function RecordsPage() {
               flexWrap: 'wrap',
             }}
           >
-            {performanceMetrics.map((metric) => (
+            {performanceMetrics.map((metric, index) => (
               <button
                 key={metric.year}
                 onClick={() => setSelectedYear(metric.year)}
@@ -250,7 +412,17 @@ export default function RecordsPage() {
                   transition: 'all var(--transition-fast)',
                 }}
               >
-                {metric.year}
+                <EditableText
+                  value={performanceMetricsData?.btnTxt?.[index]?.buttonText || metric.year}
+                  onSave={(newText) => {
+                    const updatedBtnTxt = [...(performanceMetricsData?.btnTxt || performanceMetrics.map(m => ({ buttonText: m.year })))];
+                    updatedBtnTxt[index] = { buttonText: newText };
+                    handlePerformanceMetricsBtnTxtSave(updatedBtnTxt);
+                  }}
+                  tag="span"
+                  className={`btn-text btn-text-year-${index}`}
+                  placeholder="Year"
+                />
               </button>
             ))}
           </div>
@@ -267,8 +439,18 @@ export default function RecordsPage() {
               boxShadow: 'var(--shadow-lg)',
             }}
           >
-            <div style={{ textAlign: 'center' }}>
-              <div
+            <div style={{ textAlign: 'center', display: 'flex', flexDirection: 'column', justifyContent: 'center', height: '100%' }}>
+              <EditableText
+                value={performanceMetricsData?.numbers?.[0]?.value || currentYearData.totalDeals.toString()}
+                onSave={(newValue) => {
+                  const updatedNumbers = [...(performanceMetricsData?.numbers || [])];
+                  updatedNumbers[0] = { 
+                    value: newValue, 
+                    label: updatedNumbers[0]?.label || 'Total Deals' 
+                  };
+                  handlePerformanceMetricsNumbersSave(updatedNumbers);
+                }}
+                tag="div"
                 style={{
                   fontSize: 'var(--text-4xl)',
                   fontWeight: 'var(--font-weight-bold)',
@@ -276,16 +458,36 @@ export default function RecordsPage() {
                   marginBottom: 'var(--space-2)',
                   fontFamily: 'var(--font-family-heading)',
                 }}
-              >
-                {currentYearData.totalDeals}
-              </div>
-              <div style={{ color: 'var(--text-secondary)', fontSize: 'var(--text-lg)' }}>
-                Total Deals
-              </div>
+                placeholder="Metric value"
+              />
+              <EditableText
+                value={performanceMetricsData?.numbers?.[0]?.label || 'Total Deals'}
+                onSave={(newLabel) => {
+                  const updatedNumbers = [...(performanceMetricsData?.numbers || [])];
+                  updatedNumbers[0] = { 
+                    value: updatedNumbers[0]?.value || currentYearData.totalDeals.toString(), 
+                    label: newLabel 
+                  };
+                  handlePerformanceMetricsNumbersSave(updatedNumbers);
+                }}
+                tag="div"
+                style={{ color: 'var(--text-secondary)', fontSize: 'var(--text-lg)' }}
+                placeholder="Metric label"
+              />
             </div>
             
-            <div style={{ textAlign: 'center' }}>
-              <div
+            <div style={{ textAlign: 'center', display: 'flex', flexDirection: 'column', justifyContent: 'center', height: '100%' }}>
+              <EditableText
+                value={performanceMetricsData?.numbers?.[1]?.value || `$${currentYearData.totalValue}B+`}
+                onSave={(newValue) => {
+                  const updatedNumbers = [...(performanceMetricsData?.numbers || [])];
+                  updatedNumbers[1] = { 
+                    value: newValue, 
+                    label: updatedNumbers[1]?.label || 'Deal Value' 
+                  };
+                  handlePerformanceMetricsNumbersSave(updatedNumbers);
+                }}
+                tag="div"
                 style={{
                   fontSize: 'var(--text-4xl)',
                   fontWeight: 'var(--font-weight-bold)',
@@ -293,16 +495,36 @@ export default function RecordsPage() {
                   marginBottom: 'var(--space-2)',
                   fontFamily: 'var(--font-family-heading)',
                 }}
-              >
-                ${currentYearData.totalValue}B+
-              </div>
-              <div style={{ color: 'var(--text-secondary)', fontSize: 'var(--text-lg)' }}>
-                Deal Value
-              </div>
+                placeholder="Metric value"
+              />
+              <EditableText
+                value={performanceMetricsData?.numbers?.[1]?.label || 'Deal Value'}
+                onSave={(newLabel) => {
+                  const updatedNumbers = [...(performanceMetricsData?.numbers || [])];
+                  updatedNumbers[1] = { 
+                    value: updatedNumbers[1]?.value || `$${currentYearData.totalValue}B+`, 
+                    label: newLabel 
+                  };
+                  handlePerformanceMetricsNumbersSave(updatedNumbers);
+                }}
+                tag="div"
+                style={{ color: 'var(--text-secondary)', fontSize: 'var(--text-lg)' }}
+                placeholder="Metric label"
+              />
             </div>
             
-            <div style={{ textAlign: 'center' }}>
-              <div
+            <div style={{ textAlign: 'center', display: 'flex', flexDirection: 'column', justifyContent: 'center', height: '100%' }}>
+              <EditableText
+                value={performanceMetricsData?.numbers?.[2]?.value || `${currentYearData.successRate}%`}
+                onSave={(newValue) => {
+                  const updatedNumbers = [...(performanceMetricsData?.numbers || [])];
+                  updatedNumbers[2] = { 
+                    value: newValue, 
+                    label: updatedNumbers[2]?.label || 'Success Rate' 
+                  };
+                  handlePerformanceMetricsNumbersSave(updatedNumbers);
+                }}
+                tag="div"
                 style={{
                   fontSize: 'var(--text-4xl)',
                   fontWeight: 'var(--font-weight-bold)',
@@ -310,16 +532,36 @@ export default function RecordsPage() {
                   marginBottom: 'var(--space-2)',
                   fontFamily: 'var(--font-family-heading)',
                 }}
-              >
-                {currentYearData.successRate}%
-              </div>
-              <div style={{ color: 'var(--text-secondary)', fontSize: 'var(--text-lg)' }}>
-                Success Rate
-              </div>
+                placeholder="Metric value"
+              />
+              <EditableText
+                value={performanceMetricsData?.numbers?.[2]?.label || 'Success Rate'}
+                onSave={(newLabel) => {
+                  const updatedNumbers = [...(performanceMetricsData?.numbers || [])];
+                  updatedNumbers[2] = { 
+                    value: updatedNumbers[2]?.value || `${currentYearData.successRate}%`, 
+                    label: newLabel 
+                  };
+                  handlePerformanceMetricsNumbersSave(updatedNumbers);
+                }}
+                tag="div"
+                style={{ color: 'var(--text-secondary)', fontSize: 'var(--text-lg)' }}
+                placeholder="Metric label"
+              />
             </div>
             
-            <div style={{ textAlign: 'center' }}>
-              <div
+            <div style={{ textAlign: 'center', display: 'flex', flexDirection: 'column', justifyContent: 'center', height: '100%' }}>
+              <EditableText
+                value={performanceMetricsData?.numbers?.[3]?.value || `${currentYearData.clientSatisfaction}/5`}
+                onSave={(newValue) => {
+                  const updatedNumbers = [...(performanceMetricsData?.numbers || [])];
+                  updatedNumbers[3] = { 
+                    value: newValue, 
+                    label: updatedNumbers[3]?.label || 'Client Rating' 
+                  };
+                  handlePerformanceMetricsNumbersSave(updatedNumbers);
+                }}
+                tag="div"
                 style={{
                   fontSize: 'var(--text-4xl)',
                   fontWeight: 'var(--font-weight-bold)',
@@ -327,16 +569,36 @@ export default function RecordsPage() {
                   marginBottom: 'var(--space-2)',
                   fontFamily: 'var(--font-family-heading)',
                 }}
-              >
-                {currentYearData.clientSatisfaction}/5
-              </div>
-              <div style={{ color: 'var(--text-secondary)', fontSize: 'var(--text-lg)' }}>
-                Client Rating
-              </div>
+                placeholder="Metric value"
+              />
+              <EditableText
+                value={performanceMetricsData?.numbers?.[3]?.label || 'Client Rating'}
+                onSave={(newLabel) => {
+                  const updatedNumbers = [...(performanceMetricsData?.numbers || [])];
+                  updatedNumbers[3] = { 
+                    value: updatedNumbers[3]?.value || `${currentYearData.clientSatisfaction}/5`, 
+                    label: newLabel 
+                  };
+                  handlePerformanceMetricsNumbersSave(updatedNumbers);
+                }}
+                tag="div"
+                style={{ color: 'var(--text-secondary)', fontSize: 'var(--text-lg)' }}
+                placeholder="Metric label"
+              />
             </div>
             
-            <div style={{ textAlign: 'center' }}>
-              <div
+            <div style={{ textAlign: 'center', display: 'flex', flexDirection: 'column', justifyContent: 'center', height: '100%' }}>
+              <EditableText
+                value={performanceMetricsData?.numbers?.[4]?.value || currentYearData.growth}
+                onSave={(newValue) => {
+                  const updatedNumbers = [...(performanceMetricsData?.numbers || [])];
+                  updatedNumbers[4] = { 
+                    value: newValue, 
+                    label: updatedNumbers[4]?.label || 'YoY Growth' 
+                  };
+                  handlePerformanceMetricsNumbersSave(updatedNumbers);
+                }}
+                tag="div"
                 style={{
                   fontSize: 'var(--text-4xl)',
                   fontWeight: 'var(--font-weight-bold)',
@@ -344,12 +606,22 @@ export default function RecordsPage() {
                   marginBottom: 'var(--space-2)',
                   fontFamily: 'var(--font-family-heading)',
                 }}
-              >
-                {currentYearData.growth}
-              </div>
-              <div style={{ color: 'var(--text-secondary)', fontSize: 'var(--text-lg)' }}>
-                YoY Growth
-              </div>
+                placeholder="Metric value"
+              />
+              <EditableText
+                value={performanceMetricsData?.numbers?.[4]?.label || 'YoY Growth'}
+                onSave={(newLabel) => {
+                  const updatedNumbers = [...(performanceMetricsData?.numbers || [])];
+                  updatedNumbers[4] = { 
+                    value: updatedNumbers[4]?.value || currentYearData.growth, 
+                    label: newLabel 
+                  };
+                  handlePerformanceMetricsNumbersSave(updatedNumbers);
+                }}
+                tag="div"
+                style={{ color: 'var(--text-secondary)', fontSize: 'var(--text-lg)' }}
+                placeholder="Metric label"
+              />
             </div>
           </div>
         </div>
@@ -773,7 +1045,10 @@ export default function RecordsPage() {
         }}
       >
         <div style={{ maxWidth: '800px', margin: '0 auto' }}>
-          <h2
+          <EditableText
+            value={joinSuccessData?.title || 'Ready to Join Our Success Story?'}
+            onSave={handleJoinSuccessTitleSave}
+            tag="h2"
             style={{
               fontSize: 'var(--text-4xl)',
               fontWeight: 'var(--font-weight-bold)',
@@ -781,21 +1056,23 @@ export default function RecordsPage() {
               marginBottom: 'var(--space-6)',
               fontFamily: 'var(--font-family-heading)',
             }}
-          >
-            Ready to Join Our Success Story?
-          </h2>
+            placeholder="CTA title"
+          />
           
-          <p
+          <EditableText
+            value={joinSuccessData?.subtitle || 'Let our proven track record work for you. Contact us today to discuss how we can\nhelp achieve your investment goals.'}
+            onSave={handleJoinSuccessSubtitleSave}
+            tag="p"
             style={{
               fontSize: 'var(--text-xl)',
               color: 'var(--text-secondary)',
               lineHeight: '1.6',
               marginBottom: 'var(--space-8)',
+              whiteSpace: 'pre-line',
             }}
-          >
-            Let our proven track record work for you. Contact us today to discuss how we can 
-            help achieve your investment goals.
-          </p>
+            multiline={true}
+            placeholder="CTA description"
+          />
           
           <div
             style={{
@@ -805,64 +1082,120 @@ export default function RecordsPage() {
               flexWrap: 'wrap',
             }}
           >
-            <a
-              href="/contact"
-              style={{
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: 'var(--space-2)',
-                padding: 'var(--space-4) var(--space-8)',
-                background: 'linear-gradient(135deg, #D4AF37, #FFD700)',
-                color: '#000',
-                borderRadius: 'var(--radius-lg)',
-                fontWeight: 'var(--font-weight-semibold)',
-                textDecoration: 'none',
-                fontSize: 'var(--text-lg)',
-                transition: 'all var(--transition-normal)',
-                boxShadow: '0 6px 20px rgba(212, 175, 55, 0.3)',
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.transform = 'translateY(-3px) scale(1.02)';
-                e.currentTarget.style.boxShadow = '0 12px 30px rgba(212, 175, 55, 0.5)';
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.transform = 'translateY(0) scale(1)';
-                e.currentTarget.style.boxShadow = '0 6px 20px rgba(212, 175, 55, 0.3)';
-              }}
-            >
-              Start Your Journey
-              <ArrowRight size={20} />
-            </a>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-3)' }}>
+              <Pencil
+                size={16}
+                style={{
+                  cursor: 'pointer',
+                  color: 'var(--color-accent)',
+                  transition: 'all 0.2s ease',
+                  padding: '4px',
+                  borderRadius: '4px',
+                  background: 'rgba(212, 175, 55, 0.1)',
+                  border: '1px solid rgba(212, 175, 55, 0.3)',
+                }}
+                onClick={() => {
+                  const event = new Event('dblclick');
+                  document.querySelector('.btn-text-start-journey')?.dispatchEvent(event);
+                }}
+              />
+              <a
+                href="/contact"
+                style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: 'var(--space-2)',
+                  padding: 'var(--space-4) var(--space-8)',
+                  background: 'linear-gradient(135deg, #D4AF37, #FFD700)',
+                  color: '#000',
+                  borderRadius: 'var(--radius-lg)',
+                  fontWeight: 'var(--font-weight-semibold)',
+                  textDecoration: 'none',
+                  fontSize: 'var(--text-lg)',
+                  transition: 'all var(--transition-normal)',
+                  boxShadow: '0 6px 20px rgba(212, 175, 55, 0.3)',
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.transform = 'translateY(-3px) scale(1.02)';
+                  e.currentTarget.style.boxShadow = '0 12px 30px rgba(212, 175, 55, 0.5)';
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.transform = 'translateY(0) scale(1)';
+                  e.currentTarget.style.boxShadow = '0 6px 20px rgba(212, 175, 55, 0.3)';
+                }}
+              >
+                <EditableText
+                  value={joinSuccessData?.btnTxt?.[0]?.buttonText || 'Start Your Journey'}
+                  onSave={(newText) => {
+                    const updatedBtnTxt = [...(joinSuccessData?.btnTxt || [{ buttonText: 'Start Your Journey' }, { buttonText: 'View Insights' }])];
+                    updatedBtnTxt[0] = { buttonText: newText };
+                    handleJoinSuccessBtnTxtSave(updatedBtnTxt);
+                  }}
+                  tag="span"
+                  className="btn-text btn-text-start-journey"
+                  placeholder="Button text"
+                />
+                <ArrowRight size={20} />
+              </a>
+            </div>
             
-            <a
-              href="/insights"
-              style={{
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: 'var(--space-2)',
-                padding: 'var(--space-4) var(--space-8)',
-                background: 'transparent',
-                color: 'var(--color-accent)',
-                border: '2px solid var(--color-accent)',
-                borderRadius: 'var(--radius-lg)',
-                fontWeight: 'var(--font-weight-semibold)',
-                textDecoration: 'none',
-                fontSize: 'var(--text-lg)',
-                transition: 'all var(--transition-normal)',
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.background = 'var(--color-accent)';
-                e.currentTarget.style.color = '#000';
-                e.currentTarget.style.transform = 'translateY(-3px) scale(1.02)';
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.background = 'transparent';
-                e.currentTarget.style.color = 'var(--color-accent)';
-                e.currentTarget.style.transform = 'translateY(0) scale(1)';
-              }}
-            >
-              View Insights
-            </a>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-3)' }}>
+              <Pencil
+                size={16}
+                style={{
+                  cursor: 'pointer',
+                  color: 'var(--color-accent)',
+                  transition: 'all 0.2s ease',
+                  padding: '4px',
+                  borderRadius: '4px',
+                  background: 'rgba(212, 175, 55, 0.1)',
+                  border: '1px solid rgba(212, 175, 55, 0.3)',
+                }}
+                onClick={() => {
+                  const event = new Event('dblclick');
+                  document.querySelector('.btn-text-view-insights')?.dispatchEvent(event);
+                }}
+              />
+              <a
+                href="/insights"
+                style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: 'var(--space-2)',
+                  padding: 'var(--space-4) var(--space-8)',
+                  background: 'transparent',
+                  color: 'var(--color-accent)',
+                  border: '2px solid var(--color-accent)',
+                  borderRadius: 'var(--radius-lg)',
+                  fontWeight: 'var(--font-weight-semibold)',
+                  textDecoration: 'none',
+                  fontSize: 'var(--text-lg)',
+                  transition: 'all var(--transition-normal)',
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.background = 'var(--color-accent)';
+                  e.currentTarget.style.color = '#000';
+                  e.currentTarget.style.transform = 'translateY(-3px) scale(1.02)';
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.background = 'transparent';
+                  e.currentTarget.style.color = 'var(--color-accent)';
+                  e.currentTarget.style.transform = 'translateY(0) scale(1)';
+                }}
+              >
+                <EditableText
+                  value={joinSuccessData?.btnTxt?.[1]?.buttonText || 'View Insights'}
+                  onSave={(newText) => {
+                    const updatedBtnTxt = [...(joinSuccessData?.btnTxt || [{ buttonText: 'Start Your Journey' }, { buttonText: 'View Insights' }])];
+                    updatedBtnTxt[1] = { buttonText: newText };
+                    handleJoinSuccessBtnTxtSave(updatedBtnTxt);
+                  }}
+                  tag="span"
+                  className="btn-text btn-text-view-insights"
+                  placeholder="Button text"
+                />
+              </a>
+            </div>
           </div>
         </div>
       </section>
