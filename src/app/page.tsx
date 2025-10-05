@@ -1,28 +1,14 @@
 'use client';
 
 import React, { useState, useEffect, useRef } from 'react';
-import { TrendingUp, Users, Award, ArrowRight, BarChart3, Globe, DollarSign, Building2, Shield, ChevronLeft, ChevronRight, Pencil } from 'lucide-react';
+import { TrendingUp, Users, Award, ArrowRight, BarChart3, Globe, DollarSign, Building2, Shield, ChevronLeft, ChevronRight } from 'lucide-react';
 import Link from 'next/link';
-import { EditableText } from '../components/EditableText';
-import { EditableNumbers } from '../components/EditableNumbers';
-import { cmsService, PageContentData } from '../services/cmsService';
-import { PageType } from '../constants/pageTypes';
 
 export default function Home() {
   const [isVisible, setIsVisible] = useState(false);
   const [stats, setStats] = useState({ clients: 0, deals: 0, years: 0, assets: 0 });
   const [hoveredButton, setHoveredButton] = useState<string | null>(null);
   const carouselRef = useRef<HTMLDivElement>(null);
-  
-  // CMS State
-  const [cmsData, setCmsData] = useState<PageContentData | null>(null);
-  const [visionData, setVisionData] = useState<PageContentData | null>(null);
-  const [storyData, setStoryData] = useState<PageContentData | null>(null);
-  const [leadershipData, setLeadershipData] = useState<PageContentData | null>(null);
-  const [investmentStrategyData, setInvestmentStrategyData] = useState<PageContentData | null>(null);
-  const [partnersData, setPartnersData] = useState<PageContentData | null>(null);
-  const [isLoading, setIsLoading] = useState(false);
-  const hasLoadedRef = useRef(false);
   const clients: string[] = [
     'Aurum Partners',
     'Nexus Holdings',
@@ -88,70 +74,6 @@ export default function Home() {
   useEffect(() => {
     setIsVisible(true);
     
-    // Load existing content from CMS
-    const loadPageContent = async () => {
-      if (hasLoadedRef.current) return; // Prevent multiple calls
-      hasLoadedRef.current = true;
-      
-      try {
-        setIsLoading(true);
-        
-        // Load LANDING page content
-        const landingResponse = await cmsService.getPageContent(PageType.LANDING);
-        if (landingResponse.success && landingResponse.data) {
-          setCmsData(landingResponse.data);
-        } else {
-          console.error('Failed to load landing page content:', landingResponse.message);
-        }
-        
-        // Load VISION page content
-        const visionResponse = await cmsService.getPageContent(PageType.VISION);
-        if (visionResponse.success && visionResponse.data) {
-          setVisionData(visionResponse.data);
-        } else {
-          console.error('Failed to load vision page content:', visionResponse.message);
-        }
-        
-        // Load STORY page content
-        const storyResponse = await cmsService.getPageContent(PageType.STORY);
-        if (storyResponse.success && storyResponse.data) {
-          setStoryData(storyResponse.data);
-        } else {
-          console.error('Failed to load story page content:', storyResponse.message);
-        }
-        
-        // Load LEADERSHIP_TEAM page content
-        const leadershipResponse = await cmsService.getPageContent(PageType.LEADERSHIP_TEAM);
-        if (leadershipResponse.success && leadershipResponse.data) {
-          setLeadershipData(leadershipResponse.data);
-        } else {
-          console.error('Failed to load leadership team page content:', leadershipResponse.message);
-        }
-        
-        // Load INVESTMENT_STRATEGY page content
-        const investmentStrategyResponse = await cmsService.getPageContent(PageType.INVESTMENT_STRATEGY);
-        if (investmentStrategyResponse.success && investmentStrategyResponse.data) {
-          setInvestmentStrategyData(investmentStrategyResponse.data);
-        } else {
-          console.error('Failed to load investment strategy page content:', investmentStrategyResponse.message);
-        }
-        
-        // Load PARTNERS page content
-        const partnersResponse = await cmsService.getPageContent(PageType.PARTNERS);
-        if (partnersResponse.success && partnersResponse.data) {
-          setPartnersData(partnersResponse.data);
-        } else {
-          console.error('Failed to load partners page content:', partnersResponse.message);
-        }
-      } catch (error) {
-        console.error('Error loading page content:', error);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-    
-    loadPageContent();
-    
     // Animate statistics
     const animateStats = () => {
       const targets = { clients: 500, deals: 1200, years: 15, assets: 50 };
@@ -179,182 +101,8 @@ export default function Home() {
     setTimeout(animateStats, 500);
   }, []);
 
-  // CMS Functions
-  const handleTitleSave = async (newTitle: string) => {
-    if (!cmsData) return;
-    const updatedData = { ...cmsData, title: newTitle };
-    setCmsData(updatedData);
-    await saveToCMS(updatedData);
-  };
-
-  const handleSubtitleSave = async (newSubtitle: string) => {
-    if (!cmsData) return;
-    const updatedData = { ...cmsData, subtitle: newSubtitle };
-    setCmsData(updatedData);
-    await saveToCMS(updatedData);
-  };
-
-  const handleNumbersSave = async (newNumbers: Array<{ value: string; label: string }>) => {
-    if (!cmsData) return;
-    const updatedData = { ...cmsData, numbers: newNumbers };
-    setCmsData(updatedData);
-    await saveToCMS(updatedData);
-  };
-
-  // VISION page handlers
-  const handleVisionTitleSave = async (newTitle: string) => {
-    if (!visionData) return;
-    const updatedData = { ...visionData, title: newTitle };
-    setVisionData(updatedData);
-    await saveToCMS(updatedData);
-  };
-
-  const handleVisionSubtitleSave = async (newSubtitle: string) => {
-    if (!visionData) return;
-    const updatedData = { ...visionData, subtitle: newSubtitle };
-    setVisionData(updatedData);
-    await saveToCMS(updatedData);
-  };
-
-  const handleItemsSave = async (newItems: Array<{ title: string; description: string }>) => {
-    if (!visionData) return;
-    const updatedData = { ...visionData, items: newItems };
-    setVisionData(updatedData);
-    await saveToCMS(updatedData);
-  };
-
-  const handleBtnTxtSave = async (newBtnTxt: Array<{ buttonText: string }>) => {
-    if (!visionData) return;
-    const updatedData = { ...visionData, btnTxt: newBtnTxt };
-    setVisionData(updatedData);
-    await saveToCMS(updatedData);
-  };
-
-  // Story section handlers
-  const handleStoryTitleSave = async (newTitle: string) => {
-    if (!storyData) return;
-    const updatedData = { ...storyData, title: newTitle };
-    setStoryData(updatedData);
-    await saveToCMS(updatedData);
-  };
-
-  const handleStoryDescriptionSave = async (newDescription: string) => {
-    if (!storyData) return;
-    const updatedData = { ...storyData, subtitle: newDescription };
-    setStoryData(updatedData);
-    await saveToCMS(updatedData);
-  };
-
-  // Leadership team handlers
-  const handleLeadershipTitleSave = async (newTitle: string) => {
-    if (!leadershipData) return;
-    const updatedData = { ...leadershipData, title: newTitle };
-    setLeadershipData(updatedData);
-    await saveToCMS(updatedData);
-  };
-
-  const handleLeadershipSubtitleSave = async (newSubtitle: string) => {
-    if (!leadershipData) return;
-    const updatedData = { ...leadershipData, subtitle: newSubtitle };
-    setLeadershipData(updatedData);
-    await saveToCMS(updatedData);
-  };
-
-  const handleLeadershipItemsSave = async (newItems: Array<{ title: string; description: string }>) => {
-    if (!leadershipData) return;
-    const updatedData = { ...leadershipData, items: newItems };
-    setLeadershipData(updatedData);
-    await saveToCMS(updatedData);
-  };
-
-  // Investment strategy handlers
-  const handleInvestmentStrategyTitleSave = async (newTitle: string) => {
-    if (!investmentStrategyData) return;
-    const updatedData = { ...investmentStrategyData, title: newTitle };
-    setInvestmentStrategyData(updatedData);
-    await saveToCMS(updatedData);
-  };
-
-  const handleInvestmentStrategyDescriptionSave = async (newDescription: string) => {
-    if (!investmentStrategyData) return;
-    const updatedData = { ...investmentStrategyData, subtitle: newDescription };
-    setInvestmentStrategyData(updatedData);
-    await saveToCMS(updatedData);
-  };
-
-  const handleInvestmentStrategyNumbersSave = async (newNumbers: Array<{ value: string; label: string }>) => {
-    if (!investmentStrategyData) return;
-    const updatedData = { ...investmentStrategyData, numbers: newNumbers };
-    setInvestmentStrategyData(updatedData);
-    await saveToCMS(updatedData);
-  };
-
-  const handleInvestmentStrategyBtnTxtSave = async (newBtnTxt: Array<{ buttonText: string }>) => {
-    if (!investmentStrategyData) return;
-    const updatedData = { ...investmentStrategyData, btnTxt: newBtnTxt };
-    setInvestmentStrategyData(updatedData);
-    await saveToCMS(updatedData);
-  };
-
-  // Partners handlers
-  const handlePartnersTitleSave = async (newTitle: string) => {
-    if (!partnersData) return;
-    const updatedData = { ...partnersData, title: newTitle };
-    setPartnersData(updatedData);
-    await saveToCMS(updatedData);
-  };
-
-  const handlePartnersDescriptionSave = async (newDescription: string) => {
-    if (!partnersData) return;
-    const updatedData = { ...partnersData, subtitle: newDescription };
-    setPartnersData(updatedData);
-    await saveToCMS(updatedData);
-  };
-
-  const saveToCMS = async (data: PageContentData) => {
-    try {
-      setIsLoading(true);
-      await cmsService.createOrUpdatePageContent(data);
-      console.log('Content saved successfully');
-    } catch (error) {
-      console.error('Error saving content:', error);
-      // You might want to show a toast notification here
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  // Show loading state while CMS data is being fetched
-  if (isLoading && !cmsData) {
-    return (
-      <div className="landing-page">
-        <div className="cms-loading">
-          Loading content...
-        </div>
-      </div>
-    );
-  }
-
-  // Show error state if no data is available
-  if (!cmsData) {
-    return (
-      <div className="landing-page">
-        <div className="cms-loading">
-          Failed to load content. Please refresh the page.
-        </div>
-      </div>
-    );
-  }
-
   return (
     <div className="landing-page">
-      {isLoading && (
-        <div className="cms-loading">
-          Saving...
-        </div>
-      )}
-      
-      
       {/* Hero Section */}
       <section className="hero-section">
         <div className="hero-background">
@@ -366,47 +114,34 @@ export default function Home() {
 
           
           <h1 className="hero-title">
-            <span className="hero-title-main">
-              <EditableText
-                value={cmsData.title?.split(' ')[0] || 'Elevating'}
-                onSave={(newValue) => handleTitleSave(`${newValue} Capital Markets Excellence`)}
-                tag="span"
-                placeholder="Elevating"
-              />
-            </span>
-            <span className="hero-title-accent">
-              <EditableText
-                value={cmsData.title?.split(' ').slice(1, 3).join(' ') || 'Capital Markets'}
-                onSave={(newValue) => handleTitleSave(`Elevating ${newValue} Excellence`)}
-                tag="span"
-                placeholder="Capital Markets"
-              />
-            </span>
-            <span className="hero-title-sub">
-              <EditableText
-                value={cmsData.title?.split(' ')[3] || 'Excellence'}
-                onSave={(newValue) => handleTitleSave(`Elevating Capital Markets ${newValue}`)}
-                tag="span"
-                placeholder="Excellence"
-              />
-            </span>
+            <span className="hero-title-main">Elevating</span>
+            <span className="hero-title-accent">Capital Markets</span>
+            <span className="hero-title-sub">Excellence</span>
           </h1>
           
-          <EditableText
-            value={cmsData.subtitle || 'We deliver sophisticated investment banking solutions that\ndrive growth, maximize value, and create lasting success for\nour clients across global markets.'}
-            onSave={handleSubtitleSave}
-            tag="p"
-            className="hero-description"
-            multiline={true}
-            placeholder="Enter your subtitle"
-          />
+          <p className="hero-description">
+            We deliver sophisticated investment banking solutions that drive growth, 
+            maximize value, and create lasting success for our clients across global markets.
+          </p>
           
           {/* Statistics within Hero */}
           <div className="hero-stats">
-            <EditableNumbers
-              numbers={cmsData.numbers || []}
-              onSave={handleNumbersSave}
-            />
+            <div className="stat-item">
+              <div className="stat-number">{stats.clients}+</div>
+              <div className="stat-label">Global Clients</div>
+            </div>
+            <div className="stat-item">
+              <div className="stat-number">${stats.deals}B+</div>
+              <div className="stat-label">Deals Completed</div>
+            </div>
+            <div className="stat-item">
+              <div className="stat-number">{stats.years}+</div>
+              <div className="stat-label">Years Experience</div>
+            </div>
+            <div className="stat-item">
+              <div className="stat-number">${stats.assets}B+</div>
+              <div className="stat-label">Assets Under Management</div>
+            </div>
           </div>
         </div>
       </section>
@@ -429,210 +164,98 @@ export default function Home() {
         
         <div className="merged-content">
           <h2 className="merged-title">
-            <EditableText
-              value={visionData?.title || 'Where Vision Meets Expert Insights'}
-              onSave={handleVisionTitleSave}
-              tag="span"
-              className="merged-title-text"
-              placeholder="Enter title"
-            />
+            Where <span className="highlight">Vision</span> Meets <span className="highlight">Expert Insights</span>
           </h2>
           
-          <EditableText
-            value={visionData?.subtitle || 'Experience the power of strategic investment banking combined with\ncomprehensive market research, cutting-edge analysis, and proven strategies that\ndrive exceptional results across global markets.'}
-            onSave={handleVisionSubtitleSave}
-            tag="p"
-            className="merged-description"
-            multiline={true}
-            placeholder="Enter subtitle"
-          />
+          <p className="merged-description">
+            Experience the power of strategic investment banking combined with comprehensive market research, 
+            cutting-edge analysis, and proven strategies that drive exceptional results across global markets.
+          </p>
           
           <div className="merged-features">
             <div className="feature-card">
               <div className="feature-icon">
-                <BarChart3 size={20} />
+                <BarChart3 size={28} />
               </div>
               <div className="feature-content">
-                <EditableText
-                  value={visionData?.items?.[0]?.title || 'Advanced Market Analysis'}
-                  onSave={(newTitle) => {
-                    const updatedItems = [...(visionData?.items || [])];
-                    updatedItems[0] = { ...updatedItems[0], title: newTitle, description: updatedItems[0]?.description || 'In-depth research and trend analysis with real-time market intelligence' };
-                    handleItemsSave(updatedItems);
-                  }}
-                  tag="h4"
-                  className="feature-title"
-                  placeholder="Feature title"
-                />
-                <EditableText
-                  value={visionData?.items?.[0]?.description || 'In-depth research and trend analysis with real-time market intelligence'}
-                  onSave={(newDescription) => {
-                    const updatedItems = [...(visionData?.items || [])];
-                    updatedItems[0] = { ...updatedItems[0], title: updatedItems[0]?.title || 'Advanced Market Analysis', description: newDescription };
-                    handleItemsSave(updatedItems);
-                  }}
-                  tag="p"
-                  className="feature-description"
-                  placeholder="Feature description"
-                />
+                <h4>Advanced Market Analysis</h4>
+                <p>In-depth research and trend analysis with real-time market intelligence</p>
               </div>
             </div>
             <div className="feature-card">
               <div className="feature-icon">
-                <Globe size={20} />
+                <Globe size={28} />
               </div>
               <div className="feature-content">
-                <EditableText
-                  value={visionData?.items?.[1]?.title || 'Global Market Coverage'}
-                  onSave={(newTitle) => {
-                    const updatedItems = [...(visionData?.items || [])];
-                    updatedItems[1] = { ...updatedItems[1], title: newTitle, description: updatedItems[1]?.description || 'Worldwide insights and opportunities across all major financial markets' };
-                    handleItemsSave(updatedItems);
-                  }}
-                  tag="h4"
-                  className="feature-title"
-                  placeholder="Feature title"
-                />
-                <EditableText
-                  value={visionData?.items?.[1]?.description || 'Worldwide insights and opportunities across all major financial markets'}
-                  onSave={(newDescription) => {
-                    const updatedItems = [...(visionData?.items || [])];
-                    updatedItems[1] = { ...updatedItems[1], title: updatedItems[1]?.title || 'Global Market Coverage', description: newDescription };
-                    handleItemsSave(updatedItems);
-                  }}
-                  tag="p"
-                  className="feature-description"
-                  placeholder="Feature description"
-                />
+                <h4>Global Market Coverage</h4>
+                <p>Worldwide insights and opportunities across all major financial markets</p>
               </div>
             </div>
             <div className="feature-card">
               <div className="feature-icon">
-                <DollarSign size={20} />
+                <DollarSign size={28} />
               </div>
               <div className="feature-content">
-                <EditableText
-                  value={visionData?.items?.[2]?.title || 'Strategic Investment Solutions'}
-                  onSave={(newTitle) => {
-                    const updatedItems = [...(visionData?.items || [])];
-                    updatedItems[2] = { ...updatedItems[2], title: newTitle, description: updatedItems[2]?.description || 'Proven strategies for portfolio optimization and wealth maximization' };
-                    handleItemsSave(updatedItems);
-                  }}
-                  tag="h4"
-                  className="feature-title"
-                  placeholder="Feature title"
-                />
-                <EditableText
-                  value={visionData?.items?.[2]?.description || 'Proven strategies for portfolio optimization and wealth maximization'}
-                  onSave={(newDescription) => {
-                    const updatedItems = [...(visionData?.items || [])];
-                    updatedItems[2] = { ...updatedItems[2], title: updatedItems[2]?.title || 'Strategic Investment Solutions', description: newDescription };
-                    handleItemsSave(updatedItems);
-                  }}
-                  tag="p"
-                  className="feature-description"
-                  placeholder="Feature description"
-                />
+                <h4>Strategic Investment Solutions</h4>
+                <p>Proven strategies for portfolio optimization and wealth maximization</p>
               </div>
             </div>
           </div>
           
           <div className="merged-actions">
-            <div className="button-with-edit">
-              <Pencil 
-                size={16} 
-                className="edit-icon"
-                onClick={() => {
-                  // Trigger edit for first button
-                  const event = new Event('dblclick');
-                  document.querySelector('.btn-text-1')?.dispatchEvent(event);
-                }}
-              />
-              <Link 
-                href="/insights" 
-                className="btn-primary-action"
-                onMouseEnter={() => setHoveredButton('primary-action')}
-                onMouseLeave={() => setHoveredButton(null)}
-                style={{
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  gap: 'var(--space-2)',
-                  padding: 'var(--space-5) var(--space-10)',
-                  borderRadius: 'var(--radius-lg)',
-                  fontWeight: 'var(--font-weight-bold)',
-                  textDecoration: 'none',
-                  transition: 'all 0.3s ease',
-                  border: '2px solid transparent',
-                  fontSize: 'var(--text-lg)',
-                  background: 'linear-gradient(135deg, #D4AF37, #FFD700)',
-                  color: '#000',
-                  boxShadow: hoveredButton === 'primary-action' 
-                    ? '0 15px 35px rgba(212, 175, 55, 0.6)' 
-                    : '0 8px 25px rgba(212, 175, 55, 0.4)',
-                  transform: hoveredButton === 'primary-action' ? 'translateY(-4px) scale(1.05)' : 'translateY(0) scale(1)',
-                }}
-              >
-                <EditableText
-                  value={visionData?.btnTxt?.[0]?.buttonText || 'Explore Market Insights'}
-                  onSave={(newText) => {
-                    const updatedBtnTxt = [...(visionData?.btnTxt || [{ buttonText: 'Explore Market Insights' }])];
-                    updatedBtnTxt[0] = { buttonText: newText };
-                    handleBtnTxtSave(updatedBtnTxt);
-                  }}
-                  tag="span"
-                  className="btn-text btn-text-1"
-                  placeholder="Button text"
-                />
-                <ArrowRight size={22} />
-              </Link>
-            </div>
-            <div className="button-with-edit">
-              <Pencil 
-                size={16} 
-                className="edit-icon"
-                onClick={() => {
-                  // Trigger edit for second button
-                  const event = new Event('dblclick');
-                  document.querySelector('.btn-text-2')?.dispatchEvent(event);
-                }}
-              />
-              <Link 
-                href="/contact" 
-                className="btn-tertiary-action"
-                onMouseEnter={() => setHoveredButton('tertiary-action')}
-                onMouseLeave={() => setHoveredButton(null)}
-                style={{
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  gap: 'var(--space-2)',
-                  padding: 'var(--space-5) var(--space-10)',
-                  borderRadius: 'var(--radius-lg)',
-                  fontWeight: 'var(--font-weight-semibold)',
-                  textDecoration: 'none',
-                  transition: 'all 0.3s ease',
-                  border: '2px solid rgba(212, 175, 55, 0.8)',
-                  fontSize: 'var(--text-lg)',
-                  background: hoveredButton === 'tertiary-action' 
-                    ? 'rgba(212, 175, 55, 0.2)' 
-                    : 'transparent',
-                  color: '#D4AF37',
-                  backdropFilter: 'blur(15px)',
-                  transform: hoveredButton === 'tertiary-action' ? 'translateY(-4px) scale(1.05)' : 'translateY(0) scale(1)',
-                }}
-              >
-                <EditableText
-                  value={visionData?.btnTxt?.[1]?.buttonText || 'Get Custom Analysis'}
-                  onSave={(newText) => {
-                    const updatedBtnTxt = [...(visionData?.btnTxt || [{ buttonText: 'Get Custom Analysis' }])];
-                    updatedBtnTxt[1] = { buttonText: newText };
-                    handleBtnTxtSave(updatedBtnTxt);
-                  }}
-                  tag="span"
-                  className="btn-text btn-text-2"
-                  placeholder="Button text"
-                />
-              </Link>
-            </div>
+            <Link 
+              href="/insights" 
+              className="btn-primary-action"
+              onMouseEnter={() => setHoveredButton('primary-action')}
+              onMouseLeave={() => setHoveredButton(null)}
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: 'var(--space-2)',
+                padding: 'var(--space-5) var(--space-10)',
+                borderRadius: 'var(--radius-lg)',
+                fontWeight: 'var(--font-weight-bold)',
+                textDecoration: 'none',
+                transition: 'all 0.3s ease',
+                border: '2px solid transparent',
+                fontSize: 'var(--text-lg)',
+                background: 'linear-gradient(135deg, #D4AF37, #FFD700)',
+                color: '#000',
+                boxShadow: hoveredButton === 'primary-action' 
+                  ? '0 15px 35px rgba(212, 175, 55, 0.6)' 
+                  : '0 8px 25px rgba(212, 175, 55, 0.4)',
+                transform: hoveredButton === 'primary-action' ? 'translateY(-4px) scale(1.05)' : 'translateY(0) scale(1)',
+              }}
+            >
+              Explore Market Insights
+              <ArrowRight size={22} />
+            </Link>
+            <Link 
+              href="/contact" 
+              className="btn-tertiary-action"
+              onMouseEnter={() => setHoveredButton('tertiary-action')}
+              onMouseLeave={() => setHoveredButton(null)}
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: 'var(--space-2)',
+                padding: 'var(--space-5) var(--space-10)',
+                borderRadius: 'var(--radius-lg)',
+                fontWeight: 'var(--font-weight-semibold)',
+                textDecoration: 'none',
+                transition: 'all 0.3s ease',
+                border: '2px solid rgba(212, 175, 55, 0.8)',
+                fontSize: 'var(--text-lg)',
+                background: hoveredButton === 'tertiary-action' 
+                  ? 'rgba(212, 175, 55, 0.2)' 
+                  : 'transparent',
+                color: '#D4AF37',
+                backdropFilter: 'blur(15px)',
+                transform: hoveredButton === 'tertiary-action' ? 'translateY(-4px) scale(1.05)' : 'translateY(0) scale(1)',
+              }}
+            >
+              Get Custom Analysis
+            </Link>
           </div>
         </div>
       </section>
@@ -649,23 +272,15 @@ export default function Home() {
           <div className="story-section">
             <div className="story-header">
               <h2 className="story-title">
-                <EditableText
-                  value={storyData?.title || 'Our Story'}
-                  onSave={handleStoryTitleSave}
-                  tag="span"
-                  className="story-title-text"
-                  placeholder="Story title"
-                />
+                Our <span className="story-title-accent">Story</span>
               </h2>
               
-              <EditableText
-                value={storyData?.subtitle || 'Founded in 1998, Elluminate Capital has grown from a boutique advisory firm\nto a leading investment banking powerhouse. Our journey began with a simple\nmission: to provide exceptional financial advisory services that truly serve\nour clients\' best interests.'}
-                onSave={handleStoryDescriptionSave}
-                tag="p"
-                className="story-description"
-                multiline={true}
-                placeholder="Story description"
-              />
+              <p className="story-description">
+                Founded in 1998, Elluminate Capital has grown from a boutique advisory firm 
+                to a leading investment banking powerhouse. Our journey began with a simple 
+                mission: to provide exceptional financial advisory services that truly serve 
+                our clients' best interests.
+              </p>
             </div>
             
           </div>
@@ -674,23 +289,13 @@ export default function Home() {
           <div className="team-section">
             <div className="team-header">
               <h2 className="team-title">
-                <EditableText
-                  value={leadershipData?.title || 'Leadership Team'}
-                  onSave={handleLeadershipTitleSave}
-                  tag="span"
-                  className="team-title-text"
-                  placeholder="Team title"
-                />
+                Leadership <span className="team-title-accent">Team</span>
               </h2>
               
-              <EditableText
-                value={leadershipData?.subtitle || 'Meet the experienced professionals leading our firm with expertise,\nintegrity, and unwavering commitment to excellence.'}
-                onSave={handleLeadershipSubtitleSave}
-                tag="p"
-                className="team-description"
-                multiline={true}
-                placeholder="Team description"
-              />
+              <p className="team-description">
+                Meet the experienced professionals leading our firm with expertise, 
+                integrity, and unwavering commitment to excellence.
+              </p>
             </div>
             
             <div className="team-grid">
@@ -698,38 +303,12 @@ export default function Home() {
                 <div className="member-image">
                   <img 
                     src="https://images.unsplash.com/photo-1494790108755-2616b612b786?w=400&h=400&fit=crop&crop=face" 
-                    alt={leadershipData?.items?.[0]?.title || "Sarah Mitchell"}
+                    alt="Sarah Mitchell"
                   />
                 </div>
                 <div className="member-info">
-                  <EditableText
-                    value={leadershipData?.items?.[0]?.title || 'Sarah Mitchell'}
-                    onSave={(newName) => {
-                      const updatedItems = [...(leadershipData?.items || [])];
-                      updatedItems[0] = { 
-                        title: newName, 
-                        description: updatedItems[0]?.description || 'Chief Executive Officer' 
-                      };
-                      handleLeadershipItemsSave(updatedItems);
-                    }}
-                    tag="h3"
-                    className="member-name"
-                    placeholder="Member name"
-                  />
-                  <EditableText
-                    value={leadershipData?.items?.[0]?.description || 'Chief Executive Officer'}
-                    onSave={(newPosition) => {
-                      const updatedItems = [...(leadershipData?.items || [])];
-                      updatedItems[0] = { 
-                        title: updatedItems[0]?.title || 'Sarah Mitchell', 
-                        description: newPosition 
-                      };
-                      handleLeadershipItemsSave(updatedItems);
-                    }}
-                    tag="p"
-                    className="member-position"
-                    placeholder="Member position"
-                  />
+                  <h3 className="member-name">Sarah Mitchell</h3>
+                  <p className="member-position">Chief Executive Officer</p>
                 </div>
               </div>
               
@@ -737,38 +316,12 @@ export default function Home() {
                 <div className="member-image">
                   <img 
                     src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=400&h=400&fit=crop&crop=face" 
-                    alt={leadershipData?.items?.[1]?.title || "David Chen"}
+                    alt="David Chen"
                   />
                 </div>
                 <div className="member-info">
-                  <EditableText
-                    value={leadershipData?.items?.[1]?.title || 'David Chen'}
-                    onSave={(newName) => {
-                      const updatedItems = [...(leadershipData?.items || [])];
-                      updatedItems[1] = { 
-                        title: newName, 
-                        description: updatedItems[1]?.description || 'Chief Investment Officer' 
-                      };
-                      handleLeadershipItemsSave(updatedItems);
-                    }}
-                    tag="h3"
-                    className="member-name"
-                    placeholder="Member name"
-                  />
-                  <EditableText
-                    value={leadershipData?.items?.[1]?.description || 'Chief Investment Officer'}
-                    onSave={(newPosition) => {
-                      const updatedItems = [...(leadershipData?.items || [])];
-                      updatedItems[1] = { 
-                        title: updatedItems[1]?.title || 'David Chen', 
-                        description: newPosition 
-                      };
-                      handleLeadershipItemsSave(updatedItems);
-                    }}
-                    tag="p"
-                    className="member-position"
-                    placeholder="Member position"
-                  />
+                  <h3 className="member-name">David Chen</h3>
+                  <p className="member-position">Chief Investment Officer</p>
                 </div>
               </div>
               
@@ -776,38 +329,12 @@ export default function Home() {
                 <div className="member-image">
                   <img 
                     src="https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=400&h=400&fit=crop&crop=face" 
-                    alt={leadershipData?.items?.[2]?.title || "Emily Rodriguez"}
+                    alt="Emily Rodriguez"
                   />
                 </div>
                 <div className="member-info">
-                  <EditableText
-                    value={leadershipData?.items?.[2]?.title || 'Emily Rodriguez'}
-                    onSave={(newName) => {
-                      const updatedItems = [...(leadershipData?.items || [])];
-                      updatedItems[2] = { 
-                        title: newName, 
-                        description: updatedItems[2]?.description || 'Head of Capital Markets' 
-                      };
-                      handleLeadershipItemsSave(updatedItems);
-                    }}
-                    tag="h3"
-                    className="member-name"
-                    placeholder="Member name"
-                  />
-                  <EditableText
-                    value={leadershipData?.items?.[2]?.description || 'Head of Capital Markets'}
-                    onSave={(newPosition) => {
-                      const updatedItems = [...(leadershipData?.items || [])];
-                      updatedItems[2] = { 
-                        title: updatedItems[2]?.title || 'Emily Rodriguez', 
-                        description: newPosition 
-                      };
-                      handleLeadershipItemsSave(updatedItems);
-                    }}
-                    tag="p"
-                    className="member-position"
-                    placeholder="Member position"
-                  />
+                  <h3 className="member-name">Emily Rodriguez</h3>
+                  <p className="member-position">Head of Capital Markets</p>
                 </div>
               </div>
               
@@ -815,38 +342,12 @@ export default function Home() {
                 <div className="member-image">
                   <img 
                     src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=400&fit=crop&crop=face" 
-                    alt={leadershipData?.items?.[3]?.title || "Michael Thompson"}
+                    alt="Michael Thompson"
                   />
                 </div>
                 <div className="member-info">
-                  <EditableText
-                    value={leadershipData?.items?.[3]?.title || 'Michael Thompson'}
-                    onSave={(newName) => {
-                      const updatedItems = [...(leadershipData?.items || [])];
-                      updatedItems[3] = { 
-                        title: newName, 
-                        description: updatedItems[3]?.description || 'Managing Director, M&A' 
-                      };
-                      handleLeadershipItemsSave(updatedItems);
-                    }}
-                    tag="h3"
-                    className="member-name"
-                    placeholder="Member name"
-                  />
-                  <EditableText
-                    value={leadershipData?.items?.[3]?.description || 'Managing Director, M&A'}
-                    onSave={(newPosition) => {
-                      const updatedItems = [...(leadershipData?.items || [])];
-                      updatedItems[3] = { 
-                        title: updatedItems[3]?.title || 'Michael Thompson', 
-                        description: newPosition 
-                      };
-                      handleLeadershipItemsSave(updatedItems);
-                    }}
-                    tag="p"
-                    className="member-position"
-                    placeholder="Member position"
-                  />
+                  <h3 className="member-name">Michael Thompson</h3>
+                  <p className="member-position">Managing Director, M&A</p>
                 </div>
               </div>
             </div>
@@ -864,196 +365,61 @@ export default function Home() {
         <div className="ending-content">
           <div className="ending-main">
             <h2 className="ending-title">
-              <EditableText
-                value={investmentStrategyData?.title || 'Ready to Transform Your Investment Strategy?'}
-                onSave={handleInvestmentStrategyTitleSave}
-                tag="span"
-                className="ending-title-text"
-                placeholder="Investment strategy title"
-              />
+              Ready to <span className="ending-title-accent">Transform</span> Your Investment Strategy?
             </h2>
             
-            <EditableText
-              value={investmentStrategyData?.subtitle || 'Join hundreds of successful investors who trust Elluminate Capital for their most critical financial decisions.\nLet our expertise guide you toward unprecedented growth and success.'}
-              onSave={handleInvestmentStrategyDescriptionSave}
-              tag="p"
-              className="ending-description"
-              multiline={true}
-              placeholder="Investment strategy description"
-            />
+            <p className="ending-description">
+              Join hundreds of successful investors who trust Elluminate Capital for their most critical financial decisions. 
+              Let our expertise guide you toward unprecedented growth and success.
+            </p>
             
             <div className="ending-stats">
               <div className="ending-stat">
-                <EditableText
-                  value={investmentStrategyData?.numbers?.[0]?.value || '15+'}
-                  onSave={(newValue) => {
-                    const updatedNumbers = [...(investmentStrategyData?.numbers || [])];
-                    updatedNumbers[0] = { 
-                      value: newValue, 
-                      label: updatedNumbers[0]?.label || 'Years of Excellence' 
-                    };
-                    handleInvestmentStrategyNumbersSave(updatedNumbers);
-                  }}
-                  tag="div"
-                  className="ending-stat-number"
-                  placeholder="Stat number"
-                />
-                <EditableText
-                  value={investmentStrategyData?.numbers?.[0]?.label || 'Years of Excellence'}
-                  onSave={(newLabel) => {
-                    const updatedNumbers = [...(investmentStrategyData?.numbers || [])];
-                    updatedNumbers[0] = { 
-                      value: updatedNumbers[0]?.value || '15+', 
-                      label: newLabel 
-                    };
-                    handleInvestmentStrategyNumbersSave(updatedNumbers);
-                  }}
-                  tag="div"
-                  className="ending-stat-label"
-                  placeholder="Stat label"
-                />
+                <div className="ending-stat-number">15+</div>
+                <div className="ending-stat-label">Years of Excellence</div>
               </div>
               <div className="ending-stat">
-                <EditableText
-                  value={investmentStrategyData?.numbers?.[1]?.value || '500+'}
-                  onSave={(newValue) => {
-                    const updatedNumbers = [...(investmentStrategyData?.numbers || [])];
-                    updatedNumbers[1] = { 
-                      value: newValue, 
-                      label: updatedNumbers[1]?.label || 'Successful Clients' 
-                    };
-                    handleInvestmentStrategyNumbersSave(updatedNumbers);
-                  }}
-                  tag="div"
-                  className="ending-stat-number"
-                  placeholder="Stat number"
-                />
-                <EditableText
-                  value={investmentStrategyData?.numbers?.[1]?.label || 'Successful Clients'}
-                  onSave={(newLabel) => {
-                    const updatedNumbers = [...(investmentStrategyData?.numbers || [])];
-                    updatedNumbers[1] = { 
-                      value: updatedNumbers[1]?.value || '500+', 
-                      label: newLabel 
-                    };
-                    handleInvestmentStrategyNumbersSave(updatedNumbers);
-                  }}
-                  tag="div"
-                  className="ending-stat-label"
-                  placeholder="Stat label"
-                />
+                <div className="ending-stat-number">500+</div>
+                <div className="ending-stat-label">Successful Clients</div>
               </div>
               <div className="ending-stat">
-                <EditableText
-                  value={investmentStrategyData?.numbers?.[2]?.value || '$50B+'}
-                  onSave={(newValue) => {
-                    const updatedNumbers = [...(investmentStrategyData?.numbers || [])];
-                    updatedNumbers[2] = { 
-                      value: newValue, 
-                      label: updatedNumbers[2]?.label || 'Assets Managed' 
-                    };
-                    handleInvestmentStrategyNumbersSave(updatedNumbers);
-                  }}
-                  tag="div"
-                  className="ending-stat-number"
-                  placeholder="Stat number"
-                />
-                <EditableText
-                  value={investmentStrategyData?.numbers?.[2]?.label || 'Assets Managed'}
-                  onSave={(newLabel) => {
-                    const updatedNumbers = [...(investmentStrategyData?.numbers || [])];
-                    updatedNumbers[2] = { 
-                      value: updatedNumbers[2]?.value || '$50B+', 
-                      label: newLabel 
-                    };
-                    handleInvestmentStrategyNumbersSave(updatedNumbers);
-                  }}
-                  tag="div"
-                  className="ending-stat-label"
-                  placeholder="Stat label"
-                />
+                <div className="ending-stat-number">$50B+</div>
+                <div className="ending-stat-label">Assets Managed</div>
               </div>
               <div className="ending-stat">
-                <EditableText
-                  value={investmentStrategyData?.numbers?.[3]?.value || '98%'}
-                  onSave={(newValue) => {
-                    const updatedNumbers = [...(investmentStrategyData?.numbers || [])];
-                    updatedNumbers[3] = { 
-                      value: newValue, 
-                      label: updatedNumbers[3]?.label || 'Client Satisfaction' 
-                    };
-                    handleInvestmentStrategyNumbersSave(updatedNumbers);
-                  }}
-                  tag="div"
-                  className="ending-stat-number"
-                  placeholder="Stat number"
-                />
-                <EditableText
-                  value={investmentStrategyData?.numbers?.[3]?.label || 'Client Satisfaction'}
-                  onSave={(newLabel) => {
-                    const updatedNumbers = [...(investmentStrategyData?.numbers || [])];
-                    updatedNumbers[3] = { 
-                      value: updatedNumbers[3]?.value || '98%', 
-                      label: newLabel 
-                    };
-                    handleInvestmentStrategyNumbersSave(updatedNumbers);
-                  }}
-                  tag="div"
-                  className="ending-stat-label"
-                  placeholder="Stat label"
-                />
+                <div className="ending-stat-number">98%</div>
+                <div className="ending-stat-label">Client Satisfaction</div>
               </div>
             </div>
             
             <div className="ending-actions">
-              <div className="button-with-edit">
-                <Pencil 
-                  size={18} 
-                  className="edit-icon"
-                  onClick={() => {
-                    // Trigger edit for ending button
-                    const event = new Event('dblclick');
-                    document.querySelector('.btn-text-ending')?.dispatchEvent(event);
-                  }}
-                />
-                <Link 
-                  href="/records" 
-                  className="btn-ending-primary"
-                  onMouseEnter={() => setHoveredButton('ending-primary')}
-                  onMouseLeave={() => setHoveredButton(null)}
-                  style={{
-                    display: 'inline-flex',
-                    alignItems: 'center',
-                    gap: 'var(--space-2)',
-                    padding: 'var(--space-5) var(--space-10)',
-                    borderRadius: 'var(--radius-lg)',
-                    fontWeight: 'var(--font-weight-bold)',
-                    textDecoration: 'none',
-                    transition: 'all 0.3s ease',
-                    border: '2px solid transparent',
-                    fontSize: 'var(--text-xl)',
-                    background: 'linear-gradient(135deg, #D4AF37, #FFD700)',
-                    color: '#000',
-                    boxShadow: hoveredButton === 'ending-primary' 
-                      ? '0 15px 35px rgba(212, 175, 55, 0.6)' 
-                      : '0 8px 25px rgba(212, 175, 55, 0.4)',
-                    transform: hoveredButton === 'ending-primary' ? 'translateY(-4px) scale(1.05)' : 'translateY(0) scale(1)',
-                  }}
-                >
-                  <EditableText
-                    value={investmentStrategyData?.btnTxt?.[0]?.buttonText || "View Our Track Record"}
-                    onSave={(newText) => {
-                      const updatedBtnTxt = [...(investmentStrategyData?.btnTxt || [{ buttonText: 'View Our Track Record' }])];
-                      updatedBtnTxt[0] = { buttonText: newText };
-                      handleInvestmentStrategyBtnTxtSave(updatedBtnTxt);
-                    }}
-                    tag="span"
-                    className="btn-text btn-text-ending"
-                    placeholder="Button text"
-                  />
-                  <ArrowRight size={24} />
-                </Link>
-              </div>
+              <Link 
+                href="/records" 
+                className="btn-ending-primary"
+                onMouseEnter={() => setHoveredButton('ending-primary')}
+                onMouseLeave={() => setHoveredButton(null)}
+                style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: 'var(--space-2)',
+                  padding: 'var(--space-5) var(--space-10)',
+                  borderRadius: 'var(--radius-lg)',
+                  fontWeight: 'var(--font-weight-bold)',
+                  textDecoration: 'none',
+                  transition: 'all 0.3s ease',
+                  border: '2px solid transparent',
+                  fontSize: 'var(--text-xl)',
+                  background: 'linear-gradient(135deg, #D4AF37, #FFD700)',
+                  color: '#000',
+                  boxShadow: hoveredButton === 'ending-primary' 
+                    ? '0 15px 35px rgba(212, 175, 55, 0.6)' 
+                    : '0 8px 25px rgba(212, 175, 55, 0.4)',
+                  transform: hoveredButton === 'ending-primary' ? 'translateY(-4px) scale(1.05)' : 'translateY(0) scale(1)',
+                }}
+              >
+                View Our Track Record
+                <ArrowRight size={24} />
+              </Link>
             </div>
           </div>
         </div>
@@ -1068,21 +434,9 @@ export default function Home() {
 
         <div className="clients-content">
           <h2 className="clients-title">
-            <EditableText
-              value={partnersData?.title || 'Founders we partner with'}
-              onSave={handlePartnersTitleSave}
-              tag="span"
-              className="clients-title-text"
-              placeholder="Partners title"
-            />
+            Founders we <span className="clients-title-accent">partner</span> with
           </h2>
-          <EditableText
-            value={partnersData?.subtitle || 'Trusted by category-defining companies worldwide'}
-            onSave={handlePartnersDescriptionSave}
-            tag="p"
-            className="clients-description"
-            placeholder="Partners description"
-          />
+          <p className="clients-description">Trusted by category-defining companies worldwide</p>
 
           <div className="clients-carousel" aria-label="Our clients carousel">
             <div className="carousel-viewport" ref={carouselRef}>
@@ -1115,14 +469,13 @@ export default function Home() {
           color: var(--text-primary);
         }
         
-        
         /* Hero Section */
         .hero-section {
           position: relative;
           min-height: 120vh;
           display: flex;
           align-items: center;
-          overflow: visible;
+          overflow: hidden;
           padding: 80px 0 var(--space-20);
         }
         
@@ -1201,7 +554,10 @@ export default function Home() {
         
         .hero-title-accent {
           display: block;
-          color: var(--color-accent);
+          background: var(--gradient-accent);
+          -webkit-background-clip: text;
+          -webkit-text-fill-color: transparent;
+          background-clip: text;
           opacity: ${isVisible ? 1 : 0};
           transform: ${isVisible ? 'translateY(0)' : 'translateY(30px)'};
           transition: all 0.8s ease 0.4s;
@@ -1222,8 +578,6 @@ export default function Home() {
           max-width: 600px;
           margin: 0 auto var(--space-12);
           line-height: 1.6;
-          white-space: pre-line;
-          text-align: center;
           opacity: ${isVisible ? 1 : 0};
           transform: ${isVisible ? 'translateY(0)' : 'translateY(30px)'};
           transition: all 0.8s ease 0.8s;
@@ -1279,8 +633,6 @@ export default function Home() {
             font-size: var(--text-lg);
             margin-bottom: var(--space-8);
             padding: 0 var(--space-2);
-            white-space: pre-line;
-            text-align: center;
           }
           
           .hero-stats {
@@ -1304,7 +656,6 @@ export default function Home() {
         }
         
         @media (max-width: 480px) {
-          
           .hero-section {
             padding: 40px 0 var(--space-12);
           }
@@ -1317,8 +668,6 @@ export default function Home() {
           .hero-description {
             font-size: var(--text-base);
             line-height: 1.5;
-            white-space: pre-line;
-            text-align: center;
           }
           
           .hero-stats {
@@ -1384,7 +733,6 @@ export default function Home() {
           padding: var(--space-20) var(--space-6);
           text-align: center;
           color: white;
-          overflow: visible;
         }
         
         .content-badge {
@@ -1418,25 +766,25 @@ export default function Home() {
         }
         
         .merged-title .highlight {
-          color: #D4AF37;
-          text-shadow: 0 0 20px rgba(212, 175, 55, 0.5);
+          background: linear-gradient(45deg, #D4AF37, #FFD700, #D4AF37);
+          -webkit-background-clip: text;
+          -webkit-text-fill-color: transparent;
+          background-clip: text;
+          text-shadow: none;
+          background-size: 200% 200%;
           animation: shimmer 3s ease-in-out infinite;
         }
         
-        .merged-title-text {
-          display: inline;
-        }
-        
         @keyframes shimmer {
-          0%, 100% { text-shadow: 0 0 20px rgba(212, 175, 55, 0.5); }
-          50% { text-shadow: 0 0 30px rgba(212, 175, 55, 0.8); }
+          0%, 100% { background-position: 0% 50%; }
+          50% { background-position: 100% 50%; }
         }
         
         .merged-description {
           font-size: var(--text-xl);
-          color: #ffffff !important;
+          color: rgba(255, 255, 255, 0.95);
           max-width: 800px;
-          margin: 0 auto var(--space-32);
+          margin: 0 auto var(--space-12);
           line-height: 1.7;
           text-shadow: 0 3px 6px rgba(0, 0, 0, 0.8);
           opacity: ${isVisible ? 1 : 0};
@@ -1446,30 +794,29 @@ export default function Home() {
         
         .merged-features {
           display: grid;
-          grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-          gap: var(--space-6);
-          margin: var(--space-16) auto var(--space-16);
-          max-width: 1000px;
+          grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+          gap: var(--space-8);
+          margin-bottom: var(--space-16);
+          max-width: 1200px;
+          margin-left: auto;
+          margin-right: auto;
           opacity: ${isVisible ? 1 : 0};
           transform: ${isVisible ? 'translateY(0)' : 'translateY(30px)'};
           transition: all 0.8s ease 0.6s;
-          overflow: visible;
         }
-        
         
         .feature-card {
           display: flex;
           align-items: flex-start;
-          gap: var(--space-4);
-          padding: var(--space-6);
+          gap: var(--space-6);
+          padding: var(--space-8);
           background: rgba(255, 255, 255, 0.08);
           border: 1px solid rgba(255, 255, 255, 0.15);
           border-radius: var(--radius-xl);
           backdrop-filter: blur(20px);
           transition: all 0.4s ease;
           position: relative;
-          overflow: visible;
-          max-width: 320px;
+          overflow: hidden;
         }
         
         .feature-card::before {
@@ -1498,13 +845,13 @@ export default function Home() {
           display: flex;
           align-items: center;
           justify-content: center;
-          width: 48px;
-          height: 48px;
+          width: 64px;
+          height: 64px;
           background: linear-gradient(135deg, #D4AF37, #FFD700);
-          border-radius: var(--radius-lg);
+          border-radius: var(--radius-xl);
           color: #000;
           flex-shrink: 0;
-          box-shadow: 0 6px 16px rgba(212, 175, 55, 0.4);
+          box-shadow: 0 8px 20px rgba(212, 175, 55, 0.4);
           position: relative;
           z-index: 2;
         }
@@ -1516,37 +863,20 @@ export default function Home() {
         }
         
         .feature-content h4 {
-          font-size: var(--text-lg);
+          font-size: var(--text-xl);
           font-weight: var(--font-weight-bold);
-          color: #ffffff !important;
-          margin-bottom: var(--space-2);
+          color: #ffffff;
+          margin-bottom: var(--space-3);
           font-family: var(--font-family-heading);
-          text-shadow: 0 2px 4px rgba(0, 0, 0, 0.8);
+          text-shadow: 0 3px 6px rgba(0, 0, 0, 0.8);
         }
         
         .feature-content p {
-          font-size: var(--text-sm);
-          color: #ffffff !important;
-          line-height: 1.5;
+          font-size: var(--text-base);
+          color: rgba(255, 255, 255, 0.9);
+          line-height: 1.6;
           margin: 0;
-          text-shadow: 0 1px 2px rgba(0, 0, 0, 0.8);
-        }
-        
-        .feature-title {
-          font-size: var(--text-lg);
-          font-weight: var(--font-weight-bold);
-          color: #ffffff !important;
-          margin-bottom: var(--space-2);
-          font-family: var(--font-family-heading);
           text-shadow: 0 2px 4px rgba(0, 0, 0, 0.8);
-        }
-        
-        .feature-description {
-          font-size: var(--text-sm);
-          color: #ffffff !important;
-          line-height: 1.5;
-          margin: 0;
-          text-shadow: 0 1px 2px rgba(0, 0, 0, 0.8);
         }
         
         .merged-actions {
@@ -1612,34 +942,6 @@ export default function Home() {
           transform: translateY(-4px) scale(1.05);
         }
         
-        .btn-text {
-          display: inline;
-        }
-        
-        .button-with-edit {
-          position: relative;
-          display: inline-flex;
-          align-items: center;
-          gap: var(--space-3);
-        }
-        
-        .edit-icon {
-          cursor: pointer;
-          color: #D4AF37;
-          transition: all 0.2s ease;
-          padding: 4px;
-          border-radius: 4px;
-          background: rgba(212, 175, 55, 0.1);
-          border: 1px solid rgba(212, 175, 55, 0.3);
-        }
-        
-        .edit-icon:hover {
-          color: #FFD700;
-          background: rgba(212, 175, 55, 0.2);
-          border-color: rgba(212, 175, 55, 0.5);
-          transform: scale(1.1);
-        }
-        
         /* Responsive Design for Merged Section */
         @media (max-width: 1024px) {
           .merged-video-section {
@@ -1697,8 +999,8 @@ export default function Home() {
           }
           
           .feature-icon {
-            width: 40px;
-            height: 40px;
+            width: 56px;
+            height: 56px;
           }
           
           .feature-content h4 {
@@ -1763,8 +1065,8 @@ export default function Home() {
           }
           
           .feature-icon {
-            width: 36px;
-            height: 36px;
+            width: 48px;
+            height: 48px;
           }
           
           .feature-content h4 {
@@ -1873,21 +1175,18 @@ export default function Home() {
         }
         
         .story-title-accent {
-          color: var(--color-accent);
-        }
-        
-        .story-title-text {
-          display: inline;
+          background: var(--gradient-accent);
+          -webkit-background-clip: text;
+          -webkit-text-fill-color: transparent;
+          background-clip: text;
         }
         
         .story-description {
           font-size: var(--text-xl);
-          color: #ffffff !important;
+          color: var(--text-secondary);
           max-width: 800px;
           margin: 0 auto;
           line-height: 1.7;
-          white-space: pre-line;
-          text-align: center;
           opacity: ${isVisible ? 1 : 0};
           transform: ${isVisible ? 'translateY(0)' : 'translateY(30px)'};
           transition: all 0.8s ease 0.4s;
@@ -1914,21 +1213,18 @@ export default function Home() {
         }
         
         .team-title-accent {
-          color: var(--color-accent);
-        }
-        
-        .team-title-text {
-          display: inline;
+          background: var(--gradient-accent);
+          -webkit-background-clip: text;
+          -webkit-text-fill-color: transparent;
+          background-clip: text;
         }
         
         .team-description {
           font-size: var(--text-xl);
-          color: #ffffff !important;
+          color: var(--text-secondary);
           max-width: 700px;
           margin: 0 auto;
           line-height: 1.6;
-          white-space: pre-line;
-          text-align: center;
           opacity: ${isVisible ? 1 : 0};
           transform: ${isVisible ? 'translateY(0)' : 'translateY(30px)'};
           transition: all 0.8s ease 1s;
@@ -2180,7 +1476,7 @@ export default function Home() {
           font-size: clamp(2.5rem, 6vw, 5rem);
           font-weight: var(--font-weight-bold);
           line-height: 1.1;
-          margin-bottom: 60px;
+          margin-bottom: var(--space-6);
           font-family: var(--font-family-heading);
           opacity: ${isVisible ? 1 : 0};
           transform: ${isVisible ? 'translateY(0)' : 'translateY(30px)'};
@@ -2188,21 +1484,18 @@ export default function Home() {
         }
         
         .ending-title-accent {
-          color: var(--color-accent);
-        }
-        
-        .ending-title-text {
-          display: inline;
+          background: var(--gradient-accent);
+          -webkit-background-clip: text;
+          -webkit-text-fill-color: transparent;
+          background-clip: text;
         }
         
         .ending-description {
           font-size: var(--text-xl);
-          color: #ffffff !important;
+          color: var(--text-secondary);
           max-width: 800px;
-          margin: 0 auto 150px;
+          margin: 0 auto var(--space-12);
           line-height: 1.6;
-          white-space: pre-line;
-          text-align: center;
           opacity: ${isVisible ? 1 : 0};
           transform: ${isVisible ? 'translateY(0)' : 'translateY(30px)'};
           transition: all 0.8s ease 0.4s;
@@ -2212,7 +1505,7 @@ export default function Home() {
           display: grid;
           grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
           gap: var(--space-8);
-          margin-bottom: 80px;
+          margin-bottom: var(--space-12);
           max-width: 1000px;
           width: 100%;
           opacity: ${isVisible ? 1 : 0};
@@ -2373,11 +1666,10 @@ export default function Home() {
         }
 
         .clients-title-accent {
-          color: var(--color-accent);
-        }
-        
-        .clients-title-text {
-          display: inline;
+          background: var(--gradient-accent);
+          -webkit-background-clip: text;
+          -webkit-text-fill-color: transparent;
+          background-clip: text;
         }
 
         .clients-description {
