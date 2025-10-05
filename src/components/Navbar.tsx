@@ -82,27 +82,6 @@ const Navbar: React.FC = () => {
         </div>
 
 
-        {/* Middle Section - CMS Header */}
-        <div className="navbar-middle">
-          <h1 
-            style={{
-              fontSize: '2.5rem',
-              fontWeight: '800',
-              color: 'var(--text-primary)',
-              letterSpacing: '0.15em',
-              textTransform: 'uppercase',
-              margin: 0,
-              textShadow: '0 2px 4px rgba(0, 0, 0, 0.3)',
-              background: 'linear-gradient(135deg, #ffffff 0%, #e0e0e0 100%)',
-              WebkitBackgroundClip: 'text',
-              WebkitTextFillColor: 'transparent',
-              backgroundClip: 'text',
-            }}
-          >
-            CMS
-          </h1>
-        </div>
-
         {/* Right Section - Empty for now */}
         <div className="navbar-right">
         </div>
@@ -145,13 +124,6 @@ const Navbar: React.FC = () => {
         
         .navbar-left {
           flex: 0 0 auto;
-        }
-        
-        .navbar-middle {
-          flex: 1;
-          display: flex;
-          justify-content: right;
-          align-items: center;
         }
         
         .navbar-right {
