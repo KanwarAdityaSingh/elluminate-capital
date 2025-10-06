@@ -83,27 +83,7 @@ const Navbar: React.FC = () => {
 
 
         {/* Right Section - Empty for now */}
-        <div className="navbar-right">
-          <Link
-            href="/insights"
-            style={{
-              color: 'var(--text-primary)',
-              padding: '10px 16px',
-              borderRadius: 'var(--radius-full)',
-              transition: 'all var(--transition-fast)',
-              textDecoration: 'none',
-              fontWeight: 600,
-            }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.background = 'var(--bg-secondary)';
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.background = 'transparent';
-            }}
-          >
-            Blog
-          </Link>
-        </div>
+        <div className="navbar-right"></div>
       </div>
 
 
