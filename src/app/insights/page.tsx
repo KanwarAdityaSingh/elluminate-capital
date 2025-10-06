@@ -1,10 +1,12 @@
 'use client';
 
 import React from 'react';
+import Link from 'next/link';
 import { Calendar, User, ArrowRight, TrendingUp, BarChart3, Globe, DollarSign, Clock, ExternalLink } from 'lucide-react';
 
 export default function InsightsPage() {
   const featuredArticle = {
+    slug: 'market-outlook-2024',
     title: 'Market Outlook 2024: Navigating Economic Uncertainty',
     excerpt: 'Our comprehensive analysis of global markets and investment opportunities in an uncertain economic environment.',
     author: 'Sarah Mitchell',
@@ -17,6 +19,7 @@ export default function InsightsPage() {
   const articles = [
     {
       title: 'The Future of Sustainable Investing',
+      slug: 'future-of-sustainable-investing',
       excerpt: 'Exploring ESG trends and their impact on investment strategies.',
       author: 'David Chen',
       date: 'December 10, 2023',
@@ -26,6 +29,7 @@ export default function InsightsPage() {
     },
     {
       title: 'Private Equity Trends in 2024',
+      slug: 'private-equity-trends-2024',
       excerpt: 'Key insights into private equity market dynamics and opportunities.',
       author: 'Emily Rodriguez',
       date: 'December 8, 2023',
@@ -35,6 +39,7 @@ export default function InsightsPage() {
     },
     {
       title: 'Technology Sector Analysis',
+      slug: 'technology-sector-analysis',
       excerpt: 'Deep dive into tech valuations and growth prospects.',
       author: 'Michael Thompson',
       date: 'December 5, 2023',
@@ -44,6 +49,7 @@ export default function InsightsPage() {
     },
     {
       title: 'Real Estate Investment Strategies',
+      slug: 'real-estate-investment-strategies',
       excerpt: 'Navigating commercial real estate in changing market conditions.',
       author: 'Sarah Mitchell',
       date: 'December 3, 2023',
@@ -53,6 +59,7 @@ export default function InsightsPage() {
     },
     {
       title: 'Emerging Markets Opportunities',
+      slug: 'emerging-markets-opportunities',
       excerpt: 'Identifying growth potential in developing economies.',
       author: 'David Chen',
       date: 'November 30, 2023',
@@ -62,6 +69,7 @@ export default function InsightsPage() {
     },
     {
       title: 'Fixed Income Market Update',
+      slug: 'fixed-income-market-update',
       excerpt: 'Interest rate environment and bond market outlook.',
       author: 'Emily Rodriguez',
       date: 'November 28, 2023',
@@ -352,7 +360,8 @@ export default function InsightsPage() {
                 </span>
               </div>
               
-              <button
+              <Link
+                href={`/insights/${featuredArticle.slug}`}
                 style={{
                   display: 'flex',
                   alignItems: 'center',
@@ -378,7 +387,7 @@ export default function InsightsPage() {
               >
                 Read More
                 <ArrowRight size={16} />
-              </button>
+              </Link>
             </div>
           </div>
         </div>
@@ -514,13 +523,13 @@ export default function InsightsPage() {
                     <span style={{ color: 'var(--text-muted)', fontSize: 'var(--text-xs)' }}>
                       {article.readTime}
                     </span>
-                    <button
+                    <Link
+                      href={`/insights/${article.slug}`}
                       style={{
                         display: 'flex',
                         alignItems: 'center',
                         gap: 'var(--space-1)',
                         background: 'none',
-                        border: 'none',
                         color: 'var(--text-accent)',
                         fontSize: 'var(--text-sm)',
                         fontWeight: 'var(--font-weight-medium)',
@@ -536,7 +545,7 @@ export default function InsightsPage() {
                     >
                       Read More
                       <ArrowRight size={14} />
-                    </button>
+                    </Link>
                   </div>
                 </div>
               </article>
