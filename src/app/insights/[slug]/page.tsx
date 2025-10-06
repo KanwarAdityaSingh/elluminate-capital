@@ -1,9 +1,7 @@
-'use client';
-
 import React from 'react';
-import Image from 'next/image';
 import { notFound } from 'next/navigation';
-import { Calendar, User, Clock, Share2 } from 'lucide-react';
+import { Calendar, User, Clock } from 'lucide-react';
+import ShareButton from '@/components/ShareButton';
 
 // Simple chart using SVG to avoid bringing a heavy charting lib
 function LineChart({ data }: { data: Array<{ x: number; y: number }> }) {
@@ -38,18 +36,40 @@ const articles = [
     title: 'The Future of Sustainable Investing',
     author: 'David Chen',
     date: 'December 10, 2023',
-    readTime: '5 min read',
-    cover: 'https://images.unsplash.com/photo-1559526324-4b87b5e36e44?w=1200&h=600&fit=crop',
+    readTime: '12 min read',
+    cover: 'https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?q=80&w=1920&auto=format&fit=crop',
     sections: [
       {
-        heading: 'Overview',
-        body: 'Sustainable investing integrates environmental, social, and governance (ESG) factors into investment decisions. In this article, we explore the drivers, performance considerations, and strategic implications for institutional portfolios.',
-        image: '/trading1.png',
+        heading: 'Executive Overview',
+        body:
+          'Sustainable investing has progressed from values-based exclusions to a rigorous, data-informed discipline embedded in institutional portfolios. This article frames ESG integration as a source of risk mitigation, opportunity capture, and stakeholder alignment. We outline how governance quality affects downside protection, why emissions and resource intensity increasingly price into cash flows, and how social factors influence license-to-operate risk. We also map implementation pathways across active, passive, private markets, and real assets, with practical design choices that separate robust programs from marketing optics.',
+        image:
+          'https://images.unsplash.com/photo-1451187580459-43490279c0fa?q=80&w=1920&auto=format&fit=crop',
+        caption: 'Long-horizon capital allocation increasingly incorporates ESG risk vectors.'
       },
       {
-        heading: 'Performance & Risk',
-        body: 'Multiple studies indicate that well-constructed ESG strategies can provide comparable or superior risk-adjusted returns. However, factor exposures, sector tilts, and data quality must be carefully managed.',
-        video: '/videos/mainvideo.mp4',
+        heading: 'Performance, Factors, and Materiality',
+        body:
+          'Meta-analyses suggest ESG integration can be performance-neutral to positive when materiality is respected and unintended factor tilts are controlled. The key is to isolate truly material, sector-specific metrics (e.g., methane intensity for energy, product safety for healthcare) rather than broad composite scores. We discuss portfolio construction techniques to neutralize style drifts (quality, growth) and isolate ESG premia; we also examine dispersion in third‑party ratings and strategies to triangulate a signal amidst methodological noise.',
+        image:
+          'https://images.unsplash.com/photo-1552083375-1447ce886485?q=80&w=1920&auto=format&fit=crop',
+        caption: 'Materiality mapping helps focus on what truly drives cash flows and risk.'
+      },
+      {
+        heading: 'Data Architecture and Stewardship',
+        body:
+          'Data remains the biggest execution risk. Leading allocators create a data architecture that combines company disclosures, modeled estimates, satellite and supplier data, and event-based signals. Stewardship (proxy voting, engagement) complements security selection by shaping management incentives over multi-year horizons. We propose a governance playbook with clear escalation paths, thematic priorities, and transparent reporting that ties engagement outcomes to portfolio-level KPIs.',
+        video:
+          'https://storage.googleapis.com/coverr-main/mp4/Mt_Baker.mp4',
+        caption: 'Stewardship outcomes compound over time when paired with credible escalation.'
+      },
+      {
+        heading: 'Implementation Roadmap',
+        body:
+          'A pragmatic rollout starts with a policy statement, data vendor pilots, and a small integration sleeve to validate signal efficacy. Next, scale across asset classes with risk controls and quarterly governance checkpoints. Finally, embed stewardship targets into manager guidelines and incentive structures. Success is measured not only by returns, but by improved risk diagnostics, higher quality of earnings, and resilience across macro regimes.',
+        image:
+          'https://images.unsplash.com/photo-1516541196182-6bdb0516ed27?q=80&w=1920&auto=format&fit=crop',
+        caption: 'Iterative implementation reduces execution risk while building internal buy‑in.'
       },
     ],
   },
@@ -58,18 +78,48 @@ const articles = [
     title: 'Market Outlook 2024: Navigating Economic Uncertainty',
     author: 'Sarah Mitchell',
     date: 'December 15, 2023',
-    readTime: '8 min read',
-    cover: 'https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?w=1200&h=600&fit=crop',
+    readTime: '14 min read',
+    cover: 'https://images.unsplash.com/photo-1543286386-2e659306cd6c?q=80&w=1920&auto=format&fit=crop',
     sections: [
       {
         heading: 'Executive Summary',
-        body: 'A broad review of inflation normalization, policy shifts, and sector rotations shaping 2024 market dynamics, with scenario-based playbooks for asset allocators.',
-        image: '/Trading.jpeg',
+        body:
+          'We frame 2024 around three intertwined forces: disinflation without recession, policy divergence across regions, and earnings breadth recovery. Our scenarios map the interaction between rates, credit spreads, and equity style leadership, with allocations for base, upside, and downside paths. The goal is not forecasting precision, but resilient positioning across plausible regimes.',
+        image:
+          'https://images.unsplash.com/photo-1526304640581-d334cdbbf45e?q=80&w=1920&auto=format&fit=crop',
+        caption: 'Macro regimes are defined by the interplay of growth, inflation, and policy.'
       },
       {
         heading: 'Macro Landscape',
-        body: 'Our base case assumes a softening growth environment with disinflation trends. We discuss implications for duration exposure, equity style factors, and alternatives.',
-        video: '/videos/mainvideo.mp4',
+        body:
+          'Disinflation continues as supply chains normalize and housing components reset, while services inflation remains sticky. We compare regional trajectories (US, EU, EM), noting currency implications and policy lags. In rates, duration works as a diversifier again — but convexity management and curve views matter. In credit, carry is attractive with careful sector selection and downgrade risk management.',
+        video:
+          'https://storage.googleapis.com/coverr-main/mp4/Footboys.mp4',
+        caption: 'Policy divergence and growth differentials create relative value across regions.'
+      },
+      {
+        heading: 'Equities and Style Leadership',
+        body:
+          'Earnings breadth widens beyond early leaders. Quality balance sheets and cash flow discipline remain rewarded. We discuss factor rotations and sector dynamics under different rate paths, and the role of shareholder yield (buybacks + dividends) in total return. For small caps, the key gating factor is financing access and refinancing walls.',
+        image:
+          'https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?q=80&w=1920&auto=format&fit=crop',
+        caption: 'Style leadership evolves with the rate cycle and earnings breadth.'
+      },
+      {
+        heading: 'Alternatives and Real Assets',
+        body:
+          'Real assets hedge regime uncertainty. We review infrastructure exposures tied to electrification, data centers, and logistics, plus private credit opportunities arising from bank disintermediation. In real estate, we separate secularly challenged segments from beneficiaries of onshoring and specialized demand. Commodity exposures require disciplined risk budgets given path dependency.',
+        image:
+          'https://images.unsplash.com/photo-1520607162513-77705c0f0d4a?q=80&w=1920&auto=format&fit=crop',
+        caption: 'Real assets help balance macro and inflation risks.'
+      },
+      {
+        heading: 'Portfolio Playbook',
+        body:
+          'We conclude with a practical allocation blueprint: modest duration extension; selective credit with an eye on downgrade cycles; barbell equity positioning across quality compounders and targeted cyclicals; and calibrated allocations to alternatives that monetize structural themes. We include risk controls, hedging tactics, and trigger points for scenario pivots.',
+        image:
+          'https://images.unsplash.com/photo-1518084823714-2f97cc9b5dc0?q=80&w=1920&auto=format&fit=crop',
+        caption: 'Resilient portfolios emphasize balance, quality, and optionality.'
       },
     ],
   },
@@ -78,13 +128,24 @@ const articles = [
     title: 'Private Equity Trends in 2024',
     author: 'Emily Rodriguez',
     date: 'December 8, 2023',
-    readTime: '6 min read',
-    cover: 'https://images.unsplash.com/photo-1560472354-b33ff0c44a43?w=1200&h=600&fit=crop',
+    readTime: '10 min read',
+    cover: 'https://images.unsplash.com/photo-1509228627152-72ae9ae6848d?q=80&w=1920&auto=format&fit=crop',
     sections: [
       {
-        heading: 'Dry Powder & Valuations',
-        body: 'Despite higher rates, dry powder remains elevated, driving competition for quality assets. Managers are adapting underwriting to reflect new exit timelines and cost of capital.',
-        image: '/trading2.png',
+        heading: 'Dry Powder, Cost of Capital, and Exit Windows',
+        body:
+          'Elevated dry powder meets a structurally higher cost of capital. That combination compresses underwriting cushions and lengthens hold periods. Managers respond by prioritizing operational value creation over multiple expansion, with heavier emphasis on pricing power, procurement, and working capital. We examine sector pockets where multiples remain defensible due to scarcity value or consolidation logic.',
+        image:
+          'https://images.unsplash.com/photo-1553729784-e91953dec042?q=80&w=1920&auto=format&fit=crop',
+        caption: 'Operational alpha dominates when multiple expansion is capped.'
+      },
+      {
+        heading: 'Secondaries and NAV Facilities',
+        body:
+          'Secondary volumes and NAV financing reshape liquidity management. We outline risk controls to avoid cross‑fund contagion and conflicts, along with governance considerations for board oversight. For LPs, secondaries offer pacing flexibility; for GPs, they provide portfolio duration management — but require robust transparency and alignment to safeguard outcomes.',
+        image:
+          'https://images.unsplash.com/photo-1496307042754-b4aa456c4a2d?q=80&w=1920&auto=format&fit=crop',
+        caption: 'Liquidity tools must be paired with robust governance.'
       },
     ],
   },
@@ -122,15 +183,21 @@ export default function ArticlePage({ params }: { params: { slug: string } }) {
                 <h2 style={{ fontSize: 'var(--text-3xl)', marginBottom: 12 }}>{s.heading}</h2>
                 <p style={{ color: 'var(--text-secondary)', marginBottom: 16 }}>{s.body}</p>
                 {s.image && (
-                  <div style={{ borderRadius: 'var(--radius-xl)', overflow: 'hidden', border: '1px solid var(--border-primary)', marginBottom: 16 }}>
+                  <figure style={{ borderRadius: 'var(--radius-xl)', overflow: 'hidden', border: '1px solid var(--border-primary)', marginBottom: 8, background: 'var(--bg-secondary)' }}>
                     {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img src={s.image} alt={s.heading} style={{ width: '100%', height: 'auto', display: 'block' }} />
-                  </div>
+                    {s.caption && (
+                      <figcaption style={{ padding: 12, color: 'var(--text-muted)', fontSize: 'var(--text-xs)' }}>{s.caption}</figcaption>
+                    )}
+                  </figure>
                 )}
                 {s.video && (
-                  <div style={{ borderRadius: 'var(--radius-xl)', overflow: 'hidden', border: '1px solid var(--border-primary)', marginBottom: 16 }}>
+                  <figure style={{ borderRadius: 'var(--radius-xl)', overflow: 'hidden', border: '1px solid var(--border-primary)', marginBottom: 8, background: 'var(--bg-secondary)' }}>
                     <video src={s.video} controls style={{ width: '100%', height: 'auto', display: 'block' }} />
-                  </div>
+                    {s.caption && (
+                      <figcaption style={{ padding: 12, color: 'var(--text-muted)', fontSize: 'var(--text-xs)' }}>{s.caption}</figcaption>
+                    )}
+                  </figure>
                 )}
               </div>
             ))}
@@ -143,27 +210,7 @@ export default function ArticlePage({ params }: { params: { slug: string } }) {
 
           <aside>
             <div style={{ position: 'sticky', top: 100, display: 'flex', flexDirection: 'column', gap: 16 }}>
-              <button
-                style={{
-                  padding: '10px 16px',
-                  borderRadius: 'var(--radius-lg)',
-                  background: 'var(--color-accent)',
-                  color: 'var(--text-inverse)',
-                  border: 'none',
-                  fontWeight: 600,
-                  cursor: 'pointer',
-                }}
-                onClick={() => {
-                  if (navigator.share) {
-                    navigator.share({ title: article.title, url: window.location.href }).catch(() => {});
-                  } else {
-                    navigator.clipboard.writeText(window.location.href);
-                    alert('Link copied to clipboard');
-                  }
-                }}
-              >
-                <span style={{ display: 'inline-flex', alignItems: 'center', gap: 8 }}><Share2 size={16} /> Share</span>
-              </button>
+              <ShareButton title={article.title} />
               <div style={{ padding: 16, border: '1px solid var(--border-primary)', borderRadius: 'var(--radius-lg)', background: 'var(--bg-secondary)' }}>
                 <h3 style={{ marginBottom: 8 }}>About the author</h3>
                 <p style={{ color: 'var(--text-secondary)' }}>Senior analyst with a focus on thematic strategies and long-horizon capital allocation.</p>
@@ -174,6 +221,23 @@ export default function ArticlePage({ params }: { params: { slug: string } }) {
       </section>
     </div>
   );
+}
+
+export function generateStaticParams() {
+  return articles.map((a) => ({ slug: a.slug }));
+}
+
+export function generateMetadata({ params }: { params: { slug: string } }) {
+  const article = articles.find((a) => a.slug === params.slug);
+  if (!article) return {};
+  return {
+    title: `${article.title} | Elluminate Capital`,
+    description: 'Insights article by Elluminate Capital',
+    openGraph: {
+      title: article.title,
+      type: 'article',
+    },
+  } as any;
 }
 
 
