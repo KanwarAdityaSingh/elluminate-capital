@@ -1,10 +1,134 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { TrendingUp, Award, Users, BarChart3, Star, Quote, CheckCircle, ArrowRight, Download, Calendar, Building2 } from 'lucide-react';
+import { HeroContent } from '../../types/api';
 
 export default function RecordsPage() {
   const [selectedYear, setSelectedYear] = useState('2024');
+  const [availableYears, setAvailableYears] = useState(['2024', '2023', '2022']);
+  const [successStoriesContent, setSuccessStoriesContent] = useState<HeroContent | null>(null);
+  const [performanceMetricsContent, setPerformanceMetricsContent] = useState<HeroContent | null>(null);
+  const [joinSuccessContent, setJoinSuccessContent] = useState<HeroContent | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isVisible, setIsVisible] = useState(false);
+
+  // Fetch success stories and performance metrics content on component mount
+  useEffect(() => {
+    const fetchPageContent = async () => {
+      try {
+        // Fetch success stories, performance metrics, and join success content in parallel
+        const [successStoriesResponse, performanceMetricsResponse, joinSuccessResponse] = await Promise.all([
+          fetch('http://localhost:5050/page/getPageContent?pageType=successStories'),
+          fetch('http://localhost:5050/page/getPageContent?pageType=performanceMetrics'),
+          fetch('http://localhost:5050/page/getPageContent?pageType=joinSuccess')
+        ]);
+
+        const [successStoriesData, performanceMetricsData, joinSuccessData] = await Promise.all([
+          successStoriesResponse.json(),
+          performanceMetricsResponse.json(),
+          joinSuccessResponse.json()
+        ]);
+
+        // Transform success stories data
+        if (successStoriesData.success && successStoriesData.data) {
+          const transformedSuccessStoriesData = {
+            title: successStoriesData.data.title,
+            subtitle: successStoriesData.data.subtitle,
+            stats: {
+              clients: 0,
+              deals: 0,
+              years: 0,
+              assets: 0
+            },
+            displayStats: [],
+            features: [],
+            buttons: successStoriesData.data.btnTxt.map((btn: any) => btn.buttonText)
+          };
+          console.log('Success Stories API Data received:', successStoriesData.data);
+          console.log('Transformed success stories data:', transformedSuccessStoriesData);
+          setSuccessStoriesContent(transformedSuccessStoriesData);
+        }
+
+        // Transform performance metrics data
+        if (performanceMetricsData.success && performanceMetricsData.data) {
+          const transformedPerformanceMetricsData = {
+            title: performanceMetricsData.data.title,
+            subtitle: performanceMetricsData.data.subtitle,
+            stats: {
+              clients: 0,
+              deals: 0,
+              years: 0,
+              assets: 0
+            },
+            displayStats: performanceMetricsData.data.numbers,
+            features: [],
+            buttons: performanceMetricsData.data.btnTxt.map((btn: any) => btn.buttonText)
+          };
+          console.log('Performance Metrics API Data received:', performanceMetricsData.data);
+          console.log('Transformed performance metrics data:', transformedPerformanceMetricsData);
+          setPerformanceMetricsContent(transformedPerformanceMetricsData);
+          
+          // Set available years from API data
+          const yearsFromAPI = performanceMetricsData.data.btnTxt.map((btn: any) => btn.buttonText);
+          setAvailableYears(yearsFromAPI);
+          
+          // Set the first year as selected if current selection is not in the new list
+          if (!yearsFromAPI.includes(selectedYear)) {
+            setSelectedYear(yearsFromAPI[0] || '2024');
+          }
+        }
+
+        // Transform join success data
+        if (joinSuccessData.success && joinSuccessData.data) {
+          const transformedJoinSuccessData = {
+            title: joinSuccessData.data.title,
+            subtitle: joinSuccessData.data.subtitle,
+            stats: {
+              clients: 0,
+              deals: 0,
+              years: 0,
+              assets: 0
+            },
+            displayStats: [],
+            features: [],
+            buttons: joinSuccessData.data.btnTxt.map((btn: any) => btn.buttonText)
+          };
+          console.log('Join Success API Data received:', joinSuccessData.data);
+          console.log('Transformed join success data:', transformedJoinSuccessData);
+          setJoinSuccessContent(transformedJoinSuccessData);
+        }
+      } catch (error) {
+        console.error('Error fetching page content:', error);
+        setSuccessStoriesContent(null);
+        setPerformanceMetricsContent(null);
+        setJoinSuccessContent(null);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchPageContent();
+  }, []);
+
+  // Animation effect
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setIsVisible(true);
+    }, 100);
+    return () => clearTimeout(timer);
+  }, []);
+
+  // Show loading state
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-gray-900 flex items-center justify-center">
+        <div className="text-xl text-gray-300">
+          Loading...
+        </div>
+      </div>
+    );
+  }
 
   const performanceMetrics = [
     {
@@ -165,10 +289,13 @@ export default function RecordsPage() {
               fontWeight: 'var(--font-weight-semibold)',
               marginBottom: 'var(--space-8)',
               boxShadow: 'var(--shadow-md)',
+              opacity: isVisible ? 1 : 0,
+              transform: isVisible ? 'translateY(0)' : 'translateY(20px)',
+              transition: 'all 0.6s ease',
             }}
           >
             <Award size={20} />
-            Proven Track Record
+            {successStoriesContent?.buttons?.[0] || "Proven Track Record"}
           </div>
           
           <h1
@@ -178,14 +305,47 @@ export default function RecordsPage() {
               color: 'var(--text-primary)',
               marginBottom: 'var(--space-6)',
               fontFamily: 'var(--font-family-heading)',
+              opacity: isVisible ? 1 : 0,
+              transform: isVisible ? 'translateY(0)' : 'translateY(30px)',
+              transition: 'all 0.8s ease 0.2s',
             }}
           >
-            Our <span style={{
-              background: 'var(--gradient-accent)',
-              WebkitBackgroundClip: 'text',
-              WebkitTextFillColor: 'transparent',
-              backgroundClip: 'text',
-            }}>Success Stories</span>
+            {successStoriesContent?.title ? (
+              (() => {
+                const words = successStoriesContent.title.split(' ');
+                return (
+                  <>
+                    {words.map((word, index) => (
+                      <span key={index} style={{
+                        background: word.toLowerCase().includes('success') || word.toLowerCase().includes('stories') 
+                          ? 'var(--gradient-accent)' 
+                          : 'transparent',
+                        WebkitBackgroundClip: word.toLowerCase().includes('success') || word.toLowerCase().includes('stories') 
+                          ? 'text' 
+                          : 'initial',
+                        WebkitTextFillColor: word.toLowerCase().includes('success') || word.toLowerCase().includes('stories') 
+                          ? 'transparent' 
+                          : 'var(--text-primary)',
+                        backgroundClip: word.toLowerCase().includes('success') || word.toLowerCase().includes('stories') 
+                          ? 'text' 
+                          : 'initial',
+                      }}>
+                        {word}{index < words.length - 1 ? ' ' : ''}
+                      </span>
+                    ))}
+                  </>
+                );
+              })()
+            ) : (
+              <>
+                Our <span style={{
+                  background: 'var(--gradient-accent)',
+                  WebkitBackgroundClip: 'text',
+                  WebkitTextFillColor: 'transparent',
+                  backgroundClip: 'text',
+                }}>Success Stories</span>
+              </>
+            )}
           </h1>
           
           <p
@@ -196,10 +356,12 @@ export default function RecordsPage() {
               marginBottom: 'var(--space-8)',
               maxWidth: '800px',
               margin: '0 auto var(--space-8)',
+              opacity: isVisible ? 1 : 0,
+              transform: isVisible ? 'translateY(0)' : 'translateY(30px)',
+              transition: 'all 0.8s ease 0.4s',
             }}
           >
-            Discover our proven track record of delivering exceptional results for clients across 
-            diverse industries. Our success is measured by the success of our clients.
+            {successStoriesContent?.subtitle || "Discover our proven track record of delivering exceptional results for clients across diverse industries. Our success is measured by the success of our clients."}
           </p>
         </div>
       </section>
@@ -220,9 +382,12 @@ export default function RecordsPage() {
               marginBottom: 'var(--space-8)',
               fontFamily: 'var(--font-family-heading)',
               textAlign: 'center',
+              opacity: isVisible ? 1 : 0,
+              transform: isVisible ? 'translateY(0)' : 'translateY(30px)',
+              transition: 'all 0.8s ease 0.2s',
             }}
           >
-            Performance Metrics
+            {performanceMetricsContent?.title || "Performance Metrics"}
           </h2>
           
           <div
@@ -234,23 +399,25 @@ export default function RecordsPage() {
               flexWrap: 'wrap',
             }}
           >
-            {performanceMetrics.map((metric) => (
+            {availableYears.map((year) => (
               <button
-                key={metric.year}
-                onClick={() => setSelectedYear(metric.year)}
+                key={year}
+                onClick={() => setSelectedYear(year)}
                 style={{
                   padding: 'var(--space-3) var(--space-6)',
-                  background: selectedYear === metric.year ? 'var(--color-accent)' : 'var(--bg-secondary)',
-                  color: selectedYear === metric.year ? 'var(--text-inverse)' : 'var(--text-primary)',
+                  background: selectedYear === year ? 'var(--color-accent)' : 'var(--bg-secondary)',
+                  color: selectedYear === year ? 'var(--text-inverse)' : 'var(--text-primary)',
                   border: '1px solid var(--border-primary)',
                   borderRadius: 'var(--radius-full)',
                   fontSize: 'var(--text-sm)',
                   fontWeight: 'var(--font-weight-medium)',
                   cursor: 'pointer',
                   transition: 'all var(--transition-fast)',
+                  opacity: isVisible ? 1 : 0,
+                  transform: isVisible ? 'translateY(0)' : 'translateY(20px)',
                 }}
               >
-                {metric.year}
+                {year}
               </button>
             ))}
           </div>
@@ -265,92 +432,116 @@ export default function RecordsPage() {
               borderRadius: 'var(--radius-xl)',
               border: '1px solid var(--border-primary)',
               boxShadow: 'var(--shadow-lg)',
+              opacity: isVisible ? 1 : 0,
+              transform: isVisible ? 'translateY(0)' : 'translateY(30px)',
+              transition: 'all 0.8s ease 0.4s',
             }}
           >
-            <div style={{ textAlign: 'center' }}>
-              <div
-                style={{
-                  fontSize: 'var(--text-4xl)',
-                  fontWeight: 'var(--font-weight-bold)',
-                  color: 'var(--text-accent)',
-                  marginBottom: 'var(--space-2)',
-                  fontFamily: 'var(--font-family-heading)',
-                }}
-              >
-                {currentYearData.totalDeals}
+            {performanceMetricsContent?.displayStats?.map((stat, index) => (
+              <div key={index} style={{ textAlign: 'center' }}>
+                <div
+                  style={{
+                    fontSize: 'var(--text-4xl)',
+                    fontWeight: 'var(--font-weight-bold)',
+                    color: 'var(--text-accent)',
+                    marginBottom: 'var(--space-2)',
+                    fontFamily: 'var(--font-family-heading)',
+                  }}
+                >
+                  {stat.value}
+                </div>
+                <div style={{ color: 'var(--text-secondary)', fontSize: 'var(--text-lg)' }}>
+                  {stat.label}
+                </div>
               </div>
-              <div style={{ color: 'var(--text-secondary)', fontSize: 'var(--text-lg)' }}>
-                Total Deals
-              </div>
-            </div>
-            
-            <div style={{ textAlign: 'center' }}>
-              <div
-                style={{
-                  fontSize: 'var(--text-4xl)',
-                  fontWeight: 'var(--font-weight-bold)',
-                  color: 'var(--text-accent)',
-                  marginBottom: 'var(--space-2)',
-                  fontFamily: 'var(--font-family-heading)',
-                }}
-              >
-                ${currentYearData.totalValue}B+
-              </div>
-              <div style={{ color: 'var(--text-secondary)', fontSize: 'var(--text-lg)' }}>
-                Deal Value
-              </div>
-            </div>
-            
-            <div style={{ textAlign: 'center' }}>
-              <div
-                style={{
-                  fontSize: 'var(--text-4xl)',
-                  fontWeight: 'var(--font-weight-bold)',
-                  color: 'var(--text-accent)',
-                  marginBottom: 'var(--space-2)',
-                  fontFamily: 'var(--font-family-heading)',
-                }}
-              >
-                {currentYearData.successRate}%
-              </div>
-              <div style={{ color: 'var(--text-secondary)', fontSize: 'var(--text-lg)' }}>
-                Success Rate
-              </div>
-            </div>
-            
-            <div style={{ textAlign: 'center' }}>
-              <div
-                style={{
-                  fontSize: 'var(--text-4xl)',
-                  fontWeight: 'var(--font-weight-bold)',
-                  color: 'var(--text-accent)',
-                  marginBottom: 'var(--space-2)',
-                  fontFamily: 'var(--font-family-heading)',
-                }}
-              >
-                {currentYearData.clientSatisfaction}/5
-              </div>
-              <div style={{ color: 'var(--text-secondary)', fontSize: 'var(--text-lg)' }}>
-                Client Rating
-              </div>
-            </div>
-            
-            <div style={{ textAlign: 'center' }}>
-              <div
-                style={{
-                  fontSize: 'var(--text-4xl)',
-                  fontWeight: 'var(--font-weight-bold)',
-                  color: 'var(--text-accent)',
-                  marginBottom: 'var(--space-2)',
-                  fontFamily: 'var(--font-family-heading)',
-                }}
-              >
-                {currentYearData.growth}
-              </div>
-              <div style={{ color: 'var(--text-secondary)', fontSize: 'var(--text-lg)' }}>
-                YoY Growth
-              </div>
-            </div>
+            )) || (
+              <>
+                <div style={{ textAlign: 'center' }}>
+                  <div
+                    style={{
+                      fontSize: 'var(--text-4xl)',
+                      fontWeight: 'var(--font-weight-bold)',
+                      color: 'var(--text-accent)',
+                      marginBottom: 'var(--space-2)',
+                      fontFamily: 'var(--font-family-heading)',
+                    }}
+                  >
+                    {currentYearData.totalDeals}
+                  </div>
+                  <div style={{ color: 'var(--text-secondary)', fontSize: 'var(--text-lg)' }}>
+                    Total Deals
+                  </div>
+                </div>
+                
+                <div style={{ textAlign: 'center' }}>
+                  <div
+                    style={{
+                      fontSize: 'var(--text-4xl)',
+                      fontWeight: 'var(--font-weight-bold)',
+                      color: 'var(--text-accent)',
+                      marginBottom: 'var(--space-2)',
+                      fontFamily: 'var(--font-family-heading)',
+                    }}
+                  >
+                    ${currentYearData.totalValue}B+
+                  </div>
+                  <div style={{ color: 'var(--text-secondary)', fontSize: 'var(--text-lg)' }}>
+                    Deal Value
+                  </div>
+                </div>
+                
+                <div style={{ textAlign: 'center' }}>
+                  <div
+                    style={{
+                      fontSize: 'var(--text-4xl)',
+                      fontWeight: 'var(--font-weight-bold)',
+                      color: 'var(--text-accent)',
+                      marginBottom: 'var(--space-2)',
+                      fontFamily: 'var(--font-family-heading)',
+                    }}
+                  >
+                    {currentYearData.successRate}%
+                  </div>
+                  <div style={{ color: 'var(--text-secondary)', fontSize: 'var(--text-lg)' }}>
+                    Success Rate
+                  </div>
+                </div>
+                
+                <div style={{ textAlign: 'center' }}>
+                  <div
+                    style={{
+                      fontSize: 'var(--text-4xl)',
+                      fontWeight: 'var(--font-weight-bold)',
+                      color: 'var(--text-accent)',
+                      marginBottom: 'var(--space-2)',
+                      fontFamily: 'var(--font-family-heading)',
+                    }}
+                  >
+                    {currentYearData.clientSatisfaction}/5
+                  </div>
+                  <div style={{ color: 'var(--text-secondary)', fontSize: 'var(--text-lg)' }}>
+                    Client Rating
+                  </div>
+                </div>
+                
+                <div style={{ textAlign: 'center' }}>
+                  <div
+                    style={{
+                      fontSize: 'var(--text-4xl)',
+                      fontWeight: 'var(--font-weight-bold)',
+                      color: 'var(--text-accent)',
+                      marginBottom: 'var(--space-2)',
+                      fontFamily: 'var(--font-family-heading)',
+                    }}
+                  >
+                    {currentYearData.growth}
+                  </div>
+                  <div style={{ color: 'var(--text-secondary)', fontSize: 'var(--text-lg)' }}>
+                    YoY Growth
+                  </div>
+                </div>
+              </>
+            )}
           </div>
         </div>
       </section>
@@ -780,9 +971,12 @@ export default function RecordsPage() {
               color: 'var(--text-primary)',
               marginBottom: 'var(--space-6)',
               fontFamily: 'var(--font-family-heading)',
+              opacity: isVisible ? 1 : 0,
+              transform: isVisible ? 'translateY(0)' : 'translateY(30px)',
+              transition: 'all 0.8s ease 0.2s',
             }}
           >
-            Ready to Join Our Success Story?
+            {joinSuccessContent?.title || "Ready to Join Our Success Story?"}
           </h2>
           
           <p
@@ -791,10 +985,12 @@ export default function RecordsPage() {
               color: 'var(--text-secondary)',
               lineHeight: '1.6',
               marginBottom: 'var(--space-8)',
+              opacity: isVisible ? 1 : 0,
+              transform: isVisible ? 'translateY(0)' : 'translateY(30px)',
+              transition: 'all 0.8s ease 0.4s',
             }}
           >
-            Let our proven track record work for you. Contact us today to discuss how we can 
-            help achieve your investment goals.
+            {joinSuccessContent?.subtitle || "Let our proven track record work for you. Contact us today to discuss how we can help achieve your investment goals."}
           </p>
           
           <div
@@ -803,6 +999,9 @@ export default function RecordsPage() {
               gap: 'var(--space-4)',
               justifyContent: 'center',
               flexWrap: 'wrap',
+              opacity: isVisible ? 1 : 0,
+              transform: isVisible ? 'translateY(0)' : 'translateY(30px)',
+              transition: 'all 0.8s ease 0.6s',
             }}
           >
             <a
@@ -830,7 +1029,7 @@ export default function RecordsPage() {
                 e.currentTarget.style.boxShadow = '0 6px 20px rgba(212, 175, 55, 0.3)';
               }}
             >
-              Start Your Journey
+              {joinSuccessContent?.buttons?.[0] || "Start Your Journey"}
               <ArrowRight size={20} />
             </a>
             
@@ -861,7 +1060,7 @@ export default function RecordsPage() {
                 e.currentTarget.style.transform = 'translateY(0) scale(1)';
               }}
             >
-              View Insights
+              {joinSuccessContent?.buttons?.[1] || "View Insights"}
             </a>
           </div>
         </div>

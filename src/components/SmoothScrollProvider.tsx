@@ -4,6 +4,7 @@ import React, { useEffect, useRef } from 'react';
 import { usePathname } from 'next/navigation';
 import Lenis from 'lenis';
 
+
 interface SmoothScrollProviderProps {
   children: React.ReactNode;
 }
@@ -20,14 +21,18 @@ const SmoothScrollProvider: React.FC<SmoothScrollProviderProps> = ({ children })
 
     lenisRef.current = lenis;
 
+    let rafId: number;
     function raf(time: number) {
       lenis.raf(time);
-      requestAnimationFrame(raf);
+      rafId = requestAnimationFrame(raf);
     }
 
-    requestAnimationFrame(raf);
+    rafId = requestAnimationFrame(raf);
 
     return () => {
+      if (rafId) {
+        cancelAnimationFrame(rafId);
+      }
       lenis.destroy();
       lenisRef.current = null;
     };
@@ -37,10 +42,10 @@ const SmoothScrollProvider: React.FC<SmoothScrollProviderProps> = ({ children })
   useEffect(() => {
     // Small delay to ensure the page has rendered
     const timer = setTimeout(() => {
-      window.scrollTo(0, 0);
-      // Also scroll the Lenis instance if it exists
       if (lenisRef.current) {
         lenisRef.current.scrollTo(0, { immediate: true });
+      } else {
+        window.scrollTo(0, 0);
       }
     }, 100);
 

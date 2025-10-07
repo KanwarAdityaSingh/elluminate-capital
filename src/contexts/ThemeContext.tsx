@@ -29,15 +29,9 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({ children }) => {
   // Initialize dark theme
   useEffect(() => {
     setMounted(true);
+    document.documentElement.setAttribute('data-theme', 'dark');
+    localStorage.setItem('theme', 'dark');
   }, []);
-
-  // Apply dark theme to document
-  useEffect(() => {
-    if (mounted) {
-      document.documentElement.setAttribute('data-theme', 'dark');
-      localStorage.setItem('theme', 'dark');
-    }
-  }, [mounted]);
 
   // Prevent hydration mismatch by not rendering until mounted
   if (!mounted) {

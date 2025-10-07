@@ -1,264 +1,217 @@
 'use client';
 
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import { TrendingUp, Users, Award, ArrowRight, BarChart3, Globe, DollarSign, Building2, Shield, ChevronLeft, ChevronRight } from 'lucide-react';
 import Link from 'next/link';
+import { HeroContent } from '../types/api';
+import HeroSection from '../components/HeroSection';
 
 export default function Home() {
+  const [heroContent, setHeroContent] = useState<HeroContent | null>(null);
+  const [visionContent, setVisionContent] = useState<HeroContent | null>(null);
+  const [storyContent, setStoryContent] = useState<HeroContent | null>(null);
+  const [leadershipContent, setLeadershipContent] = useState<HeroContent | null>(null);
+  const [investmentStrategyContent, setInvestmentStrategyContent] = useState<HeroContent | null>(null);
+  const [partnersContent, setPartnersContent] = useState<HeroContent | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
   const [isVisible, setIsVisible] = useState(false);
-  const [stats, setStats] = useState({ clients: 0, deals: 0, years: 0, assets: 0 });
   const [hoveredButton, setHoveredButton] = useState<string | null>(null);
-  const carouselRef = useRef<HTMLDivElement>(null);
+
+  // Fetch page content on component mount
+  useEffect(() => {
+    const fetchPageContent = async () => {
+      try {
+        // Fetch landing, vision, story, leadership team, investment strategy, and partners content in parallel
+        const [landingResponse, visionResponse, storyResponse, leadershipResponse, investmentStrategyResponse, partnersResponse] = await Promise.all([
+          fetch('http://localhost:5050/page/getPageContent?pageType=landing'),
+          fetch('http://localhost:5050/page/getPageContent?pageType=vision'),
+          fetch('http://localhost:5050/page/getPageContent?pageType=story'),
+          fetch('http://localhost:5050/page/getPageContent?pageType=leadershipTeam'),
+          fetch('http://localhost:5050/page/getPageContent?pageType=investmentStrategy'),
+          fetch('http://localhost:5050/page/getPageContent?pageType=partners')
+        ]);
+
+        const [landingData, visionData, storyData, leadershipData, investmentStrategyData, partnersData] = await Promise.all([
+          landingResponse.json(),
+          visionResponse.json(),
+          storyResponse.json(),
+          leadershipResponse.json(),
+          investmentStrategyResponse.json(),
+          partnersResponse.json()
+        ]);
+
+        // Transform landing data
+        if (landingData.success && landingData.data) {
+          const transformedLandingData = {
+            title: landingData.data.title,
+            subtitle: landingData.data.subtitle,
+            stats: {
+              clients: parseFloat(landingData.data.numbers[0]?.value.replace(/[^\d.]/g, '') || '500'),
+              deals: parseFloat(landingData.data.numbers[1]?.value.replace(/[^\d.]/g, '') || '1200'),
+              years: parseFloat(landingData.data.numbers[2]?.value.replace(/[^\d.]/g, '') || '15'),
+              assets: parseFloat(landingData.data.numbers[3]?.value.replace(/[^\d.]/g, '') || '50')
+            },
+            displayStats: landingData.data.numbers,
+            features: landingData.data.items,
+            buttons: landingData.data.btnTxt.map((btn: any) => btn.buttonText)
+          };
+          console.log('Landing API Data received:', landingData.data);
+          console.log('Transformed landing data:', transformedLandingData);
+          setHeroContent(transformedLandingData);
+        }
+
+        // Transform vision data
+        if (visionData.success && visionData.data) {
+          const transformedVisionData = {
+            title: visionData.data.title,
+            subtitle: visionData.data.subtitle,
+            stats: {
+              clients: parseFloat(visionData.data.numbers[0]?.value.replace(/[^\d.]/g, '') || '500'),
+              deals: parseFloat(visionData.data.numbers[1]?.value.replace(/[^\d.]/g, '') || '1200'),
+              years: parseFloat(visionData.data.numbers[2]?.value.replace(/[^\d.]/g, '') || '15'),
+              assets: parseFloat(visionData.data.numbers[3]?.value.replace(/[^\d.]/g, '') || '50')
+            },
+            displayStats: visionData.data.numbers,
+            features: visionData.data.items,
+            buttons: visionData.data.btnTxt.map((btn: any) => btn.buttonText)
+          };
+          console.log('Vision API Data received:', visionData.data);
+          console.log('Transformed vision data:', transformedVisionData);
+          setVisionContent(transformedVisionData);
+        }
+
+        // Transform story data
+        if (storyData.success && storyData.data) {
+          const transformedStoryData = {
+            title: storyData.data.title,
+            subtitle: storyData.data.subtitle,
+            stats: {
+              clients: 0,
+              deals: 0,
+              years: 0,
+              assets: 0
+            },
+            displayStats: [],
+            features: [],
+            buttons: []
+          };
+          console.log('Story API Data received:', storyData.data);
+          console.log('Transformed story data:', transformedStoryData);
+          setStoryContent(transformedStoryData);
+        }
+
+        // Transform leadership team data
+        if (leadershipData.success && leadershipData.data) {
+          const transformedLeadershipData = {
+            title: leadershipData.data.title,
+            subtitle: leadershipData.data.subtitle,
+            stats: {
+              clients: 0,
+              deals: 0,
+              years: 0,
+              assets: 0
+            },
+            displayStats: [],
+            features: leadershipData.data.items,
+            buttons: leadershipData.data.btnTxt.map((btn: any) => btn.buttonText)
+          };
+          console.log('Leadership API Data received:', leadershipData.data);
+          console.log('Transformed leadership data:', transformedLeadershipData);
+          setLeadershipContent(transformedLeadershipData);
+        }
+
+        // Transform investment strategy data
+        if (investmentStrategyData.success && investmentStrategyData.data) {
+          const transformedInvestmentStrategyData = {
+            title: investmentStrategyData.data.title,
+            subtitle: investmentStrategyData.data.subtitle,
+            stats: {
+              clients: parseFloat(investmentStrategyData.data.numbers[0]?.value.replace(/[^\d.]/g, '') || '500'),
+              deals: parseFloat(investmentStrategyData.data.numbers[1]?.value.replace(/[^\d.]/g, '') || '2500'),
+              years: parseFloat(investmentStrategyData.data.numbers[2]?.value.replace(/[^\d.]/g, '') || '15'),
+              assets: parseFloat(investmentStrategyData.data.numbers[3]?.value.replace(/[^\d.]/g, '') || '98')
+            },
+            displayStats: investmentStrategyData.data.numbers,
+            features: investmentStrategyData.data.items,
+            buttons: investmentStrategyData.data.btnTxt.map((btn: any) => btn.buttonText)
+          };
+          console.log('Investment Strategy API Data received:', investmentStrategyData.data);
+          console.log('Transformed investment strategy data:', transformedInvestmentStrategyData);
+          setInvestmentStrategyContent(transformedInvestmentStrategyData);
+        }
+
+        // Transform partners data
+        if (partnersData.success && partnersData.data) {
+          const transformedPartnersData = {
+            title: partnersData.data.title,
+            subtitle: partnersData.data.subtitle,
+            stats: {
+              clients: 0,
+              deals: 0,
+              years: 0,
+              assets: 0
+            },
+            displayStats: [],
+            features: [],
+            buttons: []
+          };
+          console.log('Partners API Data received:', partnersData.data);
+          console.log('Transformed partners data:', transformedPartnersData);
+          setPartnersContent(transformedPartnersData);
+        }
+      } catch (error) {
+        console.error('Error fetching page content:', error);
+        // Set fallback content
+        setHeroContent(null);
+        setVisionContent(null);
+        setStoryContent(null);
+        setLeadershipContent(null);
+        setInvestmentStrategyContent(null);
+        setPartnersContent(null);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchPageContent();
+  }, []); // Empty dependency array - only run once
+
   const clients: string[] = [
-    'Aurum Partners',
-    'Nexus Holdings',
-    'Vertex Group',
-    'Summit Equity',
-    'Crescent Global',
-    'Atlas Financial',
-    'Pinnacle Ventures',
-    'Monarch Capital',
-    'Sterling Trust',
-    'Horizon Investments',
-  ];
-  const clientProfiles: { name: string; company: string; image: string }[] = [
-    {
-      name: 'Amit Kumar',
-      company: 'CarDeck',
-      image: 'https://images.unsplash.com/photo-1544723795-3fb6469f5b39?w=900&h=1100&fit=crop&crop=faces',
-    },
-    {
-      name: 'Prashant Tandon',
-      company: 'OneMed',
-      image: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=900&h=1100&fit=crop&crop=faces',
-    },
-    {
-      name: 'Aloke Bajpai',
-      company: 'TravelX',
-      image: 'https://images.unsplash.com/photo-1554151228-14d9def656e4?w=900&h=1100&fit=crop&crop=faces',
-    },
-    {
-      name: 'Swapandeep Mann',
-      company: 'NutriLabs',
-      image: 'https://images.unsplash.com/photo-1547425260-76bcadfb4f2c?w=900&h=1100&fit=crop&crop=faces',
-    },
-    {
-      name: 'Sarah Mitchell',
-      company: 'ZenPay',
-      image: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=900&h=1100&fit=crop&crop=faces',
-    },
-    {
-      name: 'David Chen',
-      company: 'NovaGrid',
-      image: 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=900&h=1100&fit=crop&crop=faces',
-    },
-    {
-      name: 'Emily Rodriguez',
-      company: 'CapMark',
-      image: 'https://images.unsplash.com/photo-1524504388940-b1c1722653e1?w=900&h=1100&fit=crop&crop=faces',
-    },
-    {
-      name: 'Michael Thompson',
-      company: 'Meridian',
-      image: 'https://images.unsplash.com/photo-1527980965255-d3b416303d12?w=900&h=1100&fit=crop&crop=faces',
-    },
+    'Trading.jpeg',
+    'trading1.png', 
+    'trading2.png',
+    'usethis.png'
   ];
 
-  const scrollClients = (direction: 'prev' | 'next') => {
-    const el = carouselRef.current;
+  // Animation effect
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setIsVisible(true);
+    }, 100);
+    return () => clearTimeout(timer);
+  }, []);
+
+  const scrollClients = (direction: 'next' | 'prev') => {
+    const el = document.getElementById('carousel-viewport');
     if (!el) return;
     const amount = Math.max(el.clientWidth * 0.9, 320);
     el.scrollBy({ left: direction === 'next' ? amount : -amount, behavior: 'smooth' });
   };
 
-  useEffect(() => {
-    setIsVisible(true);
-    
-    // Animate statistics
-    const animateStats = () => {
-      const targets = { clients: 500, deals: 1200, years: 15, assets: 50 };
-      const duration = 2000;
-      const steps = 60;
-      const stepDuration = duration / steps;
-      
-      let step = 0;
-      const timer = setInterval(() => {
-        step++;
-        const progress = step / steps;
-        const easeOut = 1 - Math.pow(1 - progress, 3);
-        
-        setStats({
-          clients: Math.floor(targets.clients * easeOut),
-          deals: Math.floor(targets.deals * easeOut),
-          years: Math.floor(targets.years * easeOut),
-          assets: Math.floor(targets.assets * easeOut)
-        });
-        
-        if (step >= steps) clearInterval(timer);
-      }, stepDuration);
-    };
-    
-    setTimeout(animateStats, 500);
-  }, []);
+  // Show loading state
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-gray-900 flex items-center justify-center">
+        <div className="text-xl text-gray-300">
+          Loading...
+        </div>
+              </div>
+    );
+  }
 
   return (
-    <div className="landing-page">
-      {/* Hero Section */}
-      <section className="hero-section">
-        <div className="hero-background">
-          <div className="hero-gradient"></div>
-          <div className="hero-pattern"></div>
-        </div>
-        
-        <div className="hero-content">
-
-          
-          <h1 className="hero-title">
-            <span className="hero-title-main">Elevating</span>
-            <span className="hero-title-accent">Capital Markets</span>
-            <span className="hero-title-sub">Excellence</span>
-          </h1>
-          
-          <p className="hero-description">
-            We deliver sophisticated investment banking solutions that drive growth, 
-            maximize value, and create lasting success for our clients across global markets.
-          </p>
-          
-          {/* Statistics within Hero */}
-          <div className="hero-stats">
-            <div className="stat-item">
-              <div className="stat-number">{stats.clients}+</div>
-              <div className="stat-label">Global Clients</div>
-            </div>
-            <div className="stat-item">
-              <div className="stat-number">${stats.deals}B+</div>
-              <div className="stat-label">Deals Completed</div>
-            </div>
-            <div className="stat-item">
-              <div className="stat-number">{stats.years}+</div>
-              <div className="stat-label">Years Experience</div>
-            </div>
-            <div className="stat-item">
-              <div className="stat-number">${stats.assets}B+</div>
-              <div className="stat-label">Assets Under Management</div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Merged Video & Insights Section */}
-      <section className="merged-video-section">
-        <div className="video-background">
-          <video
-            autoPlay
-            muted
-            loop
-            playsInline
-            className="background-video"
-          >
-            <source src="/videos/mainvideo.mp4" type="video/mp4" />
-            Your browser does not support the video tag.
-          </video>
-          <div className="video-overlay"></div>
-        </div>
-        
-        <div className="merged-content">
-          <h2 className="merged-title">
-            Where <span className="highlight">Vision</span> Meets <span className="highlight">Expert Insights</span>
-          </h2>
-          
-          <p className="merged-description">
-            Experience the power of strategic investment banking combined with comprehensive market research, 
-            cutting-edge analysis, and proven strategies that drive exceptional results across global markets.
-          </p>
-          
-          <div className="merged-features">
-            <div className="feature-card">
-              <div className="feature-icon">
-                <BarChart3 size={28} />
-              </div>
-              <div className="feature-content">
-                <h4>Advanced Market Analysis</h4>
-                <p>In-depth research and trend analysis with real-time market intelligence</p>
-              </div>
-            </div>
-            <div className="feature-card">
-              <div className="feature-icon">
-                <Globe size={28} />
-              </div>
-              <div className="feature-content">
-                <h4>Global Market Coverage</h4>
-                <p>Worldwide insights and opportunities across all major financial markets</p>
-              </div>
-            </div>
-            <div className="feature-card">
-              <div className="feature-icon">
-                <DollarSign size={28} />
-              </div>
-              <div className="feature-content">
-                <h4>Strategic Investment Solutions</h4>
-                <p>Proven strategies for portfolio optimization and wealth maximization</p>
-              </div>
-            </div>
-          </div>
-          
-          <div className="merged-actions">
-            <Link 
-              href="/insights" 
-              className="btn-primary-action"
-              onMouseEnter={() => setHoveredButton('primary-action')}
-              onMouseLeave={() => setHoveredButton(null)}
-              style={{
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: 'var(--space-2)',
-                padding: 'var(--space-5) var(--space-10)',
-                borderRadius: 'var(--radius-lg)',
-                fontWeight: 'var(--font-weight-bold)',
-                textDecoration: 'none',
-                transition: 'all 0.3s ease',
-                border: '2px solid transparent',
-                fontSize: 'var(--text-lg)',
-                background: 'linear-gradient(135deg, #D4AF37, #FFD700)',
-                color: '#000',
-                boxShadow: hoveredButton === 'primary-action' 
-                  ? '0 15px 35px rgba(212, 175, 55, 0.6)' 
-                  : '0 8px 25px rgba(212, 175, 55, 0.4)',
-                transform: hoveredButton === 'primary-action' ? 'translateY(-4px) scale(1.05)' : 'translateY(0) scale(1)',
-              }}
-            >
-              Explore Market Insights
-              <ArrowRight size={22} />
-            </Link>
-            <Link 
-              href="/contact" 
-              className="btn-tertiary-action"
-              onMouseEnter={() => setHoveredButton('tertiary-action')}
-              onMouseLeave={() => setHoveredButton(null)}
-              style={{
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: 'var(--space-2)',
-                padding: 'var(--space-5) var(--space-10)',
-                borderRadius: 'var(--radius-lg)',
-                fontWeight: 'var(--font-weight-semibold)',
-                textDecoration: 'none',
-                transition: 'all 0.3s ease',
-                border: '2px solid rgba(212, 175, 55, 0.8)',
-                fontSize: 'var(--text-lg)',
-                background: hoveredButton === 'tertiary-action' 
-                  ? 'rgba(212, 175, 55, 0.2)' 
-                  : 'transparent',
-                color: '#D4AF37',
-                backdropFilter: 'blur(15px)',
-                transform: hoveredButton === 'tertiary-action' ? 'translateY(-4px) scale(1.05)' : 'translateY(0) scale(1)',
-              }}
-            >
-              Get Custom Analysis
-            </Link>
-          </div>
-        </div>
-      </section>
+    <div className="landing-page min-h-screen bg-gray-900 text-white">
+      <HeroSection heroContent={heroContent} visionContent={visionContent} isVisible={isVisible} />
 
       {/* Our Story & Team Section */}
       <section className="story-team-section">
@@ -268,88 +221,102 @@ export default function Home() {
         </div>
         
         <div className="story-team-content">
-          {/* Our Story */}
           <div className="story-section">
             <div className="story-header">
               <h2 className="story-title">
+                {storyContent?.title ? (
+                  <>
+                    {storyContent.title.split(' ').map((word, index) => (
+                      <span key={index} className={index === 1 ? "story-title-accent" : ""}>
+                        {word}{index < storyContent.title.split(' ').length - 1 ? ' ' : ''}
+                      </span>
+                    ))}
+                  </>
+                ) : (
+                  <>
                 Our <span className="story-title-accent">Story</span>
+                  </>
+                )}
               </h2>
-              
               <p className="story-description">
-                Founded in 1998, Elluminate Capital has grown from a boutique advisory firm 
-                to a leading investment banking powerhouse. Our journey began with a simple 
-                mission: to provide exceptional financial advisory services that truly serve 
-                our clients' best interests.
+                {storyContent?.subtitle || "Founded on the principles of excellence and innovation, we have built a legacy of trust and success in the capital markets. Our journey began with a vision to democratize sophisticated investment strategies and make them accessible to clients worldwide."}
               </p>
             </div>
-            
           </div>
           
-          {/* Leadership Team */}
           <div className="team-section">
             <div className="team-header">
               <h2 className="team-title">
-                Leadership <span className="team-title-accent">Team</span>
+                {leadershipContent?.title ? (
+                  <>
+                    {leadershipContent.title.split(' ').map((word, index) => (
+                      <span key={index} className={index === 1 ? "team-title-accent" : ""}>
+                        {word}{index < leadershipContent.title.split(' ').length - 1 ? ' ' : ''}
+                      </span>
+                    ))}
+                  </>
+                ) : (
+                  <>
+                    Meet Our <span className="team-title-accent">Leadership</span>
+                  </>
+                )}
               </h2>
-              
               <p className="team-description">
-                Meet the experienced professionals leading our firm with expertise, 
-                integrity, and unwavering commitment to excellence.
+                {leadershipContent?.subtitle || "Our team of seasoned professionals brings decades of experience in investment banking, portfolio management, and market analysis."}
               </p>
             </div>
             
             <div className="team-grid">
+              {leadershipContent?.features?.map((member, index) => (
+                <div key={index} className="team-member">
+                  <div className="member-image">
+                    <img src="/CompanyLogo.jpeg" alt="Team Member" />
+                  </div>
+                  <div className="member-info">
+                    <h3 className="member-name">{member.title}</h3>
+                    <p className="member-position">{member.description}</p>
+                  </div>
+                </div>
+              )) || (
+                <>
               <div className="team-member">
                 <div className="member-image">
-                  <img 
-                    src="https://images.unsplash.com/photo-1494790108755-2616b612b786?w=400&h=400&fit=crop&crop=face" 
-                    alt="Sarah Mitchell"
-                  />
+                      <img src="/CompanyLogo.jpeg" alt="Team Member" />
                 </div>
                 <div className="member-info">
-                  <h3 className="member-name">Sarah Mitchell</h3>
+                      <h3 className="member-name">Sarah Johnson</h3>
                   <p className="member-position">Chief Executive Officer</p>
                 </div>
               </div>
-              
               <div className="team-member">
                 <div className="member-image">
-                  <img 
-                    src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=400&h=400&fit=crop&crop=face" 
-                    alt="David Chen"
-                  />
+                      <img src="/CompanyLogo.jpeg" alt="Team Member" />
                 </div>
                 <div className="member-info">
-                  <h3 className="member-name">David Chen</h3>
+                      <h3 className="member-name">Michael Chen</h3>
                   <p className="member-position">Chief Investment Officer</p>
                 </div>
               </div>
-              
               <div className="team-member">
                 <div className="member-image">
-                  <img 
-                    src="https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=400&h=400&fit=crop&crop=face" 
-                    alt="Emily Rodriguez"
-                  />
+                      <img src="/CompanyLogo.jpeg" alt="Team Member" />
                 </div>
                 <div className="member-info">
                   <h3 className="member-name">Emily Rodriguez</h3>
-                  <p className="member-position">Head of Capital Markets</p>
+                      <p className="member-position">Head of Research</p>
                 </div>
               </div>
-              
               <div className="team-member">
                 <div className="member-image">
-                  <img 
-                    src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=400&fit=crop&crop=face" 
-                    alt="Michael Thompson"
-                  />
+                      <img src="/CompanyLogo.jpeg" alt="Team Member" />
                 </div>
                 <div className="member-info">
-                  <h3 className="member-name">Michael Thompson</h3>
-                  <p className="member-position">Managing Director, M&A</p>
+                      <h3 className="member-name">David Thompson</h3>
+                      <p className="member-position">Managing Director</p>
                 </div>
               </div>
+                </>
+              )}
             </div>
           </div>
         </div>
@@ -365,67 +332,66 @@ export default function Home() {
         <div className="ending-content">
           <div className="ending-main">
             <h2 className="ending-title">
+            {investmentStrategyContent?.title ? (
+              <>
+                {investmentStrategyContent.title.split(' ').map((word, index) => (
+                  <span key={index} className={word.toLowerCase().includes('transform') ? "ending-title-accent" : ""}>
+                    {word}{index < investmentStrategyContent.title.split(' ').length - 1 ? ' ' : ''}
+                  </span>
+                ))}
+              </>
+            ) : (
+              <>
               Ready to <span className="ending-title-accent">Transform</span> Your Investment Strategy?
+              </>
+            )}
             </h2>
-            
             <p className="ending-description">
-              Join hundreds of successful investors who trust Elluminate Capital for their most critical financial decisions. 
-              Let our expertise guide you toward unprecedented growth and success.
+            {investmentStrategyContent?.subtitle || "Join thousands of satisfied clients who trust us with their most important financial decisions. Let us help you achieve your investment goals with our proven strategies and expert guidance."}
             </p>
             
             <div className="ending-stats">
-              <div className="ending-stat">
-                <div className="ending-stat-number">15+</div>
-                <div className="ending-stat-label">Years of Excellence</div>
+            {investmentStrategyContent?.displayStats?.map((stat, index) => (
+              <div key={index} className="ending-stat">
+                <div className="ending-stat-number">{stat.value}</div>
+                <div className="ending-stat-label">{stat.label}</div>
               </div>
+            )) || (
+              <>
               <div className="ending-stat">
                 <div className="ending-stat-number">500+</div>
-                <div className="ending-stat-label">Successful Clients</div>
+                  <div className="ending-stat-label">Happy Clients</div>
               </div>
               <div className="ending-stat">
-                <div className="ending-stat-number">$50B+</div>
+                  <div className="ending-stat-number">$2.5B+</div>
                 <div className="ending-stat-label">Assets Managed</div>
+              </div>
+                <div className="ending-stat">
+                  <div className="ending-stat-number">15+</div>
+                  <div className="ending-stat-label">Years Experience</div>
               </div>
               <div className="ending-stat">
                 <div className="ending-stat-number">98%</div>
-                <div className="ending-stat-label">Client Satisfaction</div>
+                  <div className="ending-stat-label">Success Rate</div>
               </div>
+              </>
+            )}
             </div>
             
             <div className="ending-actions">
               <Link 
-                href="/records" 
+              href={investmentStrategyContent?.buttons?.[0]?.toLowerCase().includes('track') || investmentStrategyContent?.buttons?.[0]?.toLowerCase().includes('record') ? "/records" : "/contact"} 
                 className="btn-ending-primary"
-                onMouseEnter={() => setHoveredButton('ending-primary')}
-                onMouseLeave={() => setHoveredButton(null)}
-                style={{
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  gap: 'var(--space-2)',
-                  padding: 'var(--space-5) var(--space-10)',
-                  borderRadius: 'var(--radius-lg)',
-                  fontWeight: 'var(--font-weight-bold)',
-                  textDecoration: 'none',
-                  transition: 'all 0.3s ease',
-                  border: '2px solid transparent',
-                  fontSize: 'var(--text-xl)',
-                  background: 'linear-gradient(135deg, #D4AF37, #FFD700)',
-                  color: '#000',
-                  boxShadow: hoveredButton === 'ending-primary' 
-                    ? '0 15px 35px rgba(212, 175, 55, 0.6)' 
-                    : '0 8px 25px rgba(212, 175, 55, 0.4)',
-                  transform: hoveredButton === 'ending-primary' ? 'translateY(-4px) scale(1.05)' : 'translateY(0) scale(1)',
-                }}
-              >
-                View Our Track Record
-                <ArrowRight size={24} />
+            >
+              {investmentStrategyContent?.buttons?.[0] || "Get Started Today"}
+              <ArrowRight size={20} />
               </Link>
             </div>
           </div>
         </div>
       </section>
 
-      {/* Our Clients Section */}
+      {/* Clients Section */}
       <section className="clients-section">
         <div className="clients-background">
           <div className="clients-gradient"></div>
@@ -434,28 +400,59 @@ export default function Home() {
 
         <div className="clients-content">
           <h2 className="clients-title">
-            Founders we <span className="clients-title-accent">partner</span> with
+            {partnersContent?.title ? (
+              <>
+                {partnersContent.title.split(' ').map((word, index) => (
+                  <span key={index} className={word.toLowerCase().includes('partner') ? "clients-title-accent" : ""}>
+                    {word}{index < partnersContent.title.split(' ').length - 1 ? ' ' : ''}
+                  </span>
+                ))}
+              </>
+            ) : (
+              <>
+                Trusted by <span className="clients-title-accent">Leading</span> Organizations
+              </>
+            )}
           </h2>
-          <p className="clients-description">Trusted by category-defining companies worldwide</p>
-
-          <div className="clients-carousel" aria-label="Our clients carousel">
-            <div className="carousel-viewport" ref={carouselRef}>
-              {clientProfiles.map((c) => (
-                <div className="client-item" key={`${c.company}-${c.name}`}>
+          <p className="clients-description">
+            {partnersContent?.subtitle || "We're proud to work with some of the most respected names in business, helping them achieve their financial objectives through strategic investment solutions."}
+          </p>
+          
+          <div className="clients-carousel">
+            <div className="carousel-viewport" id="carousel-viewport">
+              {clients.map((client, index) => (
+                <div key={index} className="client-item">
                   <div className="client-card">
-                    <img className="client-image" src={c.image} alt={`${c.name} portrait`} />
+                    <img 
+                      src={`/${client}`} 
+                      alt={`Client ${index + 1}`}
+                      className="client-image"
+                    />
                     <div className="client-overlay"></div>
-                    <div className="client-logo-mark">{c.company}</div>
+                    <div className="client-logo-mark">
+                      {client.split('.')[0].toUpperCase()}
                   </div>
-                  <div className="client-meta">{c.name}</div>
+                  </div>
+                  <div className="client-meta">
+                    {client.split('.')[0].replace(/([A-Z])/g, ' $1').trim()}
+                  </div>
                 </div>
               ))}
             </div>
+            
             <div className="clients-nav">
-              <button className="clients-btn" aria-label="Previous" onClick={() => scrollClients('prev')}>
+              <button 
+                className="clients-btn"
+                onClick={() => scrollClients('prev')}
+                aria-label="Previous clients"
+              >
                 <ChevronLeft size={20} />
               </button>
-              <button className="clients-btn" aria-label="Next" onClick={() => scrollClients('next')}>
+              <button 
+                className="clients-btn"
+                onClick={() => scrollClients('next')}
+                aria-label="Next clients"
+              >
                 <ChevronRight size={20} />
               </button>
             </div>
@@ -594,7 +591,6 @@ export default function Home() {
           transition: all 0.8s ease 1.2s;
         }
         
-        
         .stat-item {
           text-align: center;
         }
@@ -682,1146 +678,7 @@ export default function Home() {
             border: 1px solid rgba(255, 255, 255, 0.1);
           }
         }
-        
-        /* Merged Video & Insights Section */
-        .merged-video-section {
-          position: relative;
-          min-height: 100vh;
-          overflow: hidden;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-        }
-        
-        .video-background {
-          position: absolute;
-          top: 0;
-          left: 0;
-          width: 100%;
-          height: 100%;
-          z-index: 1;
-        }
-        
-        .background-video {
-          width: 100%;
-          height: 100%;
-          object-fit: cover;
-          object-position: center;
-        }
-        
-        .video-overlay {
-          position: absolute;
-          top: 0;
-          left: 0;
-          width: 100%;
-          height: 100%;
-          background: linear-gradient(
-            135deg,
-            rgba(0, 0, 0, 0.85) 0%,
-            rgba(0, 0, 0, 0.7) 30%,
-            rgba(0, 0, 0, 0.8) 70%,
-            rgba(0, 0, 0, 0.9) 100%
-          );
-          z-index: 2;
-        }
-        
-        .merged-content {
-          position: relative;
-          z-index: 3;
-          max-width: 1400px;
-          margin: 0 auto;
-          padding: var(--space-20) var(--space-6);
-          text-align: center;
-          color: white;
-        }
-        
-        .content-badge {
-          display: inline-flex;
-          align-items: center;
-          gap: var(--space-2);
-          padding: var(--space-3) var(--space-6);
-          background: rgba(212, 175, 55, 0.15);
-          border: 1px solid rgba(212, 175, 55, 0.3);
-          border-radius: var(--radius-full);
-          color: #D4AF37;
-          font-size: var(--text-sm);
-          font-weight: var(--font-weight-semibold);
-          margin-bottom: var(--space-8);
-          backdrop-filter: blur(10px);
-          opacity: ${isVisible ? 1 : 0};
-          transform: ${isVisible ? 'translateY(0)' : 'translateY(20px)'};
-          transition: all 0.6s ease;
-        }
-        
-        .merged-title {
-          font-size: clamp(3rem, 7vw, 5.5rem);
-          font-weight: var(--font-weight-bold);
-          line-height: 1.1;
-          margin-bottom: var(--space-8);
-          font-family: var(--font-family-heading);
-          text-shadow: 0 6px 12px rgba(0, 0, 0, 0.8);
-          opacity: ${isVisible ? 1 : 0};
-          transform: ${isVisible ? 'translateY(0)' : 'translateY(30px)'};
-          transition: all 0.8s ease 0.2s;
-        }
-        
-        .merged-title .highlight {
-          background: linear-gradient(45deg, #D4AF37, #FFD700, #D4AF37);
-          -webkit-background-clip: text;
-          -webkit-text-fill-color: transparent;
-          background-clip: text;
-          text-shadow: none;
-          background-size: 200% 200%;
-          animation: shimmer 3s ease-in-out infinite;
-        }
-        
-        @keyframes shimmer {
-          0%, 100% { background-position: 0% 50%; }
-          50% { background-position: 100% 50%; }
-        }
-        
-        .merged-description {
-          font-size: var(--text-xl);
-          color: rgba(255, 255, 255, 0.95);
-          max-width: 800px;
-          margin: 0 auto var(--space-12);
-          line-height: 1.7;
-          text-shadow: 0 3px 6px rgba(0, 0, 0, 0.8);
-          opacity: ${isVisible ? 1 : 0};
-          transform: ${isVisible ? 'translateY(0)' : 'translateY(30px)'};
-          transition: all 0.8s ease 0.4s;
-        }
-        
-        .merged-features {
-          display: grid;
-          grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-          gap: var(--space-8);
-          margin-bottom: var(--space-16);
-          max-width: 1200px;
-          margin-left: auto;
-          margin-right: auto;
-          opacity: ${isVisible ? 1 : 0};
-          transform: ${isVisible ? 'translateY(0)' : 'translateY(30px)'};
-          transition: all 0.8s ease 0.6s;
-        }
-        
-        .feature-card {
-          display: flex;
-          align-items: flex-start;
-          gap: var(--space-6);
-          padding: var(--space-8);
-          background: rgba(255, 255, 255, 0.08);
-          border: 1px solid rgba(255, 255, 255, 0.15);
-          border-radius: var(--radius-xl);
-          backdrop-filter: blur(20px);
-          transition: all 0.4s ease;
-          position: relative;
-          overflow: hidden;
-        }
-        
-        .feature-card::before {
-          content: '';
-          position: absolute;
-          top: 0;
-          left: 0;
-          right: 0;
-          bottom: 0;
-          background: linear-gradient(135deg, rgba(212, 175, 55, 0.1), rgba(255, 215, 0, 0.05));
-          opacity: 0;
-          transition: opacity 0.4s ease;
-        }
-        
-        .feature-card:hover {
-          transform: translateY(-8px) scale(1.02);
-          border-color: rgba(212, 175, 55, 0.4);
-          box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3), 0 0 20px rgba(212, 175, 55, 0.2);
-        }
-        
-        .feature-card:hover::before {
-          opacity: 1;
-        }
-        
-        .feature-icon {
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          width: 64px;
-          height: 64px;
-          background: linear-gradient(135deg, #D4AF37, #FFD700);
-          border-radius: var(--radius-xl);
-          color: #000;
-          flex-shrink: 0;
-          box-shadow: 0 8px 20px rgba(212, 175, 55, 0.4);
-          position: relative;
-          z-index: 2;
-        }
-        
-        .feature-content {
-          text-align: left;
-          position: relative;
-          z-index: 2;
-        }
-        
-        .feature-content h4 {
-          font-size: var(--text-xl);
-          font-weight: var(--font-weight-bold);
-          color: #ffffff;
-          margin-bottom: var(--space-3);
-          font-family: var(--font-family-heading);
-          text-shadow: 0 3px 6px rgba(0, 0, 0, 0.8);
-        }
-        
-        .feature-content p {
-          font-size: var(--text-base);
-          color: rgba(255, 255, 255, 0.9);
-          line-height: 1.6;
-          margin: 0;
-          text-shadow: 0 2px 4px rgba(0, 0, 0, 0.8);
-        }
-        
-        .merged-actions {
-          display: flex;
-          gap: var(--space-6);
-          justify-content: center;
-          flex-wrap: wrap;
-          opacity: ${isVisible ? 1 : 0};
-          transform: ${isVisible ? 'translateY(0)' : 'translateY(30px)'};
-          transition: all 0.8s ease 0.8s;
-        }
-        
-        .btn-primary-action, .btn-secondary-action, .btn-tertiary-action {
-          display: inline-flex;
-          align-items: center;
-          gap: var(--space-3);
-          padding: var(--space-5) var(--space-10);
-          border-radius: var(--radius-lg);
-          font-weight: var(--font-weight-bold);
-          text-decoration: none;
-          transition: all 0.4s ease;
-          border: 2px solid transparent;
-          font-size: var(--text-lg);
-          position: relative;
-          overflow: hidden;
-        }
-        
-        .btn-primary-action {
-          background: linear-gradient(135deg, #D4AF37, #FFD700);
-          color: #000;
-          border-color: transparent;
-          box-shadow: 0 8px 25px rgba(212, 175, 55, 0.4);
-        }
-        
-        .btn-primary-action:hover {
-          transform: translateY(-4px) scale(1.05);
-          box-shadow: 0 15px 35px rgba(212, 175, 55, 0.6);
-        }
-        
-        .btn-secondary-action {
-          background: transparent;
-          color: white;
-          border: 2px solid rgba(255, 255, 255, 0.9);
-          backdrop-filter: blur(15px);
-        }
-        
-        .btn-secondary-action:hover {
-          background: rgba(255, 255, 255, 0.15);
-          border-color: white;
-          transform: translateY(-4px) scale(1.05);
-        }
-        
-        .btn-tertiary-action {
-          background: transparent;
-          color: #D4AF37;
-          border: 2px solid rgba(212, 175, 55, 0.8);
-          backdrop-filter: blur(15px);
-        }
-        
-        .btn-tertiary-action:hover {
-          background: rgba(212, 175, 55, 0.2);
-          border-color: #D4AF37;
-          transform: translateY(-4px) scale(1.05);
-        }
-        
-        /* Responsive Design for Merged Section */
-        @media (max-width: 1024px) {
-          .merged-video-section {
-            min-height: 90vh;
-          }
-          
-          .merged-content {
-            padding: var(--space-16) var(--space-4);
-          }
-          
-          .merged-features {
-            grid-template-columns: 1fr;
-            gap: var(--space-6);
-          }
-          
-          .feature-card {
-            flex-direction: column;
-            text-align: center;
-            padding: var(--space-6);
-          }
-          
-          .feature-content {
-            text-align: center;
-          }
-        }
-        
-        @media (max-width: 768px) {
-          .merged-video-section {
-            min-height: 80vh;
-          }
-          
-          .merged-content {
-            padding: var(--space-12) var(--space-4);
-          }
-          
-          .merged-title {
-            font-size: clamp(2.5rem, 8vw, 4rem);
-            margin-bottom: var(--space-6);
-          }
-          
-          .merged-description {
-            font-size: var(--text-lg);
-            margin-bottom: var(--space-8);
-            padding: 0 var(--space-2);
-          }
-          
-          .merged-features {
-            gap: var(--space-4);
-            margin-bottom: var(--space-12);
-          }
-          
-          .feature-card {
-            padding: var(--space-5);
-            gap: var(--space-4);
-          }
-          
-          .feature-icon {
-            width: 56px;
-            height: 56px;
-          }
-          
-          .feature-content h4 {
-            font-size: var(--text-lg);
-            margin-bottom: var(--space-2);
-          }
-          
-          .feature-content p {
-            font-size: var(--text-sm);
-          }
-          
-          .merged-actions {
-            flex-direction: column;
-            align-items: center;
-            gap: var(--space-4);
-          }
-          
-          .btn-primary-action, .btn-secondary-action, .btn-tertiary-action {
-            width: 100%;
-            max-width: 350px;
-            justify-content: center;
-            padding: var(--space-4) var(--space-8);
-            font-size: var(--text-base);
-          }
-        }
-        
-        @media (max-width: 480px) {
-          .merged-video-section {
-            min-height: 70vh;
-          }
-          
-          .merged-content {
-            padding: var(--space-8) var(--space-3);
-          }
-          
-          .content-badge {
-            font-size: var(--text-xs);
-            padding: var(--space-2) var(--space-4);
-            margin-bottom: var(--space-6);
-          }
-          
-          .merged-title {
-            font-size: clamp(2rem, 10vw, 3rem);
-            line-height: 1.2;
-            margin-bottom: var(--space-4);
-          }
-          
-          .merged-description {
-            font-size: var(--text-base);
-            line-height: 1.6;
-            margin-bottom: var(--space-6);
-          }
-          
-          .merged-features {
-            gap: var(--space-3);
-            margin-bottom: var(--space-8);
-          }
-          
-          .feature-card {
-            padding: var(--space-4);
-            gap: var(--space-3);
-          }
-          
-          .feature-icon {
-            width: 48px;
-            height: 48px;
-          }
-          
-          .feature-content h4 {
-            font-size: var(--text-base);
-            margin-bottom: var(--space-1);
-          }
-          
-          .feature-content p {
-            font-size: var(--text-xs);
-            line-height: 1.5;
-          }
-          
-          .btn-primary-action, .btn-secondary-action, .btn-tertiary-action {
-            padding: var(--space-3) var(--space-6);
-            font-size: var(--text-sm);
-            gap: var(--space-2);
-          }
-        }
-        
-        /* Our Story & Team Section */
-        .story-team-section {
-          position: relative;
-          min-height: 100vh;
-          display: flex;
-          align-items: center;
-          overflow: hidden;
-          padding: var(--space-20) 0;
-          background: var(--bg-primary);
-        }
-        
-        .story-team-background {
-          position: absolute;
-          top: 0;
-          left: 0;
-          right: 0;
-          bottom: 0;
-          z-index: 1;
-        }
-        
-        .story-team-gradient {
-          position: absolute;
-          top: 0;
-          left: 0;
-          right: 0;
-          bottom: 0;
-          background: var(--gradient-luxury);
-        }
-        
-        .story-team-pattern {
-          position: absolute;
-          top: 0;
-          left: 0;
-          right: 0;
-          bottom: 0;
-          background-image: 
-            radial-gradient(circle at 20% 20%, var(--color-accent) 0%, transparent 30%),
-            radial-gradient(circle at 80% 80%, var(--color-purple) 0%, transparent 35%),
-            radial-gradient(circle at 50% 50%, var(--color-accent-soft) 0%, transparent 25%);
-          opacity: 0.06;
-        }
-        
-        .story-team-content {
-          position: relative;
-          z-index: 2;
-          max-width: 1400px;
-          margin: 0 auto;
-          padding: 0 var(--space-6);
-          width: 100%;
-        }
-        
-        .story-section {
-          margin-bottom: var(--space-20);
-        }
-        
-        .story-header {
-          text-align: center;
-          margin-bottom: var(--space-16);
-        }
-        
-        .story-badge {
-          display: inline-flex;
-          align-items: center;
-          gap: var(--space-2);
-          padding: var(--space-3) var(--space-6);
-          background: var(--bg-secondary);
-          border: 1px solid var(--border-primary);
-          border-radius: var(--radius-full);
-          color: var(--text-accent);
-          font-size: var(--text-sm);
-          font-weight: var(--font-weight-semibold);
-          margin-bottom: var(--space-8);
-          opacity: ${isVisible ? 1 : 0};
-          transform: ${isVisible ? 'translateY(0)' : 'translateY(20px)'};
-          transition: all 0.6s ease;
-        }
-        
-        .story-title {
-          font-size: clamp(2.5rem, 6vw, 4.5rem);
-          font-weight: var(--font-weight-bold);
-          line-height: 1.1;
-          margin-bottom: var(--space-6);
-          font-family: var(--font-family-heading);
-          opacity: ${isVisible ? 1 : 0};
-          transform: ${isVisible ? 'translateY(0)' : 'translateY(30px)'};
-          transition: all 0.8s ease 0.2s;
-        }
-        
-        .story-title-accent {
-          background: var(--gradient-accent);
-          -webkit-background-clip: text;
-          -webkit-text-fill-color: transparent;
-          background-clip: text;
-        }
-        
-        .story-description {
-          font-size: var(--text-xl);
-          color: var(--text-secondary);
-          max-width: 800px;
-          margin: 0 auto;
-          line-height: 1.7;
-          opacity: ${isVisible ? 1 : 0};
-          transform: ${isVisible ? 'translateY(0)' : 'translateY(30px)'};
-          transition: all 0.8s ease 0.4s;
-        }
-        
-        
-        .team-section {
-          text-align: center;
-        }
-        
-        .team-header {
-          margin-bottom: var(--space-16);
-        }
-        
-        .team-title {
-          font-size: clamp(2.5rem, 6vw, 4.5rem);
-          font-weight: var(--font-weight-bold);
-          line-height: 1.1;
-          margin-bottom: var(--space-6);
-          font-family: var(--font-family-heading);
-          opacity: ${isVisible ? 1 : 0};
-          transform: ${isVisible ? 'translateY(0)' : 'translateY(30px)'};
-          transition: all 0.8s ease 0.8s;
-        }
-        
-        .team-title-accent {
-          background: var(--gradient-accent);
-          -webkit-background-clip: text;
-          -webkit-text-fill-color: transparent;
-          background-clip: text;
-        }
-        
-        .team-description {
-          font-size: var(--text-xl);
-          color: var(--text-secondary);
-          max-width: 700px;
-          margin: 0 auto;
-          line-height: 1.6;
-          opacity: ${isVisible ? 1 : 0};
-          transform: ${isVisible ? 'translateY(0)' : 'translateY(30px)'};
-          transition: all 0.8s ease 1s;
-        }
-        
-        .team-grid {
-          display: grid;
-          grid-template-columns: repeat(4, 1fr);
-          gap: var(--space-6);
-          max-width: 1200px;
-          margin: 0 auto;
-          opacity: ${isVisible ? 1 : 0};
-          transform: ${isVisible ? 'translateY(0)' : 'translateY(30px)'};
-          transition: all 0.8s ease 1.2s;
-        }
-        
-        .team-member {
-          background: var(--bg-secondary);
-          border: 1px solid var(--border-primary);
-          border-radius: var(--radius-xl);
-          padding: var(--space-8);
-          text-align: center;
-          transition: all 0.4s ease;
-          position: relative;
-          overflow: hidden;
-        }
-        
-        .team-member::before {
-          content: '';
-          position: absolute;
-          top: 0;
-          left: 0;
-          right: 0;
-          bottom: 0;
-          background: var(--gradient-purple);
-          opacity: 0;
-          transition: opacity 0.4s ease;
-        }
-        
-        .team-member:hover {
-          transform: translateY(-8px) scale(1.02);
-          box-shadow: var(--shadow-luxury);
-          border-color: var(--color-purple);
-        }
-        
-        .team-member:hover::before {
-          opacity: 0.05;
-        }
-        
-        .member-image {
-          width: 120px;
-          height: 120px;
-          border-radius: var(--radius-full);
-          overflow: hidden;
-          margin: 0 auto var(--space-6);
-          border: 3px solid var(--color-accent);
-          position: relative;
-          z-index: 2;
-        }
-        
-        .member-image img {
-          width: 100%;
-          height: 100%;
-          object-fit: cover;
-        }
-        
-        .member-info {
-          position: relative;
-          z-index: 2;
-        }
-        
-        .member-name {
-          font-size: var(--text-xl);
-          font-weight: var(--font-weight-semibold);
-          color: var(--text-primary);
-          margin-bottom: var(--space-2);
-          font-family: var(--font-family-heading);
-        }
-        
-        .member-position {
-          color: var(--text-accent);
-          font-size: var(--text-sm);
-          font-weight: var(--font-weight-medium);
-        }
-        
-        /* Mobile Responsiveness for Story & Team Section */
-        @media (max-width: 1024px) {
-          .story-team-section {
-            padding: var(--space-16) 0;
-          }
-          
-          .team-grid {
-            grid-template-columns: repeat(2, 1fr);
-            gap: var(--space-6);
-          }
-        }
-        
-        @media (max-width: 768px) {
-          .story-team-section {
-            padding: var(--space-12) 0;
-          }
-          
-          .story-team-content {
-            padding: 0 var(--space-4);
-          }
-          
-          .story-section {
-            margin-bottom: var(--space-16);
-          }
-          
-          .story-title, .team-title {
-            font-size: clamp(2rem, 8vw, 3.5rem);
-            margin-bottom: var(--space-4);
-          }
-          
-          .story-description, .team-description {
-            font-size: var(--text-lg);
-            margin-bottom: var(--space-8);
-          }
-          
-          .team-grid {
-            grid-template-columns: repeat(2, 1fr);
-            gap: var(--space-4);
-          }
-          
-          .team-member {
-            padding: var(--space-5);
-          }
-          
-          .member-image {
-            width: 80px;
-            height: 80px;
-            margin-bottom: var(--space-3);
-          }
-          
-          .member-name {
-            font-size: var(--text-base);
-          }
-          
-          .member-position {
-            font-size: var(--text-xs);
-          }
-        }
-        
-        @media (max-width: 480px) {
-          .story-team-section {
-            padding: var(--space-8) 0;
-          }
-          
-          .story-team-content {
-            padding: 0 var(--space-3);
-          }
-          
-          .story-title, .team-title {
-            font-size: clamp(1.8rem, 10vw, 2.8rem);
-          }
-          
-          .story-description, .team-description {
-            font-size: var(--text-base);
-            line-height: 1.6;
-          }
-          
-          .team-grid {
-            grid-template-columns: 1fr;
-            gap: var(--space-4);
-          }
-          
-          .team-member {
-            padding: var(--space-5);
-          }
-          
-          .member-image {
-            width: 80px;
-            height: 80px;
-          }
-          
-          .member-name {
-            font-size: var(--text-base);
-          }
-          
-          .member-position {
-            font-size: var(--text-xs);
-          }
-        }
-        
-        /* Ending Section */
-        .ending-section {
-          position: relative;
-          min-height: 100vh;
-          display: flex;
-          flex-direction: column;
-          overflow: hidden;
-          background: var(--bg-primary);
-        }
-        
-        .ending-background {
-          position: absolute;
-          top: 0;
-          left: 0;
-          right: 0;
-          bottom: 0;
-          z-index: 1;
-        }
-        
-        .ending-gradient {
-          position: absolute;
-          top: 0;
-          left: 0;
-          right: 0;
-          bottom: 0;
-          background: var(--gradient-luxury);
-        }
-        
-        .ending-pattern {
-          position: absolute;
-          top: 0;
-          left: 0;
-          right: 0;
-          bottom: 0;
-          background-image: 
-            radial-gradient(circle at 10% 20%, var(--color-accent) 0%, transparent 30%),
-            radial-gradient(circle at 90% 80%, var(--color-purple) 0%, transparent 35%),
-            radial-gradient(circle at 30% 70%, var(--color-purple-light) 0%, transparent 20%);
-          opacity: 0.04;
-        }
-        
-        .ending-content {
-          position: relative;
-          z-index: 2;
-          flex: 1;
-          display: flex;
-          flex-direction: column;
-        }
-        
-        .ending-main {
-          flex: 1;
-          display: flex;
-          flex-direction: column;
-          justify-content: center;
-          align-items: center;
-          text-align: center;
-          padding: var(--space-20) var(--space-6);
-          max-width: 1200px;
-          margin: 0 auto;
-          width: 100%;
-        }
-        
-        .ending-title {
-          font-size: clamp(2.5rem, 6vw, 5rem);
-          font-weight: var(--font-weight-bold);
-          line-height: 1.1;
-          margin-bottom: var(--space-6);
-          font-family: var(--font-family-heading);
-          opacity: ${isVisible ? 1 : 0};
-          transform: ${isVisible ? 'translateY(0)' : 'translateY(30px)'};
-          transition: all 0.8s ease 0.2s;
-        }
-        
-        .ending-title-accent {
-          background: var(--gradient-accent);
-          -webkit-background-clip: text;
-          -webkit-text-fill-color: transparent;
-          background-clip: text;
-        }
-        
-        .ending-description {
-          font-size: var(--text-xl);
-          color: var(--text-secondary);
-          max-width: 800px;
-          margin: 0 auto var(--space-12);
-          line-height: 1.6;
-          opacity: ${isVisible ? 1 : 0};
-          transform: ${isVisible ? 'translateY(0)' : 'translateY(30px)'};
-          transition: all 0.8s ease 0.4s;
-        }
-        
-        .ending-stats {
-          display: grid;
-          grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-          gap: var(--space-8);
-          margin-bottom: var(--space-12);
-          max-width: 1000px;
-          width: 100%;
-          opacity: ${isVisible ? 1 : 0};
-          transform: ${isVisible ? 'translateY(0)' : 'translateY(30px)'};
-          transition: all 0.8s ease 0.6s;
-        }
-        
-        .ending-stat {
-          text-align: center;
-          padding: var(--space-6);
-          background: var(--bg-secondary);
-          border: 1px solid var(--border-primary);
-          border-radius: var(--radius-xl);
-          box-shadow: var(--shadow-luxury);
-          transition: all var(--transition-normal);
-          position: relative;
-          overflow: hidden;
-        }
-        
-        .ending-stat::before {
-          content: '';
-          position: absolute;
-          top: 0;
-          left: 0;
-          right: 0;
-          bottom: 0;
-          background: var(--gradient-purple);
-          opacity: 0;
-          transition: opacity var(--transition-normal);
-        }
-        
-        .ending-stat:hover {
-          transform: translateY(-6px) scale(1.02);
-          box-shadow: var(--shadow-luxury), var(--shadow-purple);
-          border-color: var(--color-purple);
-        }
-        
-        .ending-stat:hover::before {
-          opacity: 0.05;
-        }
-        
-        .ending-stat-number {
-          font-size: var(--text-4xl);
-          font-weight: var(--font-weight-bold);
-          color: var(--text-accent);
-          margin-bottom: var(--space-2);
-          font-family: var(--font-family-heading);
-        }
-        
-        .ending-stat-label {
-          font-size: var(--text-lg);
-          color: var(--text-secondary);
-          font-weight: var(--font-weight-medium);
-        }
-        
-        .ending-actions {
-          opacity: ${isVisible ? 1 : 0};
-          transform: ${isVisible ? 'translateY(0)' : 'translateY(30px)'};
-          transition: all 0.8s ease 0.8s;
-        }
-        
-        .btn-ending-primary {
-          display: inline-flex;
-          align-items: center;
-          gap: var(--space-2);
-          padding: var(--space-5) var(--space-10);
-          border-radius: var(--radius-lg);
-          font-weight: var(--font-weight-bold);
-          text-decoration: none;
-          transition: all var(--transition-normal);
-          border: 2px solid transparent;
-          font-size: var(--text-xl);
-        }
-        
-        .btn-ending-primary:hover {
-          transform: translateY(-4px) scale(1.05);
-          box-shadow: 0 15px 35px rgba(212, 175, 55, 0.6);
-        }
-        
-        /* Responsive Design for Ending Section */
-        @media (max-width: 768px) {
-          .ending-section {
-            min-height: 80vh;
-          }
-          
-          .ending-main {
-            padding: var(--space-16) var(--space-4);
-          }
-          
-          .ending-stats {
-            grid-template-columns: repeat(2, 1fr);
-            gap: var(--space-4);
-          }
-          
-          .btn-ending-primary {
-            padding: var(--space-4) var(--space-8);
-            font-size: var(--text-lg);
-          }
-        }
-        
-        @media (max-width: 480px) {
-          .ending-stats {
-            grid-template-columns: 1fr;
-          }
-        }
-        
-        /* Clients Section */
-        .clients-section {
-          position: relative;
-          min-height: 100vh;
-          display: flex;
-          align-items: center;
-          overflow: hidden;
-          background: var(--bg-primary);
-        }
-
-        .clients-background {
-          position: absolute;
-          inset: 0;
-          z-index: 1;
-        }
-
-        .clients-gradient {
-          position: absolute;
-          inset: 0;
-          background: var(--gradient-luxury);
-          opacity: 0.6;
-        }
-
-        .clients-pattern {
-          position: absolute;
-          inset: 0;
-          background-image:
-            radial-gradient(circle at 15% 20%, var(--color-accent) 0%, transparent 28%),
-            radial-gradient(circle at 85% 80%, var(--color-purple) 0%, transparent 32%),
-            radial-gradient(circle at 50% 50%, var(--color-accent-soft) 0%, transparent 24%);
-          opacity: 0.05;
-        }
-
-        .clients-content {
-          position: relative;
-          z-index: 2;
-          width: 100%;
-          max-width: 1400px;
-          margin: 0 auto;
-          padding: var(--space-20) var(--space-6);
-          text-align: center;
-        }
-
-        .clients-title {
-          font-size: clamp(2.5rem, 6vw, 4.5rem);
-          font-weight: var(--font-weight-bold);
-          line-height: 1.1;
-          margin-bottom: var(--space-4);
-          font-family: var(--font-family-heading);
-          color: var(--text-primary);
-          text-shadow: 0 6px 12px rgba(0, 0, 0, 0.35);
-        }
-
-        .clients-title-accent {
-          background: var(--gradient-accent);
-          -webkit-background-clip: text;
-          -webkit-text-fill-color: transparent;
-          background-clip: text;
-        }
-
-        .clients-description {
-          font-size: var(--text-xl);
-          color: var(--text-secondary);
-          margin: 0 auto var(--space-12);
-          max-width: 720px;
-          opacity: ${isVisible ? 1 : 0};
-          transform: ${isVisible ? 'translateY(0)' : 'translateY(20px)'};
-          transition: all 0.8s ease 0.4s;
-        }
-
-        .clients-carousel {
-          position: relative;
-          overflow: hidden;
-          padding: var(--space-4) 0;
-          /* Soft edge fade */
-          -webkit-mask-image: linear-gradient(to right, transparent, black 10%, black 90%, transparent);
-                  mask-image: linear-gradient(to right, transparent, black 10%, black 90%, transparent);
-        }
-
-        .carousel-viewport {
-          display: flex;
-          align-items: stretch;
-          gap: var(--space-6);
-          overflow-x: auto;
-          scroll-snap-type: x mandatory;
-          padding-bottom: var(--space-2);
-          -ms-overflow-style: none;
-          scrollbar-width: none;
-        }
-
-        .carousel-viewport::-webkit-scrollbar { display: none; }
-
-        .client-item {
-          flex: 0 0 auto;
-          width: clamp(280px, 30vw, 460px);
-          scroll-snap-align: start;
-        }
-
-        .client-card {
-          position: relative;
-          height: clamp(380px, 52vh, 620px);
-          border-radius: var(--radius-xl);
-          overflow: hidden;
-          background: var(--bg-secondary);
-          border: 1px solid var(--border-primary);
-          box-shadow: var(--shadow-luxury);
-          transition: transform 0.35s ease, box-shadow 0.35s ease, border-color 0.35s ease;
-        }
-
-        .client-card:hover {
-          transform: translateY(-8px) scale(1.02);
-          box-shadow: var(--shadow-luxury), var(--shadow-purple);
-          border-color: rgba(212, 175, 55, 0.45);
-        }
-
-        .client-image {
-          width: 100%;
-          height: 100%;
-          object-fit: cover;
-          filter: grayscale(30%);
-          transform: scale(1.02);
-        }
-
-        .client-card:hover .client-image { filter: grayscale(0%); }
-
-        .client-overlay {
-          position: absolute;
-          inset: 0;
-          background: linear-gradient(to top, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0.2) 40%, rgba(0,0,0,0) 70%);
-        }
-
-        .client-logo-mark {
-          position: absolute;
-          left: 18px;
-          bottom: 18px;
-          padding: 10px 14px;
-          background: linear-gradient(135deg, #D4AF37, #FFD700);
-          border-radius: var(--radius-lg);
-          color: #000;
-          font-weight: var(--font-weight-bold);
-          font-size: var(--text-xl);
-          letter-spacing: 0.5px;
-          box-shadow: 0 12px 28px rgba(212, 175, 55, 0.35);
-        }
-
-        .client-meta {
-          margin-top: var(--space-3);
-          color: var(--text-primary);
-          font-weight: var(--font-weight-medium);
-          font-size: var(--text-lg);
-          text-align: left;
-        }
-
-        .clients-nav {
-          position: absolute;
-          left: 0;
-          right: 0;
-          bottom: 10px;
-          display: flex;
-          gap: var(--space-3);
-          justify-content: center;
-          z-index: 3;
-        }
-
-        .clients-btn {
-          width: 44px;
-          height: 44px;
-          display: inline-flex;
-          align-items: center;
-          justify-content: center;
-          border-radius: var(--radius-lg);
-          border: 1px solid rgba(212, 175, 55, 0.6);
-          background: rgba(255, 255, 255, 0.06);
-          color: #D4AF37;
-          backdrop-filter: blur(10px);
-          transition: all 0.3s ease;
-        }
-
-        .clients-btn:hover {
-          background: rgba(212, 175, 55, 0.18);
-          border-color: #D4AF37;
-          transform: translateY(-2px);
-        }
-
-        /* Responsive Design for Clients Section */
-        @media (max-width: 1024px) {
-          .clients-content { padding: var(--space-16) var(--space-4); }
-          .client-item { width: clamp(260px, 40vw, 400px); }
-        }
-
-        @media (max-width: 768px) {
-          .clients-section { min-height: 80vh; }
-          .clients-title { font-size: clamp(2rem, 8vw, 3.5rem); }
-          .clients-description { font-size: var(--text-lg); margin-bottom: var(--space-8); }
-          .client-item { width: clamp(220px, 70vw, 360px); }
-          .client-card { height: clamp(340px, 50vh, 540px); }
-        }
-
-        @media (max-width: 480px) {
-          .clients-section { min-height: 70vh; }
-          .clients-content { padding: var(--space-12) var(--space-3); }
-          .clients-description { font-size: var(--text-base); }
-          .client-item { width: 85vw; }
-          .client-card { height: 60vh; }
-          .client-meta { font-size: var(--text-base); }
-        }
-
       `}</style>
     </div>
   );
 }
-
-

@@ -19,7 +19,8 @@ const Navbar: React.FC = () => {
       setIsOverVideo(scrollY > videoStart);
     };
 
-    window.addEventListener('scroll', handleScroll);
+    // Add passive listener for better performance
+    window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
@@ -83,7 +84,8 @@ const Navbar: React.FC = () => {
 
 
         {/* Right Section - Empty for now */}
-        <div className="navbar-right"></div>
+        <div className="navbar-right">
+        </div>
       </div>
 
 
