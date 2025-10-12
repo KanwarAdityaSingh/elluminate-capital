@@ -24,11 +24,18 @@ const Navbar: React.FC = () => {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
+  const scrollToSection = (sectionId: string) => {
+    const element = document.getElementById(sectionId);
+    if (element) {
+      element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  };
+
   return (
     <nav
       className={`navbar ${isScrolled ? 'scrolled' : ''} ${isOverVideo ? 'over-video' : ''}`}
       style={{
-        position: 'fixed',
+        position: 'absolute',
         top: 0,
         left: 0,
         right: 0,
@@ -42,8 +49,9 @@ const Navbar: React.FC = () => {
           padding: '0 var(--space-6)',
           display: 'flex',
           alignItems: 'center',
-          justifyContent: 'space-between',
+          justifyContent: 'center',
           height: '80px',
+          position: 'relative',
         }}
         className="navbar-container"
       >
@@ -83,8 +91,17 @@ const Navbar: React.FC = () => {
         </div>
 
 
-        {/* Right Section - Empty for now */}
-        <div className="navbar-right">
+        {/* Center Section - Navigation Links */}
+        <div className="navbar-center">
+          <button onClick={() => scrollToSection('insights')} className="nav-link">
+            Insights
+          </button>
+          <button onClick={() => scrollToSection('story')} className="nav-link">
+            Story
+          </button>
+          <button onClick={() => scrollToSection('companies')} className="nav-link">
+            Companies
+          </button>
         </div>
       </div>
 
@@ -96,17 +113,18 @@ const Navbar: React.FC = () => {
         }
         
         .navbar.scrolled {
-          background: rgba(26, 15, 26, 0.95);
-          backdrop-filter: blur(20px);
+          background: transparent;
+          backdrop-filter: none;
           border: none;
-          box-shadow: var(--shadow-luxury);
+          box-shadow: none;
         }
         
-        /* Over video section - always visible */
+        /* Over video section - keep transparent */
         .navbar.over-video {
-          background: rgba(26, 15, 26, 0.95);
-          backdrop-filter: blur(20px);
-          box-shadow: var(--shadow-luxury);
+          background: transparent;
+          backdrop-filter: none;
+          box-shadow: none;
+          border: none;
         }
         
         .navbar.over-video .navbar-container {
@@ -120,19 +138,61 @@ const Navbar: React.FC = () => {
         .navbar-container {
           display: flex !important;
           align-items: center;
-          justify-content: space-between;
+          justify-content: center;
         }
         
         .navbar-left {
-          flex: 0 0 auto;
+          position: absolute;
+          left: var(--space-6);
+          top: 50%;
+          transform: translateY(-50%);
         }
         
-        .navbar-right {
-          flex: 0 0 auto;
+        .navbar-center {
           display: flex;
           align-items: center;
+          gap: var(--space-8);
         }
         
+        .nav-link {
+          background: transparent;
+          border: none;
+          color: var(--text-primary);
+          font-size: var(--text-sm);
+          font-weight: var(--font-weight-medium);
+          letter-spacing: 0.05em;
+          text-transform: uppercase;
+          cursor: pointer;
+          padding: var(--space-2) var(--space-4);
+          transition: all var(--transition-fast);
+          position: relative;
+          outline: none;
+        }
+        
+        .nav-link:focus {
+          outline: none;
+          box-shadow: none;
+        }
+        
+        .nav-link::after {
+          content: '';
+          position: absolute;
+          bottom: 0;
+          left: 50%;
+          transform: translateX(-50%) scaleX(0);
+          width: 80%;
+          height: 1px;
+          background: #B8956A;
+          transition: transform var(--transition-fast);
+        }
+        
+        .nav-link:hover {
+          color: #B8956A;
+        }
+        
+        .nav-link:hover::after {
+          transform: translateX(-50%) scaleX(1);
+        }
         
       `}</style>
     </nav>

@@ -5,6 +5,7 @@ import { TrendingUp, Users, Award, ArrowRight, BarChart3, Globe, DollarSign, Bui
 import Link from 'next/link';
 import { HeroContent } from '../types/api';
 import HeroSection from '../components/HeroSection';
+import Footer from '../components/Footer';
 
 export default function Home() {
   const [heroContent, setHeroContent] = useState<HeroContent | null>(null);
@@ -198,23 +199,56 @@ export default function Home() {
     el.scrollBy({ left: direction === 'next' ? amount : -amount, behavior: 'smooth' });
   };
 
-  // Show loading state
-  if (isLoading) {
-    return (
-      <div className="min-h-screen bg-gray-900 flex items-center justify-center">
-        <div className="text-xl text-gray-300">
-          Loading...
-        </div>
-              </div>
-    );
-  }
+  // Auto-scroll carousel
+  useEffect(() => {
+    const carousel = document.getElementById('carousel-viewport');
+    if (!carousel) return;
+
+    let scrollPosition = 0;
+    const scrollSpeed = 1; // pixels per frame
+    let animationFrameId: number;
+
+    const autoScroll = () => {
+      scrollPosition += scrollSpeed;
+      
+      // Reset scroll position when reaching halfway point (since we duplicated items)
+      const maxScroll = carousel.scrollWidth / 2;
+      if (scrollPosition >= maxScroll) {
+        scrollPosition = 0;
+      }
+      
+      carousel.scrollLeft = scrollPosition;
+      animationFrameId = requestAnimationFrame(autoScroll);
+    };
+
+    // Start auto-scrolling
+    animationFrameId = requestAnimationFrame(autoScroll);
+
+    // Pause on hover
+    const handleMouseEnter = () => {
+      cancelAnimationFrame(animationFrameId);
+    };
+
+    const handleMouseLeave = () => {
+      animationFrameId = requestAnimationFrame(autoScroll);
+    };
+
+    carousel.addEventListener('mouseenter', handleMouseEnter);
+    carousel.addEventListener('mouseleave', handleMouseLeave);
+
+    return () => {
+      cancelAnimationFrame(animationFrameId);
+      carousel.removeEventListener('mouseenter', handleMouseEnter);
+      carousel.removeEventListener('mouseleave', handleMouseLeave);
+    };
+  }, []);
 
   return (
-    <div className="landing-page min-h-screen bg-gray-900 text-white">
+    <div className="landing-page min-h-screen">
       <HeroSection heroContent={heroContent} visionContent={visionContent} isVisible={isVisible} />
 
       {/* Our Story & Team Section */}
-      <section className="story-team-section">
+      <section id="story" className="story-team-section">
         <div className="story-team-background">
           <div className="story-team-gradient"></div>
           <div className="story-team-pattern"></div>
@@ -322,71 +356,55 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Ending Section */}
-      <section className="ending-section">
-        <div className="ending-background">
-          <div className="ending-gradient"></div>
-          <div className="ending-pattern"></div>
+      {/* Companies Section */}
+      <section id="companies" className="companies-grid-section">
+        <div className="companies-background">
+          <div className="companies-gradient"></div>
         </div>
         
-        <div className="ending-content">
-          <div className="ending-main">
-            <h2 className="ending-title">
-            {investmentStrategyContent?.title ? (
-              <>
-                {investmentStrategyContent.title.split(' ').map((word, index) => (
-                  <span key={index} className={word.toLowerCase().includes('transform') ? "ending-title-accent" : ""}>
-                    {word}{index < investmentStrategyContent.title.split(' ').length - 1 ? ' ' : ''}
-                  </span>
-                ))}
-              </>
-            ) : (
-              <>
-              Ready to <span className="ending-title-accent">Transform</span> Your Investment Strategy?
-              </>
-            )}
-            </h2>
-            <p className="ending-description">
-            {investmentStrategyContent?.subtitle || "Join thousands of satisfied clients who trust us with their most important financial decisions. Let us help you achieve your investment goals with our proven strategies and expert guidance."}
-            </p>
-            
-            <div className="ending-stats">
-            {investmentStrategyContent?.displayStats?.map((stat, index) => (
-              <div key={index} className="ending-stat">
-                <div className="ending-stat-number">{stat.value}</div>
-                <div className="ending-stat-label">{stat.label}</div>
+        <div className="companies-grid-content">
+          <h2 className="companies-grid-title">Companies</h2>
+          
+          <div className="companies-logos-grid">
+            {[
+              { name: '100ms', logo: 'https://via.placeholder.com/200x100/1a0f2e/B8956A?text=100ms', description: 'Live-video infrastructure for developers', founders: ['Kshitij Gupta', 'Aniket Behera', 'Sarvesh Dwivedi'], investment: 'Seed in 2021' },
+              { name: '1balance living', logo: 'https://via.placeholder.com/200x100/1a0f2e/B8956A?text=1balance', description: 'Wellness and lifestyle platform', founders: ['John Doe', 'Jane Smith'], investment: 'Series A in 2022' },
+              { name: '1Password', logo: 'https://via.placeholder.com/200x100/1a0f2e/B8956A?text=1Password', description: 'Security and password management', founders: ['Dave Teare'], investment: 'Series B in 2019' },
+              { name: '99designs', logo: 'https://via.placeholder.com/200x100/1a0f2e/B8956A?text=99designs', description: 'Global creative platform', founders: ['Mark Harbottle'], investment: 'Series C in 2020' },
+              { name: 'Aavenir', logo: 'https://via.placeholder.com/200x100/1a0f2e/B8956A?text=Aavenir', description: 'Enterprise software solutions', founders: ['Sarah Johnson'], investment: 'Seed in 2023' },
+              { name: 'Acalvio', logo: 'https://via.placeholder.com/200x100/1a0f2e/B8956A?text=Acalvio', description: 'Cybersecurity platform', founders: ['Ram Varadarajan'], investment: 'Series A in 2021' },
+              { name: 'ACKO', logo: 'https://via.placeholder.com/200x100/1a0f2e/B8956A?text=ACKO', description: 'Digital insurance platform', founders: ['Varun Dua'], investment: 'Series D in 2021' },
+              { name: 'Ada', logo: 'https://via.placeholder.com/200x100/1a0f2e/B8956A?text=Ada', description: 'AI-powered customer service', founders: ['Mike Murchison'], investment: 'Series C in 2020' },
+            ].map((company, index) => (
+              <div key={index} className="company-logo-item">
+                <div className="company-logo-card">
+                  <img src={company.logo} alt={company.name} className="company-logo-img" />
+                </div>
+                
+                <div className="company-hover-details">
+                  <div className="company-detail-header">
+                    <img src={company.logo} alt={company.name} className="company-detail-logo" />
+                    <h3 className="company-detail-name">{company.name}</h3>
+                  </div>
+                  
+                  <p className="company-detail-description">{company.description}</p>
+                  
+                  <div className="company-detail-info">
+                    <h4>FOUNDERS</h4>
+                    {company.founders.map((founder, idx) => (
+                      <p key={idx}>{founder}</p>
+                    ))}
+                  </div>
+                  
+                  <div className="company-detail-info">
+                    <h4>INITIAL INVESTMENT</h4>
+                    <p>{company.investment}</p>
+                  </div>
+                  
+                  <button className="company-detail-arrow">→</button>
+                </div>
               </div>
-            )) || (
-              <>
-              <div className="ending-stat">
-                <div className="ending-stat-number">500+</div>
-                  <div className="ending-stat-label">Happy Clients</div>
-              </div>
-              <div className="ending-stat">
-                  <div className="ending-stat-number">$2.5B+</div>
-                <div className="ending-stat-label">Assets Managed</div>
-              </div>
-                <div className="ending-stat">
-                  <div className="ending-stat-number">15+</div>
-                  <div className="ending-stat-label">Years Experience</div>
-              </div>
-              <div className="ending-stat">
-                <div className="ending-stat-number">98%</div>
-                  <div className="ending-stat-label">Success Rate</div>
-              </div>
-              </>
-            )}
-            </div>
-            
-            <div className="ending-actions">
-              <Link 
-              href={investmentStrategyContent?.buttons?.[0]?.toLowerCase().includes('track') || investmentStrategyContent?.buttons?.[0]?.toLowerCase().includes('record') ? "/records" : "/contact"} 
-                className="btn-ending-primary"
-            >
-              {investmentStrategyContent?.buttons?.[0] || "Get Started Today"}
-              <ArrowRight size={20} />
-              </Link>
-            </div>
+            ))}
           </div>
         </div>
       </section>
@@ -420,7 +438,8 @@ export default function Home() {
           
           <div className="clients-carousel">
             <div className="carousel-viewport" id="carousel-viewport">
-              {clients.map((client, index) => (
+              {/* Render clients twice for infinite loop effect */}
+              {[...clients, ...clients].map((client, index) => (
                 <div key={index} className="client-item">
                   <div className="client-card">
                     <img 
@@ -439,26 +458,11 @@ export default function Home() {
                 </div>
               ))}
             </div>
-            
-            <div className="clients-nav">
-              <button 
-                className="clients-btn"
-                onClick={() => scrollClients('prev')}
-                aria-label="Previous clients"
-              >
-                <ChevronLeft size={20} />
-              </button>
-              <button 
-                className="clients-btn"
-                onClick={() => scrollClients('next')}
-                aria-label="Next clients"
-              >
-                <ChevronRight size={20} />
-              </button>
-            </div>
           </div>
         </div>
       </section>
+
+      <Footer />
 
       <style jsx>{`
         .landing-page {

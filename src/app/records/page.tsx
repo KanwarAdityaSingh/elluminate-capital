@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { TrendingUp, Award, Users, BarChart3, Star, Quote, CheckCircle, ArrowRight, Download, Calendar, Building2 } from 'lucide-react';
 import { HeroContent } from '../../types/api';
+import Footer from '../../components/Footer';
 
 export default function RecordsPage() {
   const [selectedYear, setSelectedYear] = useState('2024');
@@ -12,6 +13,16 @@ export default function RecordsPage() {
   const [joinSuccessContent, setJoinSuccessContent] = useState<HeroContent | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isVisible, setIsVisible] = useState(false);
+  const [heroVisible, setHeroVisible] = useState(false);
+  const [metricsVisible, setMetricsVisible] = useState(false);
+  const [awardsVisible, setAwardsVisible] = useState(false);
+  const [ctaVisible, setCtaVisible] = useState(false);
+  const [animatedMetrics, setAnimatedMetrics] = useState({
+    totalDeals: 0,
+    totalValue: 0,
+    successRate: 0,
+    clientSatisfaction: 0
+  });
 
   // Fetch success stories and performance metrics content on component mount
   useEffect(() => {
@@ -115,20 +126,125 @@ export default function RecordsPage() {
   useEffect(() => {
     const timer = setTimeout(() => {
       setIsVisible(true);
+      setHeroVisible(true); // Show hero section immediately
     }, 100);
     return () => clearTimeout(timer);
   }, []);
 
-  // Show loading state
-  if (isLoading) {
-    return (
-      <div className="min-h-screen bg-gray-900 flex items-center justify-center">
-        <div className="text-xl text-gray-300">
-          Loading...
-        </div>
-      </div>
-    );
-  }
+  // Scroll animations for each section
+  useEffect(() => {
+    const observerOptions = {
+      threshold: 0.3,
+      rootMargin: '0px 0px -200px 0px'
+    };
+
+    const observers: IntersectionObserver[] = [];
+
+    const metricsSection = document.getElementById('metrics-section');
+    const awardsSection = document.getElementById('awards-section');
+    const ctaSection = document.getElementById('cta-section');
+
+    if (metricsSection) {
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            setMetricsVisible(true);
+          }
+        });
+      }, observerOptions);
+      observer.observe(metricsSection);
+      observers.push(observer);
+    }
+
+    if (awardsSection) {
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            setAwardsVisible(true);
+          }
+        });
+      }, observerOptions);
+      observer.observe(awardsSection);
+      observers.push(observer);
+    }
+
+    if (ctaSection) {
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            setCtaVisible(true);
+          }
+        });
+      }, observerOptions);
+      observer.observe(ctaSection);
+      observers.push(observer);
+    }
+
+    return () => {
+      observers.forEach(observer => observer.disconnect());
+    };
+  }, []);
+
+  // Animate metrics when they become visible
+  useEffect(() => {
+    if (!metricsVisible) return;
+
+    const currentYearData = performanceMetrics.find(metric => metric.year === selectedYear) || performanceMetrics[0];
+    
+    const targets = {
+      totalDeals: currentYearData.totalDeals,
+      totalValue: currentYearData.totalValue,
+      successRate: currentYearData.successRate,
+      clientSatisfaction: currentYearData.clientSatisfaction
+    };
+
+    // Animate each metric individually with staggered delays
+    const animateMetric = (metricName: keyof typeof animatedMetrics, delay: number) => {
+      const duration = 2000;
+      const steps = 60;
+      const stepDuration = duration / steps;
+      
+      const timeoutId = setTimeout(() => {
+        let step = 0;
+        const timer = setInterval(() => {
+          step++;
+          const progress = step / steps;
+          const easeOut = 1 - Math.pow(1 - progress, 3);
+          
+          setAnimatedMetrics(prev => ({
+            ...prev,
+            [metricName]: parseFloat((targets[metricName] * easeOut).toFixed(1))
+          }));
+          
+          if (step >= steps) {
+            clearInterval(timer);
+            // Set final value to ensure accuracy
+            setAnimatedMetrics(prev => ({
+              ...prev,
+              [metricName]: targets[metricName]
+            }));
+          }
+        }, stepDuration);
+        
+        return () => clearInterval(timer);
+      }, delay);
+      
+      return () => clearTimeout(timeoutId);
+    };
+    
+    // Stagger each metric animation
+    const cleanup1 = animateMetric('totalDeals', 400);
+    const cleanup2 = animateMetric('totalValue', 600);
+    const cleanup3 = animateMetric('successRate', 800);
+    const cleanup4 = animateMetric('clientSatisfaction', 1000);
+    
+    return () => {
+      cleanup1();
+      cleanup2();
+      cleanup3();
+      cleanup4();
+    };
+  }, [metricsVisible, selectedYear]);
 
   const performanceMetrics = [
     {
@@ -196,45 +312,6 @@ export default function RecordsPage() {
     }
   ];
 
-  const notableDeals = [
-    {
-      client: 'TechVentures Inc.',
-      dealType: 'M&A Acquisition',
-      value: '$2.5B',
-      industry: 'Technology',
-      year: '2024',
-      description: 'Strategic acquisition of AI startup portfolio',
-      status: 'Completed'
-    },
-    {
-      client: 'Global Manufacturing Corp.',
-      dealType: 'IPO Advisory',
-      value: '$1.8B',
-      industry: 'Manufacturing',
-      year: '2024',
-      description: 'Successful public offering and market debut',
-      status: 'Completed'
-    },
-    {
-      client: 'Energy Solutions Ltd.',
-      dealType: 'Private Equity Exit',
-      value: '$4.1B',
-      industry: 'Energy',
-      year: '2023',
-      description: 'Strategic divestiture to international consortium',
-      status: 'Completed'
-    },
-    {
-      client: 'Financial Services Group',
-      dealType: 'Debt Restructuring',
-      value: '$3.2B',
-      industry: 'Financial Services',
-      year: '2023',
-      description: 'Complex debt restructuring and refinancing',
-      status: 'Completed'
-    }
-  ];
-
   const awards = [
     {
       title: 'Investment Bank of the Year',
@@ -265,16 +342,53 @@ export default function RecordsPage() {
   const currentYearData = performanceMetrics.find(metric => metric.year === selectedYear) || performanceMetrics[0];
 
   return (
-    <div style={{ paddingTop: '80px' }}>
-      {/* Hero Section */}
-      <section
+    <div style={{ position: 'relative', minHeight: '100vh' }}>
+      
+      {/* Fixed Background Image */}
+      <div
         style={{
-          background: 'var(--gradient-subtle)',
-          padding: 'var(--space-20) var(--space-6)',
-          textAlign: 'center',
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          width: '100%',
+          height: '100%',
+          backgroundImage: 'url(/success.jpg)',
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          backgroundRepeat: 'no-repeat',
+          zIndex: 0,
         }}
-      >
-        <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
+      />
+      
+      {/* Dark Overlay */}
+      <div
+        style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          width: '100%',
+          height: '100%',
+          background: 'rgba(0, 0, 0, 0.75)',
+          zIndex: 1,
+        }}
+      />
+
+      <div style={{ paddingTop: '80px', position: 'relative', zIndex: 10 }}>
+        {/* Hero Section */}
+        <section
+          style={{
+            minHeight: '80vh',
+            padding: 'var(--space-20) var(--space-6)',
+            textAlign: 'center',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            opacity: heroVisible ? 1 : 0,
+            transform: heroVisible ? 'translateY(0)' : 'translateY(50px)',
+            transition: 'all 1s ease-out',
+          }}
+        >
+        <div style={{ maxWidth: '1200px', margin: '0 auto', width: '100%' }}>
           <div
             style={{
               display: 'inline-flex',
@@ -289,8 +403,8 @@ export default function RecordsPage() {
               fontWeight: 'var(--font-weight-semibold)',
               marginBottom: 'var(--space-8)',
               boxShadow: 'var(--shadow-md)',
-              opacity: isVisible ? 1 : 0,
-              transform: isVisible ? 'translateY(0)' : 'translateY(20px)',
+              opacity: heroVisible ? 1 : 0,
+              transform: heroVisible ? 'translateY(0)' : 'translateY(20px)',
               transition: 'all 0.6s ease',
             }}
           >
@@ -302,11 +416,11 @@ export default function RecordsPage() {
             style={{
               fontSize: 'var(--text-6xl)',
               fontWeight: 'var(--font-weight-bold)',
-              color: 'var(--text-primary)',
+              color: '#B8956A',
               marginBottom: 'var(--space-6)',
               fontFamily: 'var(--font-family-heading)',
-              opacity: isVisible ? 1 : 0,
-              transform: isVisible ? 'translateY(0)' : 'translateY(30px)',
+              opacity: heroVisible ? 1 : 0,
+              transform: heroVisible ? 'translateY(0)' : 'translateY(30px)',
               transition: 'all 0.8s ease 0.2s',
             }}
           >
@@ -356,8 +470,8 @@ export default function RecordsPage() {
               marginBottom: 'var(--space-8)',
               maxWidth: '800px',
               margin: '0 auto var(--space-8)',
-              opacity: isVisible ? 1 : 0,
-              transform: isVisible ? 'translateY(0)' : 'translateY(30px)',
+              opacity: heroVisible ? 1 : 0,
+              transform: heroVisible ? 'translateY(0)' : 'translateY(30px)',
               transition: 'all 0.8s ease 0.4s',
             }}
           >
@@ -366,24 +480,63 @@ export default function RecordsPage() {
         </div>
       </section>
 
-      {/* Performance Metrics */}
+      {/* Performance Metrics & Client Testimonials Combined */}
       <section
+        id="metrics-section"
         style={{
+          position: 'relative',
+          minHeight: '100vh',
           padding: 'var(--space-20) var(--space-6)',
-          background: 'var(--bg-primary)',
+          overflow: 'hidden',
+          opacity: metricsVisible ? 1 : 0,
+          transform: metricsVisible ? 'translateY(0)' : 'translateY(80px)',
+          transition: 'all 1.2s ease-out',
         }}
       >
-        <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
+        {/* Video Background */}
+        <video
+          autoPlay
+          muted
+          loop
+          playsInline
+          style={{
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            width: '100%',
+            height: '100%',
+            objectFit: 'cover',
+            zIndex: 1,
+          }}
+        >
+          <source src="/videos/176521-855920743_small.mp4" type="video/mp4" />
+        </video>
+
+        {/* Dark Overlay */}
+        <div
+          style={{
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            width: '100%',
+            height: '100%',
+            background: 'rgba(0, 0, 0, 0.7)',
+            zIndex: 2,
+          }}
+        />
+
+        {/* Performance Metrics Content */}
+        <div style={{ maxWidth: '1200px', margin: '0 auto', width: '100%', position: 'relative', zIndex: 3 }}>
           <h2
             style={{
               fontSize: 'var(--text-4xl)',
               fontWeight: 'var(--font-weight-bold)',
-              color: 'var(--text-primary)',
+              color: '#B8956A',
               marginBottom: 'var(--space-8)',
               fontFamily: 'var(--font-family-heading)',
               textAlign: 'center',
-              opacity: isVisible ? 1 : 0,
-              transform: isVisible ? 'translateY(0)' : 'translateY(30px)',
+              opacity: metricsVisible ? 1 : 0,
+              transform: metricsVisible ? 'translateY(0)' : 'translateY(30px)',
               transition: 'all 0.8s ease 0.2s',
             }}
           >
@@ -413,8 +566,8 @@ export default function RecordsPage() {
                   fontWeight: 'var(--font-weight-medium)',
                   cursor: 'pointer',
                   transition: 'all var(--transition-fast)',
-                  opacity: isVisible ? 1 : 0,
-                  transform: isVisible ? 'translateY(0)' : 'translateY(20px)',
+                  opacity: metricsVisible ? 1 : 0,
+                  transform: metricsVisible ? 'translateY(0)' : 'translateY(20px)',
                 }}
               >
                 {year}
@@ -427,13 +580,8 @@ export default function RecordsPage() {
               display: 'grid',
               gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
               gap: 'var(--space-8)',
-              background: 'var(--bg-secondary)',
-              padding: 'var(--space-8)',
-              borderRadius: 'var(--radius-xl)',
-              border: '1px solid var(--border-primary)',
-              boxShadow: 'var(--shadow-lg)',
-              opacity: isVisible ? 1 : 0,
-              transform: isVisible ? 'translateY(0)' : 'translateY(30px)',
+              opacity: metricsVisible ? 1 : 0,
+              transform: metricsVisible ? 'translateY(0)' : 'translateY(30px)',
               transition: 'all 0.8s ease 0.4s',
             }}
           >
@@ -466,7 +614,7 @@ export default function RecordsPage() {
                       fontFamily: 'var(--font-family-heading)',
                     }}
                   >
-                    {currentYearData.totalDeals}
+                    {Math.floor(animatedMetrics.totalDeals)}
                   </div>
                   <div style={{ color: 'var(--text-secondary)', fontSize: 'var(--text-lg)' }}>
                     Total Deals
@@ -483,7 +631,7 @@ export default function RecordsPage() {
                       fontFamily: 'var(--font-family-heading)',
                     }}
                   >
-                    ${currentYearData.totalValue}B+
+                    ${animatedMetrics.totalValue.toFixed(1)}B+
                   </div>
                   <div style={{ color: 'var(--text-secondary)', fontSize: 'var(--text-lg)' }}>
                     Deal Value
@@ -500,7 +648,7 @@ export default function RecordsPage() {
                       fontFamily: 'var(--font-family-heading)',
                     }}
                   >
-                    {currentYearData.successRate}%
+                    {animatedMetrics.successRate.toFixed(1)}%
                   </div>
                   <div style={{ color: 'var(--text-secondary)', fontSize: 'var(--text-lg)' }}>
                     Success Rate
@@ -517,7 +665,7 @@ export default function RecordsPage() {
                       fontFamily: 'var(--font-family-heading)',
                     }}
                   >
-                    {currentYearData.clientSatisfaction}/5
+                    {animatedMetrics.clientSatisfaction.toFixed(1)}/5
                   </div>
                   <div style={{ color: 'var(--text-secondary)', fontSize: 'var(--text-lg)' }}>
                     Client Rating
@@ -543,23 +691,15 @@ export default function RecordsPage() {
               </>
             )}
           </div>
-        </div>
-      </section>
 
-      {/* Client Testimonials */}
-      <section
-        style={{
-          padding: 'var(--space-20) var(--space-6)',
-          background: 'var(--bg-secondary)',
-        }}
-      >
-        <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
+          {/* Client Testimonials */}
           <h2
             style={{
               fontSize: 'var(--text-4xl)',
               fontWeight: 'var(--font-weight-bold)',
-              color: 'var(--text-primary)',
+              color: '#B8956A',
               marginBottom: 'var(--space-8)',
+              marginTop: 'var(--space-20)',
               fontFamily: 'var(--font-family-heading)',
               textAlign: 'center',
             }}
@@ -578,20 +718,22 @@ export default function RecordsPage() {
               <div
                 key={index}
                 style={{
-                  background: 'var(--bg-primary)',
+                  background: 'transparent',
                   padding: 'var(--space-8)',
                   borderRadius: 'var(--radius-xl)',
-                  border: '1px solid var(--border-primary)',
-                  boxShadow: 'var(--shadow-lg)',
+                  border: '1px solid rgba(184, 149, 106, 0.3)',
+                  boxShadow: 'none',
                   transition: 'all var(--transition-normal)',
                 }}
                 onMouseEnter={(e) => {
                   e.currentTarget.style.transform = 'translateY(-4px)';
-                  e.currentTarget.style.boxShadow = 'var(--shadow-xl)';
+                  e.currentTarget.style.border = '1px solid #B8956A';
+                  e.currentTarget.style.boxShadow = 'none';
                 }}
                 onMouseLeave={(e) => {
                   e.currentTarget.style.transform = 'translateY(0)';
-                  e.currentTarget.style.boxShadow = 'var(--shadow-lg)';
+                  e.currentTarget.style.border = '1px solid rgba(184, 149, 106, 0.3)';
+                  e.currentTarget.style.boxShadow = 'none';
                 }}
               >
                 <div
@@ -688,166 +830,15 @@ export default function RecordsPage() {
         </div>
       </section>
 
-      {/* Notable Deals */}
-      <section
-        style={{
-          padding: 'var(--space-20) var(--space-6)',
-          background: 'var(--bg-primary)',
-        }}
-      >
-        <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
-          <h2
-            style={{
-              fontSize: 'var(--text-4xl)',
-              fontWeight: 'var(--font-weight-bold)',
-              color: 'var(--text-primary)',
-              marginBottom: 'var(--space-8)',
-              fontFamily: 'var(--font-family-heading)',
-              textAlign: 'center',
-            }}
-          >
-            Notable Deals
-          </h2>
-          
-          <div
-            style={{
-              display: 'grid',
-              gridTemplateColumns: 'repeat(auto-fit, minmax(500px, 1fr))',
-              gap: 'var(--space-6)',
-            }}
-          >
-            {notableDeals.map((deal, index) => (
-              <div
-                key={index}
-                style={{
-                  background: 'var(--bg-secondary)',
-                  padding: 'var(--space-6)',
-                  borderRadius: 'var(--radius-xl)',
-                  border: '1px solid var(--border-primary)',
-                  boxShadow: 'var(--shadow-md)',
-                  transition: 'all var(--transition-normal)',
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.transform = 'translateY(-2px)';
-                  e.currentTarget.style.boxShadow = 'var(--shadow-lg)';
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.transform = 'translateY(0)';
-                  e.currentTarget.style.boxShadow = 'var(--shadow-md)';
-                }}
-              >
-                <div
-                  style={{
-                    display: 'flex',
-                    justifyContent: 'space-between',
-                    alignItems: 'flex-start',
-                    marginBottom: 'var(--space-4)',
-                  }}
-                >
-                  <div>
-                    <h4
-                      style={{
-                        fontSize: 'var(--text-xl)',
-                        fontWeight: 'var(--font-weight-semibold)',
-                        color: 'var(--text-primary)',
-                        marginBottom: 'var(--space-2)',
-                        fontFamily: 'var(--font-family-heading)',
-                      }}
-                    >
-                      {deal.client}
-                    </h4>
-                    <p
-                      style={{
-                        color: 'var(--text-accent)',
-                        fontSize: 'var(--text-lg)',
-                        fontWeight: 'var(--font-weight-medium)',
-                        marginBottom: 'var(--space-1)',
-                      }}
-                    >
-                      {deal.dealType}
-                    </p>
-                  </div>
-                  <div
-                    style={{
-                      textAlign: 'right',
-                    }}
-                  >
-                    <div
-                      style={{
-                        fontSize: 'var(--text-2xl)',
-                        fontWeight: 'var(--font-weight-bold)',
-                        color: 'var(--text-accent)',
-                        fontFamily: 'var(--font-family-heading)',
-                      }}
-                    >
-                      {deal.value}
-                    </div>
-                    <div
-                      style={{
-                        color: 'var(--text-muted)',
-                        fontSize: 'var(--text-sm)',
-                      }}
-                    >
-                      {deal.year}
-                    </div>
-                  </div>
-                </div>
-                
-                <p
-                  style={{
-                    color: 'var(--text-secondary)',
-                    lineHeight: '1.5',
-                    marginBottom: 'var(--space-4)',
-                  }}
-                >
-                  {deal.description}
-                </p>
-                
-                <div
-                  style={{
-                    display: 'flex',
-                    justifyContent: 'space-between',
-                    alignItems: 'center',
-                  }}
-                >
-                  <div
-                    style={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: 'var(--space-2)',
-                    }}
-                  >
-                    <CheckCircle size={16} color="var(--color-accent)" />
-                    <span
-                      style={{
-                        color: 'var(--text-accent)',
-                        fontSize: 'var(--text-sm)',
-                        fontWeight: 'var(--font-weight-medium)',
-                      }}
-                    >
-                      {deal.status}
-                    </span>
-                  </div>
-                  <span
-                    style={{
-                      color: 'var(--text-muted)',
-                      fontSize: 'var(--text-sm)',
-                    }}
-                  >
-                    {deal.industry}
-                  </span>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
       {/* Awards & Recognition */}
       <section
+        id="awards-section"
         style={{
+          minHeight: '70vh',
           padding: 'var(--space-20) var(--space-6)',
-          background: 'var(--bg-secondary)',
+          opacity: awardsVisible ? 1 : 0,
+          transform: awardsVisible ? 'translateY(0)' : 'translateY(80px)',
+          transition: 'all 1.2s ease-out',
         }}
       >
         <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
@@ -855,7 +846,7 @@ export default function RecordsPage() {
             style={{
               fontSize: 'var(--text-4xl)',
               fontWeight: 'var(--font-weight-bold)',
-              color: 'var(--text-primary)',
+              color: '#B8956A',
               marginBottom: 'var(--space-8)',
               fontFamily: 'var(--font-family-heading)',
               textAlign: 'center',
@@ -875,21 +866,20 @@ export default function RecordsPage() {
               <div
                 key={index}
                 style={{
-                  background: 'var(--bg-primary)',
+                  background: 'transparent',
                   padding: 'var(--space-6)',
                   borderRadius: 'var(--radius-xl)',
-                  border: '1px solid var(--border-primary)',
-                  boxShadow: 'var(--shadow-md)',
+                  border: '1px solid rgba(184, 149, 106, 0.3)',
                   textAlign: 'center',
                   transition: 'all var(--transition-normal)',
                 }}
                 onMouseEnter={(e) => {
                   e.currentTarget.style.transform = 'translateY(-4px)';
-                  e.currentTarget.style.boxShadow = 'var(--shadow-lg)';
+                  e.currentTarget.style.borderColor = '#B8956A';
                 }}
                 onMouseLeave={(e) => {
                   e.currentTarget.style.transform = 'translateY(0)';
-                  e.currentTarget.style.boxShadow = 'var(--shadow-md)';
+                  e.currentTarget.style.borderColor = 'rgba(184, 149, 106, 0.3)';
                 }}
               >
                 <div
@@ -957,22 +947,29 @@ export default function RecordsPage() {
 
       {/* CTA Section */}
       <section
+        id="cta-section"
         style={{
+          minHeight: '50vh',
           padding: 'var(--space-20) var(--space-6)',
-          background: 'var(--gradient-subtle)',
           textAlign: 'center',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          opacity: ctaVisible ? 1 : 0,
+          transform: ctaVisible ? 'translateY(0)' : 'translateY(80px)',
+          transition: 'all 1.2s ease-out',
         }}
       >
-        <div style={{ maxWidth: '800px', margin: '0 auto' }}>
+        <div style={{ maxWidth: '800px', margin: '0 auto', width: '100%' }}>
           <h2
             style={{
               fontSize: 'var(--text-4xl)',
               fontWeight: 'var(--font-weight-bold)',
-              color: 'var(--text-primary)',
+              color: '#B8956A',
               marginBottom: 'var(--space-6)',
               fontFamily: 'var(--font-family-heading)',
-              opacity: isVisible ? 1 : 0,
-              transform: isVisible ? 'translateY(0)' : 'translateY(30px)',
+              opacity: ctaVisible ? 1 : 0,
+              transform: ctaVisible ? 'translateY(0)' : 'translateY(30px)',
               transition: 'all 0.8s ease 0.2s',
             }}
           >
@@ -985,8 +982,8 @@ export default function RecordsPage() {
               color: 'var(--text-secondary)',
               lineHeight: '1.6',
               marginBottom: 'var(--space-8)',
-              opacity: isVisible ? 1 : 0,
-              transform: isVisible ? 'translateY(0)' : 'translateY(30px)',
+              opacity: ctaVisible ? 1 : 0,
+              transform: ctaVisible ? 'translateY(0)' : 'translateY(30px)',
               transition: 'all 0.8s ease 0.4s',
             }}
           >
@@ -999,8 +996,8 @@ export default function RecordsPage() {
               gap: 'var(--space-4)',
               justifyContent: 'center',
               flexWrap: 'wrap',
-              opacity: isVisible ? 1 : 0,
-              transform: isVisible ? 'translateY(0)' : 'translateY(30px)',
+              opacity: ctaVisible ? 1 : 0,
+              transform: ctaVisible ? 'translateY(0)' : 'translateY(30px)',
               transition: 'all 0.8s ease 0.6s',
             }}
           >
@@ -1011,22 +1008,24 @@ export default function RecordsPage() {
                 alignItems: 'center',
                 gap: 'var(--space-2)',
                 padding: 'var(--space-4) var(--space-8)',
-                background: 'linear-gradient(135deg, #D4AF37, #FFD700)',
-                color: '#000',
+                background: 'transparent',
+                color: '#ffffff',
+                border: '2px solid #ffffff',
                 borderRadius: 'var(--radius-lg)',
                 fontWeight: 'var(--font-weight-semibold)',
                 textDecoration: 'none',
                 fontSize: 'var(--text-lg)',
                 transition: 'all var(--transition-normal)',
-                boxShadow: '0 6px 20px rgba(212, 175, 55, 0.3)',
               }}
               onMouseEnter={(e) => {
+                e.currentTarget.style.background = '#ffffff';
+                e.currentTarget.style.color = '#000000';
                 e.currentTarget.style.transform = 'translateY(-3px) scale(1.02)';
-                e.currentTarget.style.boxShadow = '0 12px 30px rgba(212, 175, 55, 0.5)';
               }}
               onMouseLeave={(e) => {
+                e.currentTarget.style.background = 'transparent';
+                e.currentTarget.style.color = '#ffffff';
                 e.currentTarget.style.transform = 'translateY(0) scale(1)';
-                e.currentTarget.style.boxShadow = '0 6px 20px rgba(212, 175, 55, 0.3)';
               }}
             >
               {joinSuccessContent?.buttons?.[0] || "Start Your Journey"}
@@ -1041,8 +1040,8 @@ export default function RecordsPage() {
                 gap: 'var(--space-2)',
                 padding: 'var(--space-4) var(--space-8)',
                 background: 'transparent',
-                color: 'var(--color-accent)',
-                border: '2px solid var(--color-accent)',
+                color: '#ffffff',
+                border: '2px solid #ffffff',
                 borderRadius: 'var(--radius-lg)',
                 fontWeight: 'var(--font-weight-semibold)',
                 textDecoration: 'none',
@@ -1050,13 +1049,13 @@ export default function RecordsPage() {
                 transition: 'all var(--transition-normal)',
               }}
               onMouseEnter={(e) => {
-                e.currentTarget.style.background = 'var(--color-accent)';
-                e.currentTarget.style.color = '#000';
+                e.currentTarget.style.background = '#ffffff';
+                e.currentTarget.style.color = '#000000';
                 e.currentTarget.style.transform = 'translateY(-3px) scale(1.02)';
               }}
               onMouseLeave={(e) => {
                 e.currentTarget.style.background = 'transparent';
-                e.currentTarget.style.color = 'var(--color-accent)';
+                e.currentTarget.style.color = '#ffffff';
                 e.currentTarget.style.transform = 'translateY(0) scale(1)';
               }}
             >
@@ -1065,6 +1064,9 @@ export default function RecordsPage() {
           </div>
         </div>
       </section>
+
+        <Footer />
+      </div>
     </div>
   );
 }

@@ -5,6 +5,7 @@ import { Calendar, User, ArrowRight } from 'lucide-react';
 import { HeroContent } from '../../types/api';
 import { useBlogData } from '../../hooks/useBlogData';
 import BlogCard from '../../components/BlogCard';
+import Footer from '../../components/Footer';
 
 export default function InsightsPage() {
   const [insightsContent, setInsightsContent] = useState<HeroContent | null>(null);
@@ -61,18 +62,6 @@ export default function InsightsPage() {
     }, 100);
     return () => clearTimeout(timer);
   }, []);
-
-  // Show loading state
-  if (isLoading || blogLoading) {
-    return (
-      <div className="min-h-screen bg-gray-900 flex items-center justify-center">
-        <div className="text-xl text-gray-300">
-          Loading...
-        </div>
-      </div>
-    );
-  }
-
 
   // Categories come from insights API
   const categories = insightsContent?.buttons || [];
@@ -231,6 +220,8 @@ export default function InsightsPage() {
         </div>
       </section>
       ))}
+
+      <Footer />
 
     </div>
   );

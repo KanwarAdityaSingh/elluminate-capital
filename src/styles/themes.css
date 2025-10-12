@@ -1,50 +1,50 @@
-/* Luxury Investment Banking Theme Variables */
+/* Professional Black & White Theme - KKR/TRMG Inspired */
 
 :root {
-  /* Light Theme - Professional & Clean */
-  --color-primary: #1a1a1a;
-  --color-primary-soft: #2d2d2d;
-  --color-secondary: #f8f9fa;
-  --color-secondary-soft: #e9ecef;
-  --color-accent: #d4af37;
-  --color-accent-soft: #f4e4a6;
-  --color-accent-dark: #b8941f;
+  /* Light Theme - Ultra Clean & Professional */
+  --color-primary: #000000;
+  --color-primary-soft: #1a1a1a;
+  --color-secondary: #ffffff;
+  --color-secondary-soft: #f5f5f5;
+  --color-accent: #000000;
+  --color-accent-soft: #333333;
+  --color-accent-dark: #000000;
   
   /* Background Colors */
   --bg-primary: #ffffff;
-  --bg-secondary: #f8f9fa;
-  --bg-tertiary: #e9ecef;
-  --bg-accent: #fafbfc;
+  --bg-secondary: #fafafa;
+  --bg-tertiary: #f5f5f5;
+  --bg-accent: #000000;
   
   /* Text Colors */
-  --text-primary: #1a1a1a;
-  --text-secondary: #6c757d;
-  --text-muted: #adb5bd;
+  --text-primary: #000000;
+  --text-secondary: #666666;
+  --text-muted: #999999;
   --text-inverse: #ffffff;
-  --text-accent: #d4af37;
+  --text-accent: #000000;
   
   /* Border Colors */
-  --border-primary: #e9ecef;
-  --border-secondary: #dee2e6;
-  --border-accent: #d4af37;
-  --border-focus: #d4af37;
+  --border-primary: #e5e5e5;
+  --border-secondary: #d4d4d4;
+  --border-accent: #000000;
+  --border-focus: #000000;
   
   /* Shadow Colors */
-  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-  --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
-  --shadow-gold: 0 4px 14px 0 rgba(212, 175, 55, 0.2);
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.04);
+  --shadow-md: 0 2px 8px 0 rgba(0, 0, 0, 0.08);
+  --shadow-lg: 0 4px 16px 0 rgba(0, 0, 0, 0.12);
+  --shadow-xl: 0 8px 32px 0 rgba(0, 0, 0, 0.16);
+  --shadow-gold: 0 2px 8px 0 rgba(0, 0, 0, 0.1);
   
   /* Gradient Colors */
-  --gradient-primary: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
-  --gradient-accent: linear-gradient(135deg, #d4af37 0%, #f4e4a6 100%);
-  --gradient-subtle: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+  --gradient-primary: linear-gradient(180deg, #000000 0%, #1a1a1a 100%);
+  --gradient-accent: linear-gradient(135deg, #000000 0%, #333333 100%);
+  --gradient-subtle: linear-gradient(180deg, #ffffff 0%, #fafafa 100%);
   
-  /* Typography */
-  --font-family-primary: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
-  --font-family-heading: 'Source Serif 4', Georgia, 'Times New Roman', serif;
-  --font-family-mono: 'JetBrains Mono', 'SF Mono', Monaco, 'Cascadia Code', 'Roboto Mono', monospace;
+  /* Typography - Dynamic font families */
+  --font-family-primary: var(--font-inter), -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+  --font-family-heading: var(--font-source-serif-4), Georgia, 'Times New Roman', serif;
+  --font-family-mono: var(--font-jetbrains-mono), 'SF Mono', Monaco, 'Cascadia Code', 'Roboto Mono', monospace;
   
   /* Font Weights */
   --font-weight-light: 300;
@@ -112,58 +112,58 @@
 }
 
 [data-theme="dark"] {
-  /* Dark Theme - Luxury Purple & Gold */
+  /* Dark Theme - Professional Purple */
   --color-primary: #ffffff;
-  --color-primary-soft: #e9ecef;
-  --color-secondary: #0f0f0f;
-  --color-secondary-soft: #1a1a1a;
-  --color-accent: #d4af37;
-  --color-accent-soft: #f4e4a6;
-  --color-accent-dark: #b8941f;
-  --color-purple: #4a2c5a;
-  --color-purple-soft: #6b4c7a;
-  --color-purple-dark: #2d1a35;
-  --color-purple-light: #8b7aa8;
+  --color-primary-soft: #f5f5f5;
+  --color-secondary: #1a0f2e;
+  --color-secondary-soft: #2a1a4e;
+  --color-accent: #ffffff;
+  --color-accent-soft: #cccccc;
+  --color-accent-dark: #ffffff;
+  --color-purple: #2a1a4e;
+  --color-purple-soft: #3a2a5e;
+  --color-purple-dark: #1a0f2e;
+  --color-purple-light: #4a3a6e;
   
   /* Background Colors */
-  --bg-primary: #1a0f1a;
-  --bg-secondary: #2d1a35;
-  --bg-tertiary: #4a2c5a;
-  --bg-accent: #1f1425;
-  --bg-purple-subtle: rgba(74, 44, 90, 0.15);
-  --bg-purple-soft: rgba(74, 44, 90, 0.25);
+  --bg-primary: #0f0a1a;
+  --bg-secondary: #1a0f2e;
+  --bg-tertiary: #2a1a4e;
+  --bg-accent: #ffffff;
+  --bg-purple-subtle: rgba(138, 92, 246, 0.05);
+  --bg-purple-soft: rgba(138, 92, 246, 0.1);
   
   /* Text Colors */
   --text-primary: #ffffff;
-  --text-secondary: #c9b3d1;
-  --text-muted: #8b7aa8;
-  --text-inverse: #1a0f1a;
-  --text-accent: #d4af37;
+  --text-secondary: #a3a3a3;
+  --text-muted: #737373;
+  --text-inverse: #000000;
+  --text-accent: #ffffff;
   
   /* Border Colors */
-  --border-primary: #4a2c5a;
-  --border-secondary: #6b4c7a;
-  --border-accent: #d4af37;
-  --border-focus: #d4af37;
-  --border-purple: rgba(74, 44, 90, 0.5);
-  --border-purple-soft: rgba(74, 44, 90, 0.3);
+  --border-primary: #2a1a4e;
+  --border-secondary: #3a2a5e;
+  --border-accent: #ffffff;
+  --border-focus: #ffffff;
+  --border-purple: rgba(138, 92, 246, 0.3);
+  --border-purple-soft: rgba(138, 92, 246, 0.15);
   
   /* Shadow Colors */
-  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.4);
-  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.5), 0 2px 4px -1px rgba(0, 0, 0, 0.4);
-  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.5), 0 4px 6px -2px rgba(0, 0, 0, 0.4);
-  --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.5), 0 10px 10px -5px rgba(0, 0, 0, 0.4);
-  --shadow-gold: 0 4px 20px 0 rgba(212, 175, 55, 0.4);
-  --shadow-purple: 0 4px 20px 0 rgba(74, 44, 90, 0.3);
-  --shadow-luxury: 0 8px 32px 0 rgba(0, 0, 0, 0.6), 0 4px 16px 0 rgba(212, 175, 55, 0.1);
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.6);
+  --shadow-md: 0 2px 8px 0 rgba(0, 0, 0, 0.7);
+  --shadow-lg: 0 4px 16px 0 rgba(0, 0, 0, 0.8);
+  --shadow-xl: 0 8px 32px 0 rgba(0, 0, 0, 0.9);
+  --shadow-gold: 0 2px 8px 0 rgba(255, 255, 255, 0.1);
+  --shadow-purple: 0 2px 8px 0 rgba(255, 255, 255, 0.05);
+  --shadow-luxury: 0 4px 24px 0 rgba(0, 0, 0, 0.8);
   
   /* Gradient Colors */
-  --gradient-primary: linear-gradient(135deg, #ffffff 0%, #e9ecef 100%);
-  --gradient-accent: linear-gradient(135deg, #d4af37 0%, #f4e4a6 100%);
-  --gradient-subtle: linear-gradient(135deg, #1a0f1a 0%, #2d1a35 100%);
-  --gradient-purple: linear-gradient(135deg, #4a2c5a 0%, #6b4c7a 100%);
-  --gradient-luxury: linear-gradient(135deg, #1a0f1a 0%, rgba(74, 44, 90, 0.3) 50%, #1a0f1a 100%);
-  --gradient-hero: linear-gradient(135deg, #1a0f1a 0%, rgba(74, 44, 90, 0.15) 25%, rgba(212, 175, 55, 0.05) 75%, #1a0f1a 100%);
+  --gradient-primary: linear-gradient(180deg, #ffffff 0%, #f5f5f5 100%);
+  --gradient-accent: linear-gradient(135deg, #ffffff 0%, #cccccc 100%);
+  --gradient-subtle: linear-gradient(180deg, #0f0a1a 0%, #1a0f2e 100%);
+  --gradient-purple: linear-gradient(135deg, #1a0f2e 0%, #2a1a4e 100%);
+  --gradient-luxury: linear-gradient(180deg, #0f0a1a 0%, #1a0f2e 50%, #0f0a1a 100%);
+  --gradient-hero: linear-gradient(180deg, #0f0a1a 0%, #1a0f2e 50%, #2a1a4e 100%);
 }
 
 /* Base Styles */
@@ -183,7 +183,7 @@ body {
   line-height: 1.6;
   color: var(--text-primary);
   background-color: var(--bg-primary);
-  transition: background-color var(--transition-normal), color var(--transition-normal);
+  transition: background-color var(--transition-normal), color var(--transition-normal), font-family var(--transition-normal);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   letter-spacing: var(--letter-spacing-normal);
@@ -197,6 +197,7 @@ h1, h2, h3, h4, h5, h6 {
   color: var(--text-primary);
   margin-bottom: var(--space-4);
   letter-spacing: var(--letter-spacing-tight);
+  transition: font-family var(--transition-normal);
 }
 
 h1 { font-size: var(--text-5xl); }
