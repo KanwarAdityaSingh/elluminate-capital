@@ -1,7 +1,8 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Mail, Phone, MapPin, Clock, Send, CheckCircle } from 'lucide-react';
+import { Mail, Phone, MapPin, Clock, Send, CheckCircle, Loader2 } from 'lucide-react';
+import emailjs from '@emailjs/browser';
 
 export default function ContactPage() {
   const [formData, setFormData] = useState({
@@ -13,6 +14,8 @@ export default function ContactPage() {
     message: ''
   });
   const [isSubmitted, setIsSubmitted] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState('');
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
@@ -22,12 +25,32 @@ export default function ContactPage() {
     }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Simulate form submission
-    setIsSubmitted(true);
-    setTimeout(() => {
-      setIsSubmitted(false);
+    setIsLoading(true);
+    setError('');
+
+    try {
+      // EmailJS configuration - you'll need to replace these with your actual values
+      const serviceId = process.env.NEXT_PUBLIC_EMAILJS_SERVICE_ID || 'your_service_id';
+      const templateId = process.env.NEXT_PUBLIC_EMAILJS_TEMPLATE_ID || 'your_template_id';
+      const publicKey = process.env.NEXT_PUBLIC_EMAILJS_PUBLIC_KEY || 'your_public_key';
+
+      // Prepare template parameters
+      const templateParams = {
+        from_name: formData.name,
+        from_email: formData.email,
+        company: formData.company,
+        phone: formData.phone,
+        service: formData.service,
+        message: formData.message,
+        to_email: 'bhageria.srijan@gmail.com', // Your email address
+      };
+
+      // Send email using EmailJS
+      await emailjs.send(serviceId, templateId, templateParams, publicKey);
+      
+      setIsSubmitted(true);
       setFormData({
         name: '',
         email: '',
@@ -36,7 +59,18 @@ export default function ContactPage() {
         service: '',
         message: ''
       });
-    }, 3000);
+      
+      // Reset success message after 5 seconds
+      setTimeout(() => {
+        setIsSubmitted(false);
+      }, 5000);
+      
+    } catch (error) {
+      console.error('EmailJS Error:', error);
+      setError('Failed to send message. Please try again or contact us directly.');
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const offices = [
@@ -167,6 +201,22 @@ export default function ContactPage() {
               >
                 Send us a Message
               </h2>
+              
+              {error && (
+                <div
+                  style={{
+                    padding: 'var(--space-4)',
+                    background: 'rgba(239, 68, 68, 0.1)',
+                    border: '1px solid rgba(239, 68, 68, 0.3)',
+                    borderRadius: 'var(--radius-md)',
+                    marginBottom: 'var(--space-6)',
+                    color: '#ef4444',
+                    fontSize: 'var(--text-sm)',
+                  }}
+                >
+                  {error}
+                </div>
+              )}
               
               {isSubmitted ? (
                 <div
@@ -416,16 +466,17 @@ export default function ContactPage() {
 
                   <button
                     type="submit"
+                    disabled={isLoading}
                     style={{
                       width: '100%',
                       padding: 'var(--space-4)',
-                      background: '#E5D4C1',
+                      background: isLoading ? '#D4C4B0' : '#E5D4C1',
                       color: '#000000',
                       border: 'none',
                       borderRadius: 'var(--radius-lg)',
                       fontSize: 'var(--text-lg)',
                       fontWeight: 'var(--font-weight-semibold)',
-                      cursor: 'pointer',
+                      cursor: isLoading ? 'not-allowed' : 'pointer',
                       display: 'flex',
                       alignItems: 'center',
                       justifyContent: 'center',
@@ -433,18 +484,32 @@ export default function ContactPage() {
                       transition: 'all var(--transition-fast)',
                       position: 'relative',
                       zIndex: 1,
+                      opacity: isLoading ? 0.7 : 1,
                     }}
                     onMouseEnter={(e) => {
-                      e.currentTarget.style.background = '#D4C4B0';
-                      e.currentTarget.style.transform = 'translateY(-2px)';
+                      if (!isLoading) {
+                        e.currentTarget.style.background = '#D4C4B0';
+                        e.currentTarget.style.transform = 'translateY(-2px)';
+                      }
                     }}
                     onMouseLeave={(e) => {
-                      e.currentTarget.style.background = '#E5D4C1';
-                      e.currentTarget.style.transform = 'translateY(0)';
+                      if (!isLoading) {
+                        e.currentTarget.style.background = '#E5D4C1';
+                        e.currentTarget.style.transform = 'translateY(0)';
+                      }
                     }}
                   >
-                    Send Message
-                    <Send size={20} />
+                    {isLoading ? (
+                      <>
+                        <Loader2 size={20} className="animate-spin" />
+                        Sending...
+                      </>
+                    ) : (
+                      <>
+                        Send Message
+                        <Send size={20} />
+                      </>
+                    )}
                   </button>
                 </form>
               )}
