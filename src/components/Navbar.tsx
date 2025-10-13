@@ -171,7 +171,6 @@ const Navbar: React.FC = () => {
           font-size: var(--text-sm);
           font-weight: var(--font-weight-medium);
           letter-spacing: 0.05em;
-          text-transform: uppercase;
           cursor: pointer;
           padding: var(--space-2) var(--space-4);
           transition: all var(--transition-fast);
