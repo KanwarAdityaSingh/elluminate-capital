@@ -3,11 +3,14 @@
 import React, { useState, useEffect } from 'react';
 import { TrendingUp, Users, Award, ArrowRight, BarChart3, Globe, DollarSign, Building2, Shield, ChevronLeft, ChevronRight } from 'lucide-react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { HeroContent } from '../types/api';
 import HeroSection from '../components/HeroSection';
 import Footer from '../components/Footer';
+import investmentCardService, { InvestmentCard } from '../services/investmentCardService';
 
 export default function Home() {
+  const router = useRouter();
   const [heroContent, setHeroContent] = useState<HeroContent | null>(null);
   const [visionContent, setVisionContent] = useState<HeroContent | null>(null);
   const [storyContent, setStoryContent] = useState<HeroContent | null>(null);
@@ -17,6 +20,9 @@ export default function Home() {
   const [isLoading, setIsLoading] = useState(true);
   const [isVisible, setIsVisible] = useState(false);
   const [hoveredButton, setHoveredButton] = useState<string | null>(null);
+  const [storyVisible, setStoryVisible] = useState(false);
+  const [companiesVisible, setCompaniesVisible] = useState(false);
+  const [investmentCards, setInvestmentCards] = useState<InvestmentCard[]>([]);
 
   // Fetch page content on component mount
   useEffect(() => {
@@ -177,6 +183,20 @@ export default function Home() {
     fetchPageContent();
   }, []); // Empty dependency array - only run once
 
+  // Fetch investment cards
+  useEffect(() => {
+    const fetchInvestmentCards = async () => {
+      try {
+        const cards = await investmentCardService.getAllInvestmentCards();
+        setInvestmentCards(cards);
+      } catch (error) {
+        console.error('Error fetching investment cards:', error);
+      }
+    };
+
+    fetchInvestmentCards();
+  }, []);
+
   const clients: string[] = [
     'Trading.jpeg',
     'trading1.png', 
@@ -197,6 +217,20 @@ export default function Home() {
     if (!el) return;
     const amount = Math.max(el.clientWidth * 0.9, 320);
     el.scrollBy({ left: direction === 'next' ? amount : -amount, behavior: 'smooth' });
+  };
+
+  // Transform investment cards to display format
+  const transformInvestmentCards = () => {
+    return investmentCards.map((card) => {
+      // Sort sections by order
+      const sortedSections = [...card.sections].sort((a, b) => a.order - b.order);
+
+      return {
+        name: card.companyName,
+        logo: card.companyLogo,
+        sections: sortedSections,
+      };
+    });
   };
 
   // Auto-scroll carousel
@@ -243,41 +277,108 @@ export default function Home() {
     };
   }, []);
 
+  // Scroll animation for story section
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            setStoryVisible(true);
+          }
+        });
+      },
+      { threshold: 0.2 }
+    );
+
+    const storySection = document.querySelector('.story-section-wrapper');
+    if (storySection) {
+      observer.observe(storySection);
+    }
+
+    return () => {
+      if (storySection) {
+        observer.unobserve(storySection);
+      }
+    };
+  }, []);
+
+  // Scroll animation for companies section
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            setCompaniesVisible(true);
+            // Animate each card one by one
+            const cards = document.querySelectorAll('.company-logo-card');
+            cards.forEach((card, index) => {
+              setTimeout(() => {
+                card.classList.add('flip-in');
+              }, index * 100); // 100ms delay between each card
+            });
+          }
+        });
+      },
+      { threshold: 0.2 }
+    );
+
+    const companiesSection = document.querySelector('.companies-grid-section');
+    if (companiesSection) {
+      observer.observe(companiesSection);
+    }
+
+    return () => {
+      if (companiesSection) {
+        observer.unobserve(companiesSection);
+      }
+    };
+  }, []);
+
   return (
     <div className="landing-page min-h-screen">
       <HeroSection heroContent={heroContent} visionContent={visionContent} isVisible={isVisible} />
 
-      {/* Our Story & Team Section */}
-      <section id="story" className="story-team-section">
-        <div className="story-team-background">
-          <div className="story-team-gradient"></div>
-          <div className="story-team-pattern"></div>
+      {/* Our Story Section */}
+      <section 
+        id="story" 
+        className="story-section-wrapper story-section-clickable"
+        onClick={() => router.push('/records')}
+        style={{ cursor: 'pointer' }}
+      >
+        <div className="story-background">
+          <div className="story-gradient"></div>
         </div>
         
-        <div className="story-team-content">
+        <div className="story-content">
           <div className="story-section">
             <div className="story-header">
-              <h2 className="story-title">
-                {storyContent?.title ? (
-                  <>
-                    {storyContent.title.split(' ').map((word, index) => (
-                      <span key={index} className={index === 1 ? "story-title-accent" : ""}>
-                        {word}{index < storyContent.title.split(' ').length - 1 ? ' ' : ''}
-                      </span>
-                    ))}
-                  </>
-                ) : (
-                  <>
-                Our <span className="story-title-accent">Story</span>
-                  </>
-                )}
-              </h2>
-              <p className="story-description">
+              <div className={`story-title-wrapper ${storyVisible ? 'animate' : ''}`}>
+                <h2 className="story-title-line story-title-first">
+                  {storyContent?.title ? storyContent.title.split(' ')[0] : 'Our'}
+                </h2>
+                <h2 className="story-title-line story-title-second">
+                  {storyContent?.title ? storyContent.title.split(' ')[1] : 'Story'}
+                </h2>
+              </div>
+              <div className={`story-vertical-divider ${storyVisible ? 'animate' : ''}`}></div>
+              <p className={`story-description ${storyVisible ? 'animate' : ''}`}>
                 {storyContent?.subtitle || "Founded on the principles of excellence and innovation, we have built a legacy of trust and success in the capital markets. Our journey began with a vision to democratize sophisticated investment strategies and make them accessible to clients worldwide."}
               </p>
             </div>
           </div>
-          
+        </div>
+        <div className="story-arrow-container">
+          <ChevronRight size={80} color="#B8956A" />
+        </div>
+      </section>
+
+      {/* Leadership Team Section */}
+      <section className="team-section-wrapper">
+        <div className="team-background">
+          <div className="team-gradient"></div>
+        </div>
+        
+        <div className="team-content">
           <div className="team-section">
             <div className="team-header">
               <h2 className="team-title">
@@ -366,16 +467,7 @@ export default function Home() {
           <h2 className="companies-grid-title">Companies</h2>
           
           <div className="companies-logos-grid">
-            {[
-              { name: '100ms', logo: 'https://via.placeholder.com/200x100/1a0f2e/B8956A?text=100ms', description: 'Live-video infrastructure for developers', founders: ['Kshitij Gupta', 'Aniket Behera', 'Sarvesh Dwivedi'], investment: 'Seed in 2021' },
-              { name: '1balance living', logo: 'https://via.placeholder.com/200x100/1a0f2e/B8956A?text=1balance', description: 'Wellness and lifestyle platform', founders: ['John Doe', 'Jane Smith'], investment: 'Series A in 2022' },
-              { name: '1Password', logo: 'https://via.placeholder.com/200x100/1a0f2e/B8956A?text=1Password', description: 'Security and password management', founders: ['Dave Teare'], investment: 'Series B in 2019' },
-              { name: '99designs', logo: 'https://via.placeholder.com/200x100/1a0f2e/B8956A?text=99designs', description: 'Global creative platform', founders: ['Mark Harbottle'], investment: 'Series C in 2020' },
-              { name: 'Aavenir', logo: 'https://via.placeholder.com/200x100/1a0f2e/B8956A?text=Aavenir', description: 'Enterprise software solutions', founders: ['Sarah Johnson'], investment: 'Seed in 2023' },
-              { name: 'Acalvio', logo: 'https://via.placeholder.com/200x100/1a0f2e/B8956A?text=Acalvio', description: 'Cybersecurity platform', founders: ['Ram Varadarajan'], investment: 'Series A in 2021' },
-              { name: 'ACKO', logo: 'https://via.placeholder.com/200x100/1a0f2e/B8956A?text=ACKO', description: 'Digital insurance platform', founders: ['Varun Dua'], investment: 'Series D in 2021' },
-              { name: 'Ada', logo: 'https://via.placeholder.com/200x100/1a0f2e/B8956A?text=Ada', description: 'AI-powered customer service', founders: ['Mike Murchison'], investment: 'Series C in 2020' },
-            ].map((company, index) => (
+            {transformInvestmentCards().map((company, index) => (
               <div key={index} className="company-logo-item">
                 <div className="company-logo-card">
                   <img src={company.logo} alt={company.name} className="company-logo-img" />
@@ -387,19 +479,18 @@ export default function Home() {
                     <h3 className="company-detail-name">{company.name}</h3>
                   </div>
                   
-                  <p className="company-detail-description">{company.description}</p>
-                  
-                  <div className="company-detail-info">
-                    <h4>FOUNDERS</h4>
-                    {company.founders.map((founder, idx) => (
-                      <p key={idx}>{founder}</p>
-                    ))}
-                  </div>
-                  
-                  <div className="company-detail-info">
-                    <h4>INITIAL INVESTMENT</h4>
-                    <p>{company.investment}</p>
-                  </div>
+                  {company.sections.map((section, sectionIdx) => (
+                    <div key={section.sectionId || sectionIdx} className="company-detail-info">
+                      <h4>{section.title}</h4>
+                      {Array.isArray(section.content) ? (
+                        section.content.map((item, itemIdx) => (
+                          <p key={itemIdx}>{item}</p>
+                        ))
+                      ) : (
+                        <p>{section.content}</p>
+                      )}
+                    </div>
+                  ))}
                   
                   <button className="company-detail-arrow">→</button>
                 </div>

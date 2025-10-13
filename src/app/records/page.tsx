@@ -360,7 +360,7 @@ export default function RecordsPage() {
         }}
       />
       
-      {/* Dark Overlay */}
+      {/* Light Overlay */}
       <div
         style={{
           position: 'fixed',
@@ -368,15 +368,16 @@ export default function RecordsPage() {
           left: 0,
           width: '100%',
           height: '100%',
-          background: 'rgba(0, 0, 0, 0.75)',
+          background: 'rgba(0, 0, 0, 0.7)',
           zIndex: 1,
         }}
       />
 
-      <div style={{ paddingTop: '80px', position: 'relative', zIndex: 10 }}>
+      <div style={{ paddingTop: '80px', position: 'relative', zIndex: 50 }}>
         {/* Hero Section */}
         <section
           style={{
+            position: 'relative',
             minHeight: '80vh',
             padding: 'var(--space-20) var(--space-6)',
             textAlign: 'center',
@@ -388,15 +389,15 @@ export default function RecordsPage() {
             transition: 'all 1s ease-out',
           }}
         >
-        <div style={{ maxWidth: '1200px', margin: '0 auto', width: '100%' }}>
+        <div style={{ maxWidth: '1200px', margin: '0 auto', width: '100%', position: 'relative' }}>
           <div
             style={{
               display: 'inline-flex',
               alignItems: 'center',
               gap: 'var(--space-2)',
               padding: 'var(--space-3) var(--space-6)',
-              background: 'var(--bg-secondary)',
-              border: '1px solid var(--border-primary)',
+              background: 'transparent',
+              border: '1px solid #ffffff',
               borderRadius: 'var(--radius-full)',
               color: 'var(--text-accent)',
               fontSize: 'var(--text-sm)',
@@ -424,42 +425,7 @@ export default function RecordsPage() {
               transition: 'all 0.8s ease 0.2s',
             }}
           >
-            {successStoriesContent?.title ? (
-              (() => {
-                const words = successStoriesContent.title.split(' ');
-                return (
-                  <>
-                    {words.map((word, index) => (
-                      <span key={index} style={{
-                        background: word.toLowerCase().includes('success') || word.toLowerCase().includes('stories') 
-                          ? 'var(--gradient-accent)' 
-                          : 'transparent',
-                        WebkitBackgroundClip: word.toLowerCase().includes('success') || word.toLowerCase().includes('stories') 
-                          ? 'text' 
-                          : 'initial',
-                        WebkitTextFillColor: word.toLowerCase().includes('success') || word.toLowerCase().includes('stories') 
-                          ? 'transparent' 
-                          : 'var(--text-primary)',
-                        backgroundClip: word.toLowerCase().includes('success') || word.toLowerCase().includes('stories') 
-                          ? 'text' 
-                          : 'initial',
-                      }}>
-                        {word}{index < words.length - 1 ? ' ' : ''}
-                      </span>
-                    ))}
-                  </>
-                );
-              })()
-            ) : (
-              <>
-                Our <span style={{
-                  background: 'var(--gradient-accent)',
-                  WebkitBackgroundClip: 'text',
-                  WebkitTextFillColor: 'transparent',
-                  backgroundClip: 'text',
-                }}>Success Stories</span>
-              </>
-            )}
+            {successStoriesContent?.title || "Our Success Stories"}
           </h1>
           
           <p
@@ -480,6 +446,50 @@ export default function RecordsPage() {
         </div>
       </section>
 
+      {/* Connecting Line */}
+      <div
+        style={{
+          position: 'absolute',
+          left: '50%',
+          top: '630px',
+          transform: 'translateX(-50%)',
+          width: '2px',
+          height: '180px',
+          background: 'linear-gradient(180deg, rgba(184, 149, 106, 0.3), rgba(184, 149, 106, 0.8))',
+          opacity: heroVisible ? 1 : 0,
+          transition: 'opacity 1s ease 0.6s',
+          zIndex: 100,
+        }}
+      >
+        {/* Dot at the end with surrounding circle */}
+        <div
+          style={{
+            position: 'absolute',
+            bottom: '-10px',
+            left: '50%',
+            transform: 'translateX(-50%)',
+            width: '24px',
+            height: '24px',
+            borderRadius: '50%',
+            border: '2px solid rgba(184, 149, 106, 0.4)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+          }}
+        >
+          {/* Inner solid dot */}
+          <div
+            style={{
+              width: '12px',
+              height: '12px',
+              borderRadius: '50%',
+              background: '#B8956A',
+              boxShadow: '0 0 10px rgba(184, 149, 106, 0.5)',
+            }}
+          />
+        </div>
+      </div>
+
       {/* Performance Metrics & Client Testimonials Combined */}
       <section
         id="metrics-section"
@@ -488,9 +498,6 @@ export default function RecordsPage() {
           minHeight: '100vh',
           padding: 'var(--space-20) var(--space-6)',
           overflow: 'hidden',
-          opacity: metricsVisible ? 1 : 0,
-          transform: metricsVisible ? 'translateY(0)' : 'translateY(80px)',
-          transition: 'all 1.2s ease-out',
         }}
       >
         {/* Video Background */}
@@ -512,21 +519,8 @@ export default function RecordsPage() {
           <source src="/videos/176521-855920743_small.mp4" type="video/mp4" />
         </video>
 
-        {/* Dark Overlay */}
-        <div
-          style={{
-            position: 'absolute',
-            top: 0,
-            left: 0,
-            width: '100%',
-            height: '100%',
-            background: 'rgba(0, 0, 0, 0.7)',
-            zIndex: 2,
-          }}
-        />
-
         {/* Performance Metrics Content */}
-        <div style={{ maxWidth: '1200px', margin: '0 auto', width: '100%', position: 'relative', zIndex: 3 }}>
+        <div style={{ maxWidth: '1200px', margin: '0 auto', width: '100%', position: 'relative', zIndex: 2 }}>
           <h2
             style={{
               fontSize: 'var(--text-4xl)',
@@ -558,9 +552,9 @@ export default function RecordsPage() {
                 onClick={() => setSelectedYear(year)}
                 style={{
                   padding: 'var(--space-3) var(--space-6)',
-                  background: selectedYear === year ? 'var(--color-accent)' : 'var(--bg-secondary)',
-                  color: selectedYear === year ? 'var(--text-inverse)' : 'var(--text-primary)',
-                  border: '1px solid var(--border-primary)',
+                  background: 'transparent',
+                  color: selectedYear === year ? '#ffffff' : '#ffffff',
+                  border: '1px solid #ffffff',
                   borderRadius: 'var(--radius-full)',
                   fontSize: 'var(--text-sm)',
                   fontWeight: 'var(--font-weight-medium)',
@@ -591,7 +585,7 @@ export default function RecordsPage() {
                   style={{
                     fontSize: 'var(--text-4xl)',
                     fontWeight: 'var(--font-weight-bold)',
-                    color: 'var(--text-accent)',
+                    color: '#B8956A',
                     marginBottom: 'var(--space-2)',
                     fontFamily: 'var(--font-family-heading)',
                   }}
@@ -609,7 +603,7 @@ export default function RecordsPage() {
                     style={{
                       fontSize: 'var(--text-4xl)',
                       fontWeight: 'var(--font-weight-bold)',
-                      color: 'var(--text-accent)',
+                      color: '#B8956A',
                       marginBottom: 'var(--space-2)',
                       fontFamily: 'var(--font-family-heading)',
                     }}
@@ -626,7 +620,7 @@ export default function RecordsPage() {
                     style={{
                       fontSize: 'var(--text-4xl)',
                       fontWeight: 'var(--font-weight-bold)',
-                      color: 'var(--text-accent)',
+                      color: '#B8956A',
                       marginBottom: 'var(--space-2)',
                       fontFamily: 'var(--font-family-heading)',
                     }}
@@ -643,7 +637,7 @@ export default function RecordsPage() {
                     style={{
                       fontSize: 'var(--text-4xl)',
                       fontWeight: 'var(--font-weight-bold)',
-                      color: 'var(--text-accent)',
+                      color: '#B8956A',
                       marginBottom: 'var(--space-2)',
                       fontFamily: 'var(--font-family-heading)',
                     }}
@@ -660,7 +654,7 @@ export default function RecordsPage() {
                     style={{
                       fontSize: 'var(--text-4xl)',
                       fontWeight: 'var(--font-weight-bold)',
-                      color: 'var(--text-accent)',
+                      color: '#B8956A',
                       marginBottom: 'var(--space-2)',
                       fontFamily: 'var(--font-family-heading)',
                     }}
@@ -677,7 +671,7 @@ export default function RecordsPage() {
                     style={{
                       fontSize: 'var(--text-4xl)',
                       fontWeight: 'var(--font-weight-bold)',
-                      color: 'var(--text-accent)',
+                      color: '#B8956A',
                       marginBottom: 'var(--space-2)',
                       fontFamily: 'var(--font-family-heading)',
                     }}
@@ -759,7 +753,7 @@ export default function RecordsPage() {
                       style={{
                         fontSize: 'var(--text-lg)',
                         fontWeight: 'var(--font-weight-semibold)',
-                        color: 'var(--text-primary)',
+                        color: '#B8956A',
                         marginBottom: 'var(--space-1)',
                         fontFamily: 'var(--font-family-heading)',
                       }}
@@ -768,7 +762,7 @@ export default function RecordsPage() {
                     </h4>
                     <p
                       style={{
-                        color: 'var(--text-secondary)',
+                        color: 'rgba(255, 255, 255, 0.9)',
                         fontSize: 'var(--text-sm)',
                         marginBottom: 'var(--space-1)',
                       }}
@@ -782,8 +776,8 @@ export default function RecordsPage() {
                         gap: 'var(--space-2)',
                       }}
                     >
-                      <Building2 size={14} color="var(--text-accent)" />
-                      <span style={{ color: 'var(--text-muted)', fontSize: 'var(--text-xs)' }}>
+                      <Building2 size={14} color="rgba(255, 255, 255, 0.7)" />
+                      <span style={{ color: 'rgba(255, 255, 255, 0.7)', fontSize: 'var(--text-xs)' }}>
                         {testimonial.company} • {testimonial.dealValue}
                       </span>
                     </div>
@@ -798,14 +792,14 @@ export default function RecordsPage() {
                   }}
                 >
                   {[...Array(testimonial.rating)].map((_, i) => (
-                    <Star key={i} size={16} fill="var(--color-accent)" color="var(--color-accent)" />
+                    <Star key={i} size={16} fill="#B8956A" color="#B8956A" />
                   ))}
                 </div>
                 
                 <blockquote
                   style={{
                     fontSize: 'var(--text-base)',
-                    color: 'var(--text-secondary)',
+                    color: 'rgba(255, 255, 255, 0.8)',
                     lineHeight: '1.6',
                     fontStyle: 'italic',
                     position: 'relative',
@@ -818,7 +812,7 @@ export default function RecordsPage() {
                       position: 'absolute',
                       left: 0,
                       top: 0,
-                      color: 'var(--color-accent)',
+                      color: 'rgba(255, 255, 255, 0.3)',
                       opacity: 0.3,
                     }}
                   />
@@ -886,7 +880,8 @@ export default function RecordsPage() {
                   style={{
                     width: '60px',
                     height: '60px',
-                    background: 'var(--gradient-accent)',
+                    background: 'transparent',
+                    border: '2px solid #B8956A',
                     borderRadius: '50%',
                     display: 'flex',
                     alignItems: 'center',
@@ -894,14 +889,14 @@ export default function RecordsPage() {
                     margin: '0 auto var(--space-4)',
                   }}
                 >
-                  <Award size={24} color="#000" />
+                  <Award size={24} color="#B8956A" />
                 </div>
                 
                 <h4
                   style={{
                     fontSize: 'var(--text-lg)',
                     fontWeight: 'var(--font-weight-semibold)',
-                    color: 'var(--text-primary)',
+                    color: '#B8956A',
                     marginBottom: 'var(--space-2)',
                     fontFamily: 'var(--font-family-heading)',
                   }}

@@ -3,8 +3,11 @@
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
+import { usePathname } from 'next/navigation';
 
 const Navbar: React.FC = () => {
+  const pathname = usePathname();
+  const isHomePage = pathname === '/';
   const [isScrolled, setIsScrolled] = useState(false);
   const [isOverVideo, setIsOverVideo] = useState(false);
   const [isLogoHovered, setIsLogoHovered] = useState(false);
@@ -65,6 +68,8 @@ const Navbar: React.FC = () => {
               gap: 'var(--space-3)',
               textDecoration: 'none',
               transition: 'all var(--transition-fast)',
+              outline: 'none',
+              border: 'none',
             }}
             onMouseEnter={(e) => {
               e.currentTarget.style.transform = 'scale(1.02)';
@@ -91,18 +96,23 @@ const Navbar: React.FC = () => {
         </div>
 
 
-        {/* Center Section - Navigation Links */}
-        <div className="navbar-center">
-          <button onClick={() => scrollToSection('insights')} className="nav-link">
-            Insights
-          </button>
-          <button onClick={() => scrollToSection('story')} className="nav-link">
-            Story
-          </button>
-          <button onClick={() => scrollToSection('companies')} className="nav-link">
-            Companies
-          </button>
-        </div>
+        {/* Center Section - Navigation Links (only on home page) */}
+        {isHomePage && (
+          <div className="navbar-center">
+            <button onClick={() => scrollToSection('insights')} className="nav-link">
+              Insights
+            </button>
+            <button onClick={() => scrollToSection('story')} className="nav-link">
+              Story
+            </button>
+            <button onClick={() => scrollToSection('companies')} className="nav-link">
+              Companies
+            </button>
+            <Link href="/contact" className="nav-link">
+              Contact Us
+            </Link>
+          </div>
+        )}
       </div>
 
 
@@ -167,11 +177,24 @@ const Navbar: React.FC = () => {
           transition: all var(--transition-fast);
           position: relative;
           outline: none;
+          text-decoration: none;
+          display: inline-block;
         }
         
         .nav-link:focus {
-          outline: none;
-          box-shadow: none;
+          outline: none !important;
+          box-shadow: none !important;
+        }
+        
+        .nav-link:active {
+          outline: none !important;
+          box-shadow: none !important;
+          background: transparent !important;
+        }
+        
+        .nav-link:focus-visible {
+          outline: none !important;
+          box-shadow: none !important;
         }
         
         .nav-link::after {
@@ -192,6 +215,18 @@ const Navbar: React.FC = () => {
         
         .nav-link:hover::after {
           transform: translateX(-50%) scaleX(1);
+        }
+        
+        .navbar-left a:focus {
+          outline: none !important;
+          box-shadow: none !important;
+          border: none !important;
+        }
+        
+        .navbar-left a:focus-visible {
+          outline: none !important;
+          box-shadow: none !important;
+          border: none !important;
         }
         
       `}</style>

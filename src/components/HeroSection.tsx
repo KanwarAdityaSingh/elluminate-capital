@@ -16,6 +16,18 @@ export default function HeroSection({ heroContent, visionContent, isVisible: par
   const [stats, setStats] = useState({ clients: 0, deals: 0, years: 0, assets: 0 });
   const [videoSectionVisible, setVideoSectionVisible] = useState(false);
 
+  // Helper function to format animated number with API formatting
+  const formatStatValue = (animatedValue: number, apiValue?: string) => {
+    if (!apiValue) return animatedValue;
+    
+    // Extract prefix (like $), suffix (like +, B+, etc) from API value
+    const numericValue = apiValue.replace(/[^0-9.]/g, '');
+    const prefix = apiValue.substring(0, apiValue.indexOf(numericValue));
+    const suffix = apiValue.substring(apiValue.indexOf(numericValue) + numericValue.length);
+    
+    return `${prefix}${animatedValue}${suffix}`;
+  };
+
   useEffect(() => {
     setIsVisible(parentIsVisible ?? true);
     
@@ -147,19 +159,19 @@ export default function HeroSection({ heroContent, visionContent, isVisible: par
           <div className="hero-stats-container">
             <div className="hero-stats">
               <div className="stat-item">
-                <div className="stat-number">{stats.clients}+</div>
+                <div className="stat-number">{formatStatValue(stats.clients, heroContent?.displayStats?.[0]?.value)}</div>
                 <div className="stat-label">{heroContent?.displayStats?.[0]?.label || 'Global Clients'}</div>
               </div>
               <div className="stat-item">
-                <div className="stat-number">${stats.deals}B+</div>
+                <div className="stat-number">{formatStatValue(stats.deals, heroContent?.displayStats?.[1]?.value)}</div>
                 <div className="stat-label">{heroContent?.displayStats?.[1]?.label || 'Deals Completed'}</div>
               </div>
               <div className="stat-item">
-                <div className="stat-number">{stats.years}+</div>
+                <div className="stat-number">{formatStatValue(stats.years, heroContent?.displayStats?.[2]?.value)}</div>
                 <div className="stat-label">{heroContent?.displayStats?.[2]?.label || 'Years Experience'}</div>
               </div>
               <div className="stat-item">
-                <div className="stat-number">${stats.assets}B+</div>
+                <div className="stat-number">{formatStatValue(stats.assets, heroContent?.displayStats?.[3]?.value)}</div>
                 <div className="stat-label">{heroContent?.displayStats?.[3]?.label || 'Assets Under Management'}</div>
               </div>
             </div>
@@ -220,12 +232,6 @@ export default function HeroSection({ heroContent, visionContent, isVisible: par
             >
               {visionContent?.buttons?.[0] || "Explore Market Insights"}
               <ArrowRight size={22} />
-            </Link>
-            <Link 
-              href="/records"
-              className="btn-secondary-action"
-            >
-              {visionContent?.buttons?.[1] || "Get Custom Analysis"}
             </Link>
           </div>
         </div>

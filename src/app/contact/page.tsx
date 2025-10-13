@@ -72,21 +72,54 @@ export default function ContactPage() {
   ];
 
   return (
-    <div style={{ paddingTop: '80px' }}>
-      {/* Hero Section */}
-      <section
+    <div style={{ position: 'relative', minHeight: '100vh' }}>
+      {/* Fixed Background Video */}
+      <video
+        autoPlay
+        muted
+        loop
+        playsInline
         style={{
-          background: 'var(--gradient-subtle)',
-          padding: 'var(--space-20) var(--space-6)',
-          textAlign: 'center',
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          width: '100%',
+          height: '100%',
+          objectFit: 'cover',
+          zIndex: 0,
         }}
       >
+        <source src="/videos/4065924-uhd_4096_2160_25fps.mp4" type="video/mp4" />
+      </video>
+      
+      {/* Black Overlay */}
+      <div
+        style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          background: 'rgba(0, 0, 0, 0.7)',
+          zIndex: 1,
+        }}
+      />
+
+      <div style={{ paddingTop: '80px', position: 'relative', zIndex: 10 }}>
+        {/* Hero Section */}
+        <section
+          style={{
+            padding: 'var(--space-20) var(--space-6)',
+            textAlign: 'center',
+            background: '#C9A876',
+          }}
+        >
         <div style={{ maxWidth: '800px', margin: '0 auto' }}>
           <h1
             style={{
               fontSize: 'var(--text-6xl)',
               fontWeight: 'var(--font-weight-bold)',
-              color: 'var(--text-primary)',
+              color: '#FFFFFF',
               marginBottom: 'var(--space-6)',
               fontFamily: 'var(--font-family-heading)',
             }}
@@ -96,7 +129,7 @@ export default function ContactPage() {
           <p
             style={{
               fontSize: 'var(--text-xl)',
-              color: 'var(--text-secondary)',
+              color: '#FFFFFF',
               lineHeight: '1.6',
               marginBottom: 'var(--space-8)',
             }}
@@ -111,7 +144,6 @@ export default function ContactPage() {
       <section
         style={{
           padding: 'var(--space-20) var(--space-6)',
-          background: 'var(--bg-primary)',
         }}
       >
         <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
@@ -128,7 +160,7 @@ export default function ContactPage() {
                 style={{
                   fontSize: 'var(--text-3xl)',
                   fontWeight: 'var(--font-weight-bold)',
-                  color: 'var(--text-primary)',
+                  color: '#FFFFFF',
                   marginBottom: 'var(--space-6)',
                   fontFamily: 'var(--font-family-heading)',
                 }}
@@ -165,25 +197,40 @@ export default function ContactPage() {
                 <form
                   onSubmit={handleSubmit}
                   style={{
-                    background: 'var(--bg-secondary)',
+                    background: 'url(/pexels-alex-andrews-271121-821754.jpg)',
+                    backgroundSize: 'cover',
+                    backgroundPosition: 'center',
                     padding: 'var(--space-8)',
                     borderRadius: 'var(--radius-xl)',
-                    border: '1px solid var(--border-primary)',
+                    border: '2px solid #B8956A',
+                    position: 'relative',
+                    overflow: 'hidden',
                   }}
                 >
+                  <div style={{
+                    position: 'absolute',
+                    top: 0,
+                    left: 0,
+                    right: 0,
+                    bottom: 0,
+                    background: 'rgba(0, 0, 0, 0.6)',
+                    zIndex: 0,
+                  }} />
                   <div
                     style={{
                       display: 'grid',
                       gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
                       gap: 'var(--space-4)',
                       marginBottom: 'var(--space-6)',
+                      position: 'relative',
+                      zIndex: 1,
                     }}
                   >
                     <div>
                       <label
                         style={{
                           display: 'block',
-                          color: 'var(--text-primary)',
+                          color: '#FFFFFF',
                           fontWeight: 'var(--font-weight-medium)',
                           marginBottom: 'var(--space-2)',
                         }}
@@ -199,10 +246,10 @@ export default function ContactPage() {
                         style={{
                           width: '100%',
                           padding: 'var(--space-3)',
-                          border: '1px solid var(--border-primary)',
+                          border: '1px solid #D4C4B0',
                           borderRadius: 'var(--radius-md)',
-                          background: 'var(--bg-primary)',
-                          color: 'var(--text-primary)',
+                          background: 'transparent',
+                          color: '#FFFFFF',
                           fontSize: 'var(--text-base)',
                         }}
                       />
@@ -211,7 +258,7 @@ export default function ContactPage() {
                       <label
                         style={{
                           display: 'block',
-                          color: 'var(--text-primary)',
+                          color: '#FFFFFF',
                           fontWeight: 'var(--font-weight-medium)',
                           marginBottom: 'var(--space-2)',
                         }}
@@ -227,10 +274,10 @@ export default function ContactPage() {
                         style={{
                           width: '100%',
                           padding: 'var(--space-3)',
-                          border: '1px solid var(--border-primary)',
+                          border: '1px solid #D4C4B0',
                           borderRadius: 'var(--radius-md)',
-                          background: 'var(--bg-primary)',
-                          color: 'var(--text-primary)',
+                          background: 'transparent',
+                          color: '#FFFFFF',
                           fontSize: 'var(--text-base)',
                         }}
                       />
@@ -243,13 +290,15 @@ export default function ContactPage() {
                       gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
                       gap: 'var(--space-4)',
                       marginBottom: 'var(--space-6)',
+                      position: 'relative',
+                      zIndex: 1,
                     }}
                   >
                     <div>
                       <label
                         style={{
                           display: 'block',
-                          color: 'var(--text-primary)',
+                          color: '#FFFFFF',
                           fontWeight: 'var(--font-weight-medium)',
                           marginBottom: 'var(--space-2)',
                         }}
@@ -264,10 +313,10 @@ export default function ContactPage() {
                         style={{
                           width: '100%',
                           padding: 'var(--space-3)',
-                          border: '1px solid var(--border-primary)',
+                          border: '1px solid #D4C4B0',
                           borderRadius: 'var(--radius-md)',
-                          background: 'var(--bg-primary)',
-                          color: 'var(--text-primary)',
+                          background: 'transparent',
+                          color: '#FFFFFF',
                           fontSize: 'var(--text-base)',
                         }}
                       />
@@ -276,7 +325,7 @@ export default function ContactPage() {
                       <label
                         style={{
                           display: 'block',
-                          color: 'var(--text-primary)',
+                          color: '#FFFFFF',
                           fontWeight: 'var(--font-weight-medium)',
                           marginBottom: 'var(--space-2)',
                         }}
@@ -291,21 +340,21 @@ export default function ContactPage() {
                         style={{
                           width: '100%',
                           padding: 'var(--space-3)',
-                          border: '1px solid var(--border-primary)',
+                          border: '1px solid #D4C4B0',
                           borderRadius: 'var(--radius-md)',
-                          background: 'var(--bg-primary)',
-                          color: 'var(--text-primary)',
+                          background: 'transparent',
+                          color: '#FFFFFF',
                           fontSize: 'var(--text-base)',
                         }}
                       />
                     </div>
                   </div>
 
-                  <div style={{ marginBottom: 'var(--space-6)' }}>
+                  <div style={{ marginBottom: 'var(--space-6)', position: 'relative', zIndex: 1 }}>
                     <label
                       style={{
                         display: 'block',
-                        color: 'var(--text-primary)',
+                        color: '#FFFFFF',
                         fontWeight: 'var(--font-weight-medium)',
                         marginBottom: 'var(--space-2)',
                       }}
@@ -319,10 +368,10 @@ export default function ContactPage() {
                       style={{
                         width: '100%',
                         padding: 'var(--space-3)',
-                        border: '1px solid var(--border-primary)',
+                        border: '1px solid #D4C4B0',
                         borderRadius: 'var(--radius-md)',
-                        background: 'var(--bg-primary)',
-                        color: 'var(--text-primary)',
+                        background: 'transparent',
+                        color: '#FFFFFF',
                         fontSize: 'var(--text-base)',
                       }}
                     >
@@ -335,11 +384,11 @@ export default function ContactPage() {
                     </select>
                   </div>
 
-                  <div style={{ marginBottom: 'var(--space-6)' }}>
+                  <div style={{ marginBottom: 'var(--space-6)', position: 'relative', zIndex: 1 }}>
                     <label
                       style={{
                         display: 'block',
-                        color: 'var(--text-primary)',
+                        color: '#FFFFFF',
                         fontWeight: 'var(--font-weight-medium)',
                         marginBottom: 'var(--space-2)',
                       }}
@@ -355,10 +404,10 @@ export default function ContactPage() {
                       style={{
                         width: '100%',
                         padding: 'var(--space-3)',
-                        border: '1px solid var(--border-primary)',
+                        border: '1px solid #D4C4B0',
                         borderRadius: 'var(--radius-md)',
-                        background: 'var(--bg-primary)',
-                        color: 'var(--text-primary)',
+                        background: 'transparent',
+                        color: '#FFFFFF',
                         fontSize: 'var(--text-base)',
                         resize: 'vertical',
                       }}
@@ -370,8 +419,8 @@ export default function ContactPage() {
                     style={{
                       width: '100%',
                       padding: 'var(--space-4)',
-                      background: 'var(--color-accent)',
-                      color: 'var(--text-inverse)',
+                      background: '#E5D4C1',
+                      color: '#000000',
                       border: 'none',
                       borderRadius: 'var(--radius-lg)',
                       fontSize: 'var(--text-lg)',
@@ -382,13 +431,15 @@ export default function ContactPage() {
                       justifyContent: 'center',
                       gap: 'var(--space-2)',
                       transition: 'all var(--transition-fast)',
+                      position: 'relative',
+                      zIndex: 1,
                     }}
                     onMouseEnter={(e) => {
-                      e.currentTarget.style.background = 'var(--color-accent-dark)';
+                      e.currentTarget.style.background = '#D4C4B0';
                       e.currentTarget.style.transform = 'translateY(-2px)';
                     }}
                     onMouseLeave={(e) => {
-                      e.currentTarget.style.background = 'var(--color-accent)';
+                      e.currentTarget.style.background = '#E5D4C1';
                       e.currentTarget.style.transform = 'translateY(0)';
                     }}
                   >
@@ -405,7 +456,7 @@ export default function ContactPage() {
                 style={{
                   fontSize: 'var(--text-3xl)',
                   fontWeight: 'var(--font-weight-bold)',
-                  color: 'var(--text-primary)',
+                  color: '#FFFFFF',
                   marginBottom: 'var(--space-6)',
                   fontFamily: 'var(--font-family-heading)',
                 }}
@@ -426,26 +477,26 @@ export default function ContactPage() {
                     style={{
                       width: '50px',
                       height: '50px',
-                      background: 'var(--gradient-accent)',
+                      background: '#B8956A',
                       borderRadius: 'var(--radius-lg)',
                       display: 'flex',
                       alignItems: 'center',
                       justifyContent: 'center',
                     }}
                   >
-                    <Mail size={24} color="var(--text-primary)" />
+                    <Mail size={24} color="#FFFFFF" />
                   </div>
                   <div>
                     <h3
                       style={{
-                        color: 'var(--text-primary)',
+                        color: '#FFFFFF',
                         fontWeight: 'var(--font-weight-semibold)',
                         marginBottom: 'var(--space-1)',
                       }}
                     >
                       Email Us
                     </h3>
-                    <p style={{ color: 'var(--text-secondary)', margin: 0 }}>
+                    <p style={{ color: '#FFFFFF', margin: 0, opacity: 0.8 }}>
                       info@elluminatecapital.com
                     </p>
                   </div>
@@ -463,26 +514,26 @@ export default function ContactPage() {
                     style={{
                       width: '50px',
                       height: '50px',
-                      background: 'var(--gradient-accent)',
+                      background: '#B8956A',
                       borderRadius: 'var(--radius-lg)',
                       display: 'flex',
                       alignItems: 'center',
                       justifyContent: 'center',
                     }}
                   >
-                    <Phone size={24} color="var(--text-primary)" />
+                    <Phone size={24} color="#FFFFFF" />
                   </div>
                   <div>
                     <h3
                       style={{
-                        color: 'var(--text-primary)',
+                        color: '#FFFFFF',
                         fontWeight: 'var(--font-weight-semibold)',
                         marginBottom: 'var(--space-1)',
                       }}
                     >
                       Call Us
                     </h3>
-                    <p style={{ color: 'var(--text-secondary)', margin: 0 }}>
+                    <p style={{ color: '#FFFFFF', margin: 0, opacity: 0.8 }}>
                       +1 (555) 123-4567
                     </p>
                   </div>
@@ -500,26 +551,26 @@ export default function ContactPage() {
                     style={{
                       width: '50px',
                       height: '50px',
-                      background: 'var(--gradient-accent)',
+                      background: '#B8956A',
                       borderRadius: 'var(--radius-lg)',
                       display: 'flex',
                       alignItems: 'center',
                       justifyContent: 'center',
                     }}
                   >
-                    <Clock size={24} color="var(--text-primary)" />
+                    <Clock size={24} color="#FFFFFF" />
                   </div>
                   <div>
                     <h3
                       style={{
-                        color: 'var(--text-primary)',
+                        color: '#FFFFFF',
                         fontWeight: 'var(--font-weight-semibold)',
                         marginBottom: 'var(--space-1)',
                       }}
                     >
                       Business Hours
                     </h3>
-                    <p style={{ color: 'var(--text-secondary)', margin: 0 }}>
+                    <p style={{ color: '#FFFFFF', margin: 0, opacity: 0.8 }}>
                       Mon-Fri: 9:00 AM - 6:00 PM EST
                     </p>
                   </div>
@@ -531,7 +582,7 @@ export default function ContactPage() {
                 style={{
                   fontSize: 'var(--text-xl)',
                   fontWeight: 'var(--font-weight-semibold)',
-                  color: 'var(--text-primary)',
+                  color: '#FFFFFF',
                   marginBottom: 'var(--space-4)',
                 }}
               >
@@ -543,14 +594,14 @@ export default function ContactPage() {
                     key={index}
                     style={{
                       padding: 'var(--space-4)',
-                      background: 'var(--bg-secondary)',
+                      background: 'transparent',
                       borderRadius: 'var(--radius-lg)',
-                      border: '1px solid var(--border-primary)',
+                      border: '2px solid #B8956A',
                     }}
                   >
                     <h4
                       style={{
-                        color: 'var(--text-primary)',
+                        color: '#FFFFFF',
                         fontWeight: 'var(--font-weight-semibold)',
                         marginBottom: 'var(--space-2)',
                       }}
@@ -558,26 +609,26 @@ export default function ContactPage() {
                       {office.city}
                     </h4>
                     <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-2)', marginBottom: 'var(--space-1)' }}>
-                      <MapPin size={16} color="var(--text-accent)" />
-                      <span style={{ color: 'var(--text-secondary)', fontSize: 'var(--text-sm)' }}>
+                      <MapPin size={16} color="#FFFFFF" />
+                      <span style={{ color: '#FFFFFF', fontSize: 'var(--text-sm)' }}>
                         {office.address}
                       </span>
                     </div>
                     <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-2)', marginBottom: 'var(--space-1)' }}>
-                      <Phone size={16} color="var(--text-accent)" />
-                      <span style={{ color: 'var(--text-secondary)', fontSize: 'var(--text-sm)' }}>
+                      <Phone size={16} color="#FFFFFF" />
+                      <span style={{ color: '#FFFFFF', fontSize: 'var(--text-sm)' }}>
                         {office.phone}
                       </span>
                     </div>
                     <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-2)', marginBottom: 'var(--space-1)' }}>
-                      <Mail size={16} color="var(--text-accent)" />
-                      <span style={{ color: 'var(--text-secondary)', fontSize: 'var(--text-sm)' }}>
+                      <Mail size={16} color="#FFFFFF" />
+                      <span style={{ color: '#FFFFFF', fontSize: 'var(--text-sm)' }}>
                         {office.email}
                       </span>
                     </div>
                     <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-2)' }}>
-                      <Clock size={16} color="var(--text-accent)" />
-                      <span style={{ color: 'var(--text-secondary)', fontSize: 'var(--text-sm)' }}>
+                      <Clock size={16} color="#FFFFFF" />
+                      <span style={{ color: '#FFFFFF', fontSize: 'var(--text-sm)' }}>
                         {office.hours}
                       </span>
                     </div>
@@ -588,6 +639,7 @@ export default function ContactPage() {
           </div>
         </div>
       </section>
+      </div>
     </div>
   );
 }
