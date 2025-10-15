@@ -7,7 +7,6 @@ import { useRouter } from 'next/navigation';
 import { HeroContent } from '../types/api';
 import HeroSection from '../components/HeroSection';
 import Footer from '../components/Footer';
-import investmentCardService, { InvestmentCard } from '../services/investmentCardService';
 
 export default function Home() {
   const router = useRouter();
@@ -22,7 +21,6 @@ export default function Home() {
   const [hoveredButton, setHoveredButton] = useState<string | null>(null);
   const [storyVisible, setStoryVisible] = useState(false);
   const [companiesVisible, setCompaniesVisible] = useState(false);
-  const [investmentCards, setInvestmentCards] = useState<InvestmentCard[]>([]);
 
   // Fetch page content on component mount
   useEffect(() => {
@@ -183,19 +181,6 @@ export default function Home() {
     fetchPageContent();
   }, []); // Empty dependency array - only run once
 
-  // Fetch investment cards
-  useEffect(() => {
-    const fetchInvestmentCards = async () => {
-      try {
-        const cards = await investmentCardService.getAllInvestmentCards();
-        setInvestmentCards(cards);
-      } catch (error) {
-        console.error('Error fetching investment cards:', error);
-      }
-    };
-
-    fetchInvestmentCards();
-  }, []);
 
   const clients: string[] = [
     'Trading.jpeg',
@@ -219,19 +204,121 @@ export default function Home() {
     el.scrollBy({ left: direction === 'next' ? amount : -amount, behavior: 'smooth' });
   };
 
-  // Transform investment cards to display format
-  const transformInvestmentCards = () => {
-    return investmentCards.map((card) => {
-      // Sort sections by order
-      const sortedSections = [...card.sections].sort((a, b) => a.order - b.order);
-
-      return {
-        name: card.companyName,
-        logo: card.companyLogo,
-        sections: sortedSections,
-      };
-    });
-  };
+  // Hardcoded company data
+  const companies = [
+    {
+      name: "Sunstone",
+      logo: "/logos/Sunstone-logo.png",
+      sections: [
+        {
+          title: "About",
+          content: "Leading education technology company focused on higher education and professional development."
+        },
+        {
+          title: "Investment Stage",
+          content: "Series A"
+        }
+      ]
+    },
+    {
+      name: "One",
+      logo: "/logos/one-logo.png",
+      sections: [
+        {
+          title: "About",
+          content: "Digital banking platform providing seamless financial services and payment solutions."
+        },
+        {
+          title: "Investment Stage",
+          content: "Series B"
+        }
+      ]
+    },
+    {
+      name: "Battery Smart",
+      logo: "/logos/battery-smart.webp",
+      sections: [
+        {
+          title: "About",
+          content: "Electric vehicle battery swapping network enabling sustainable mobility solutions."
+        },
+        {
+          title: "Investment Stage",
+          content: "Series A"
+        }
+      ]
+    },
+    {
+      name: "Jiraaf",
+      logo: "/logos/jiraaf-launches-indias-first-bond-analyser-to-decode-fixed-income-investing.webp",
+      sections: [
+        {
+          title: "About",
+          content: "Fixed income investment platform with India's first bond analyser for retail investors."
+        },
+        {
+          title: "Investment Stage",
+          content: "Seed"
+        }
+      ]
+    },
+    {
+      name: "Farmart",
+      logo: "/logos/Farmart-logo.webp",
+      sections: [
+        {
+          title: "About",
+          content: "Agricultural technology platform connecting farmers with buyers and providing market insights."
+        },
+        {
+          title: "Investment Stage",
+          content: "Series A"
+        }
+      ]
+    },
+    {
+      name: "Damensch",
+      logo: "/logos/Damensch.png",
+      sections: [
+        {
+          title: "About",
+          content: "Direct-to-consumer men's fashion brand specializing in premium innerwear and casual wear."
+        },
+        {
+          title: "Investment Stage",
+          content: "Series B"
+        }
+      ]
+    },
+    {
+      name: "Vegrow",
+      logo: "/logos/vegrow.webp",
+      sections: [
+        {
+          title: "About",
+          content: "B2B marketplace for fresh produce, connecting farmers directly with retailers and restaurants."
+        },
+        {
+          title: "Investment Stage",
+          content: "Series A"
+        }
+      ]
+    },
+    {
+      name: "Captain Fresh",
+      logo: "/logos/captainFresh.png",
+      sections: [
+        {
+          title: "About",
+          content: "Seafood supply chain platform ensuring fresh and traceable seafood from ocean to table."
+        },
+        {
+          title: "Investment Stage",
+          content: "Series B"
+        }
+      ]
+    }
+  ];
 
   // Auto-scroll carousel
   useEffect(() => {
@@ -467,7 +554,7 @@ export default function Home() {
           <h2 className="companies-grid-title">Companies</h2>
           
           <div className="companies-logos-grid">
-            {transformInvestmentCards().map((company, index) => (
+            {companies.map((company, index) => (
               <div key={index} className="company-logo-item">
                 <div className="company-logo-card">
                   <img src={company.logo} alt={company.name} className="company-logo-img" />
@@ -480,7 +567,7 @@ export default function Home() {
                   </div>
                   
                   {company.sections.map((section, sectionIdx) => (
-                    <div key={section.sectionId || sectionIdx} className="company-detail-info">
+                      <div key={sectionIdx} className="company-detail-info">
                       <h4>{section.title}</h4>
                       {Array.isArray(section.content) ? (
                         section.content.map((item, itemIdx) => (
