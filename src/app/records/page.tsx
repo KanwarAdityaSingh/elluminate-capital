@@ -122,13 +122,10 @@ export default function RecordsPage() {
     fetchPageContent();
   }, []);
 
-  // Animation effect
+  // Animation effect - immediate to prevent flashing
   useEffect(() => {
-    const timer = setTimeout(() => {
-      setIsVisible(true);
-      setHeroVisible(true); // Show hero section immediately
-    }, 100);
-    return () => clearTimeout(timer);
+    setIsVisible(true);
+    setHeroVisible(true); // Show hero section immediately
   }, []);
 
   // Scroll animations for each section

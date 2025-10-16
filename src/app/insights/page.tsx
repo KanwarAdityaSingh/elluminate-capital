@@ -55,12 +55,9 @@ export default function InsightsPage() {
     fetchInsightsContent();
   }, []);
 
-  // Animation effect
+  // Animation effect - immediate to prevent flashing
   useEffect(() => {
-    const timer = setTimeout(() => {
-      setIsVisible(true);
-    }, 100);
-    return () => clearTimeout(timer);
+    setIsVisible(true);
   }, []);
 
   // Categories come from insights API
@@ -73,52 +70,116 @@ export default function InsightsPage() {
   console.log('All Blogs:', allBlogs.length);
 
   return (
-    <div style={{ paddingTop: '80px' }}>
-      {/* Hero Section */}
-      <section
+    <div style={{ position: 'relative', minHeight: '100vh' }}>
+      
+      {/* Fixed Background Image */}
+      <div
         style={{
-          background: 'var(--gradient-subtle)',
-          padding: 'var(--space-20) var(--space-6)',
-          textAlign: 'center',
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          width: '100%',
+          height: '100%',
+          backgroundImage: 'url(/insights.jpg)',
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          backgroundRepeat: 'no-repeat',
+          zIndex: 0,
         }}
-      >
-        <div style={{ maxWidth: '800px', margin: '0 auto' }}>
-          <h1
+      />
+      
+      {/* Light Overlay */}
+      <div
+        style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          width: '100%',
+          height: '100%',
+          background: 'rgba(0, 0, 0, 0.7)',
+          zIndex: 1,
+        }}
+      />
+
+      <div style={{ paddingTop: '80px', position: 'relative', zIndex: 50 }}>
+        {/* Hero Section */}
+        <section
+          style={{
+            position: 'relative',
+            minHeight: '80vh',
+            padding: 'var(--space-20) var(--space-6)',
+            textAlign: 'center',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            overflow: 'hidden',
+          }}
+        >
+          {/* Content */}
+          <div style={{ maxWidth: '800px', margin: '0 auto', position: 'relative', zIndex: 3 }}>
+            <h1
+              style={{
+                fontSize: 'clamp(3rem, 6vw, 5rem)',
+                fontWeight: 'var(--font-weight-bold)',
+                color: '#B8956A',
+                marginBottom: 'var(--space-6)',
+                fontFamily: 'var(--font-family-heading)',
+                textShadow: '0 2px 4px rgba(0, 0, 0, 0.3)',
+                opacity: isVisible ? 1 : 0,
+                transform: isVisible ? 'translateY(0)' : 'translateY(30px)',
+                transition: 'all 0.8s ease 0.4s',
+                lineHeight: '1.2',
+              }}
+            >
+              {insightsContent?.title || "Market Insights"}
+            </h1>
+            <p
+              style={{
+                fontSize: 'clamp(1.25rem, 3vw, 1.75rem)',
+                color: 'rgba(255, 255, 255, 0.9)',
+                lineHeight: '1.5',
+                marginBottom: 'var(--space-8)',
+                textShadow: '0 1px 2px rgba(0, 0, 0, 0.3)',
+                opacity: isVisible ? 1 : 0,
+                transform: isVisible ? 'translateY(0)' : 'translateY(30px)',
+                transition: 'all 0.8s ease 1.2s',
+                fontWeight: 'var(--font-weight-normal)',
+              }}
+            >
+              {insightsContent?.subtitle || "Stay informed with our latest research, market analysis, and investment insights from our team of financial experts."}
+            </p>
+          </div>
+
+          {/* Floating Arrow Indicator */}
+          <div
             style={{
-              fontSize: 'var(--text-6xl)',
-              fontWeight: 'var(--font-weight-bold)',
-              color: 'var(--text-primary)',
-              marginBottom: 'var(--space-6)',
-              fontFamily: 'var(--font-family-heading)',
-              opacity: isVisible ? 1 : 0,
-              transform: isVisible ? 'translateY(0)' : 'translateY(30px)',
-              transition: 'all 0.8s ease 0.2s',
+              position: 'absolute',
+              bottom: '20px',
+              left: '50%',
+              transform: 'translateX(-50%)',
+              zIndex: 1000,
+              opacity: 1,
             }}
           >
-            {insightsContent?.title || "Market Insights"}
-          </h1>
-          <p
-            style={{
-              fontSize: 'var(--text-xl)',
-              color: 'var(--text-secondary)',
-              lineHeight: '1.6',
-              marginBottom: 'var(--space-8)',
-              opacity: isVisible ? 1 : 0,
-              transform: isVisible ? 'translateY(0)' : 'translateY(30px)',
-              transition: 'all 0.8s ease 0.4s',
-            }}
-          >
-            {insightsContent?.subtitle || "Stay informed with our latest research, market analysis, and investment insights from our team of financial experts."}
-          </p>
-        </div>
-      </section>
+            <div
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                color: '#B8956A',
+                animation: 'bounce 2s infinite',
+              }}
+            >
+              <div style={{ fontSize: '60px' }}>↓</div>
+            </div>
+          </div>
+        </section>
 
       {/* Categories Filter Pills */}
       <section
         style={{
-          padding: 'var(--space-8) var(--space-6)',
-          background: 'var(--bg-primary)',
-          borderBottom: '1px solid var(--border-primary)',
+          padding: 'var(--space-32) var(--space-6) var(--space-8)',
+          background: 'transparent',
         }}
       >
         <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
@@ -135,9 +196,9 @@ export default function InsightsPage() {
                 key={category}
                 style={{
                   padding: 'var(--space-3) var(--space-6)',
-                  background: 'var(--bg-secondary)',
-                  color: 'var(--text-primary)',
-                  border: '1px solid var(--border-primary)',
+                  background: 'transparent',
+                  color: '#ffffff',
+                  border: '1px solid rgba(255, 255, 255, 0.3)',
                   borderRadius: 'var(--radius-full)',
                   fontSize: 'var(--text-sm)',
                   fontWeight: 'var(--font-weight-medium)',
@@ -145,12 +206,15 @@ export default function InsightsPage() {
                   transition: 'all var(--transition-fast)',
                   opacity: isVisible ? 1 : 0,
                   transform: isVisible ? 'translateY(0)' : 'translateY(20px)',
+                  backdropFilter: 'blur(10px)',
                 }}
                 onMouseEnter={(e) => {
-                    e.currentTarget.style.background = 'var(--bg-tertiary)';
+                    e.currentTarget.style.background = 'rgba(255, 255, 255, 0.1)';
+                    e.currentTarget.style.border = '1px solid rgba(255, 255, 255, 0.5)';
                 }}
                 onMouseLeave={(e) => {
-                    e.currentTarget.style.background = 'var(--bg-secondary)';
+                    e.currentTarget.style.background = 'transparent';
+                    e.currentTarget.style.border = '1px solid rgba(255, 255, 255, 0.3)';
                 }}
               >
                 {category}
@@ -166,7 +230,7 @@ export default function InsightsPage() {
           key={blogType._id}
         style={{
           padding: 'var(--space-20) var(--space-6)',
-            background: typeIndex % 2 === 0 ? 'var(--bg-primary)' : 'var(--bg-secondary)',
+          background: 'transparent',
         }}
       >
         <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
@@ -174,9 +238,10 @@ export default function InsightsPage() {
             style={{
                 fontSize: 'var(--text-4xl)',
                 fontWeight: 'var(--font-weight-bold)',
-                color: 'var(--text-primary)',
+                color: '#ffffff',
                 marginBottom: 'var(--space-4)',
                 fontFamily: 'var(--font-family-heading)',
+                textShadow: '0 2px 4px rgba(0, 0, 0, 0.3)',
                 opacity: isVisible ? 1 : 0,
                 transform: isVisible ? 'translateY(0)' : 'translateY(30px)',
                 transition: `all 0.8s ease ${0.2 + typeIndex * 0.1}s`,
@@ -188,9 +253,10 @@ export default function InsightsPage() {
             <p
               style={{
                 fontSize: 'var(--text-lg)',
-                color: 'var(--text-secondary)',
+                color: 'rgba(255, 255, 255, 0.8)',
                 marginBottom: 'var(--space-8)',
                 maxWidth: '600px',
+                textShadow: '0 1px 2px rgba(0, 0, 0, 0.3)',
                 opacity: isVisible ? 1 : 0,
                 transform: isVisible ? 'translateY(0)' : 'translateY(30px)',
                 transition: `all 0.8s ease ${0.3 + typeIndex * 0.1}s`,
@@ -221,8 +287,22 @@ export default function InsightsPage() {
       </section>
       ))}
 
-      <Footer />
+        <Footer />
+      </div>
 
+      <style jsx>{`
+        @keyframes bounce {
+          0%, 20%, 50%, 80%, 100% {
+            transform: translateY(0);
+          }
+          40% {
+            transform: translateY(-10px);
+          }
+          60% {
+            transform: translateY(-5px);
+          }
+        }
+      `}</style>
     </div>
   );
 }

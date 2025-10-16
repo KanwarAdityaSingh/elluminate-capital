@@ -189,12 +189,9 @@ export default function Home() {
     'usethis.png'
   ];
 
-  // Animation effect
+  // Animation effect - immediate to prevent flashing
   useEffect(() => {
-    const timer = setTimeout(() => {
-      setIsVisible(true);
-    }, 100);
-    return () => clearTimeout(timer);
+    setIsVisible(true);
   }, []);
 
   const scrollClients = (direction: 'next' | 'prev') => {

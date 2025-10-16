@@ -40,16 +40,12 @@ const SmoothScrollProvider: React.FC<SmoothScrollProviderProps> = ({ children })
 
   // Scroll to top when pathname changes
   useEffect(() => {
-    // Small delay to ensure the page has rendered
-    const timer = setTimeout(() => {
-      if (lenisRef.current) {
-        lenisRef.current.scrollTo(0, { immediate: true });
-      } else {
-        window.scrollTo(0, 0);
-      }
-    }, 100);
-
-    return () => clearTimeout(timer);
+    // Immediate scroll to top without delay to prevent flashing
+    if (lenisRef.current) {
+      lenisRef.current.scrollTo(0, { immediate: true });
+    } else {
+      window.scrollTo(0, 0);
+    }
   }, [pathname]);
 
   return <>{children}</>;
