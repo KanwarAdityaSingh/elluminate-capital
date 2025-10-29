@@ -519,7 +519,7 @@ export default function ServicesPage() {
           </p>
           <div style={{ display: 'flex', gap: 'var(--space-4)', justifyContent: 'center', flexWrap: 'wrap' }}>
             <a
-              href="/contact"
+              href="/contact/"
               style={{
                 display: 'inline-block',
                 padding: 'var(--space-4) var(--space-8)',
@@ -542,7 +542,7 @@ export default function ServicesPage() {
               Contact Us
             </a>
             <a
-              href="/about"
+              href="/about/"
               style={{
                 display: 'inline-block',
                 padding: 'var(--space-4) var(--space-8)',

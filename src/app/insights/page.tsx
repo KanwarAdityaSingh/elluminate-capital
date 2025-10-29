@@ -23,7 +23,7 @@ export default function InsightsPage() {
   useEffect(() => {
     const fetchInsightsContent = async () => {
       try {
-        const response = await fetch('http://localhost:5050/page/getPageContent?pageType=insights');
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5050'}/page/getPageContent?pageType=insights`);
         const data = await response.json();
         
         if (data.success && data.data) {
@@ -38,7 +38,7 @@ export default function InsightsPage() {
             },
             displayStats: [],
             features: [],
-            buttons: data.data.btnTxt.map((btn: any) => btn.buttonText)
+            buttons: data.data.btnTxt.map((btn: { buttonText: string }) => btn.buttonText)
           };
           console.log('Insights API Data received:', data.data);
           console.log('Transformed insights data:', transformedData);

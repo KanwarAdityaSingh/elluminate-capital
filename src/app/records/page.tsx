@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import Link from 'next/link';
 import { TrendingUp, Award, Users, BarChart3, Star, Quote, CheckCircle, ArrowRight, Download, Calendar, Building2 } from 'lucide-react';
 import { HeroContent } from '../../types/api';
 import Footer from '../../components/Footer';
@@ -30,9 +31,9 @@ export default function RecordsPage() {
       try {
         // Fetch success stories, performance metrics, and join success content in parallel
         const [successStoriesResponse, performanceMetricsResponse, joinSuccessResponse] = await Promise.all([
-          fetch('http://localhost:5050/page/getPageContent?pageType=successStories'),
-          fetch('http://localhost:5050/page/getPageContent?pageType=performanceMetrics'),
-          fetch('http://localhost:5050/page/getPageContent?pageType=joinSuccess')
+          fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5050'}/page/getPageContent?pageType=successStories`),
+          fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5050'}/page/getPageContent?pageType=performanceMetrics`),
+          fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5050'}/page/getPageContent?pageType=joinSuccess`)
         ]);
 
         const [successStoriesData, performanceMetricsData, joinSuccessData] = await Promise.all([
@@ -54,7 +55,7 @@ export default function RecordsPage() {
             },
             displayStats: [],
             features: [],
-            buttons: successStoriesData.data.btnTxt.map((btn: any) => btn.buttonText)
+            buttons: successStoriesData.data.btnTxt.map((btn: { buttonText: string }) => btn.buttonText)
           };
           console.log('Success Stories API Data received:', successStoriesData.data);
           console.log('Transformed success stories data:', transformedSuccessStoriesData);
@@ -74,14 +75,14 @@ export default function RecordsPage() {
             },
             displayStats: performanceMetricsData.data.numbers,
             features: [],
-            buttons: performanceMetricsData.data.btnTxt.map((btn: any) => btn.buttonText)
+            buttons: performanceMetricsData.data.btnTxt.map((btn: { buttonText: string }) => btn.buttonText)
           };
           console.log('Performance Metrics API Data received:', performanceMetricsData.data);
           console.log('Transformed performance metrics data:', transformedPerformanceMetricsData);
           setPerformanceMetricsContent(transformedPerformanceMetricsData);
           
           // Set available years from API data
-          const yearsFromAPI = performanceMetricsData.data.btnTxt.map((btn: any) => btn.buttonText);
+          const yearsFromAPI = performanceMetricsData.data.btnTxt.map((btn: { buttonText: string }) => btn.buttonText);
           setAvailableYears(yearsFromAPI);
           
           // Set the first year as selected if current selection is not in the new list
@@ -103,7 +104,7 @@ export default function RecordsPage() {
             },
             displayStats: [],
             features: [],
-            buttons: joinSuccessData.data.btnTxt.map((btn: any) => btn.buttonText)
+            buttons: joinSuccessData.data.btnTxt.map((btn: { buttonText: string }) => btn.buttonText)
           };
           console.log('Join Success API Data received:', joinSuccessData.data);
           console.log('Transformed join success data:', transformedJoinSuccessData);
@@ -993,8 +994,8 @@ export default function RecordsPage() {
               transition: 'all 0.8s ease 0.6s',
             }}
           >
-            <a
-              href="/contact"
+            <Link
+              href="/contact/"
               style={{
                 display: 'inline-flex',
                 alignItems: 'center',
@@ -1022,10 +1023,10 @@ export default function RecordsPage() {
             >
               {joinSuccessContent?.buttons?.[0] || "Start Your Journey"}
               <ArrowRight size={20} />
-            </a>
+            </Link>
             
-            <a
-              href="/insights"
+            <Link
+              href="/insights/"
               style={{
                 display: 'inline-flex',
                 alignItems: 'center',
@@ -1052,7 +1053,7 @@ export default function RecordsPage() {
               }}
             >
               {joinSuccessContent?.buttons?.[1] || "View Insights"}
-            </a>
+            </Link>
           </div>
         </div>
       </section>

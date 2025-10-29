@@ -24,19 +24,19 @@ const Footer: React.FC = () => {
     {
       title: 'Company',
       links: [
-        { name: 'About Us', href: '/about' },
-        { name: 'Our Team', href: '/about#team' },
-        { name: 'Careers', href: '/careers' },
-        { name: 'News & Insights', href: '/insights' },
+        { name: 'About Us', href: '/about/' },
+        { name: 'Our Team', href: '/about/#team' },
+        { name: 'Careers', href: '/careers/' },
+        { name: 'News & Insights', href: '/insights/' },
       ],
     },
     {
       title: 'Resources',
       links: [
-        { name: 'Market Reports', href: '/insights#reports' },
-        { name: 'Research', href: '/insights#research' },
-        { name: 'Client Portal', href: '/portal' },
-        { name: 'Contact Us', href: '/contact' },
+        { name: 'Market Reports', href: '/insights/#reports' },
+        { name: 'Research', href: '/insights/#research' },
+        { name: 'Client Portal', href: '/portal/' },
+        { name: 'Contact Us', href: '/contact/' },
       ],
     },
   ];
@@ -313,7 +313,7 @@ const Footer: React.FC = () => {
           </p>
           <div style={{ display: 'flex', gap: 'var(--space-6)' }}>
             <Link
-              href="/privacy"
+              href="/privacy/"
               style={{
                 color: 'var(--text-muted)',
                 textDecoration: 'none',
@@ -330,7 +330,7 @@ const Footer: React.FC = () => {
               Privacy Policy
             </Link>
             <Link
-              href="/terms"
+              href="/terms/"
               style={{
                 color: 'var(--text-muted)',
                 textDecoration: 'none',

@@ -28,12 +28,12 @@ export default function Home() {
       try {
         // Fetch landing, vision, story, leadership team, investment strategy, and partners content in parallel
         const [landingResponse, visionResponse, storyResponse, leadershipResponse, investmentStrategyResponse, partnersResponse] = await Promise.all([
-          fetch('http://localhost:5050/page/getPageContent?pageType=landing'),
-          fetch('http://localhost:5050/page/getPageContent?pageType=vision'),
-          fetch('http://localhost:5050/page/getPageContent?pageType=story'),
-          fetch('http://localhost:5050/page/getPageContent?pageType=leadershipTeam'),
-          fetch('http://localhost:5050/page/getPageContent?pageType=investmentStrategy'),
-          fetch('http://localhost:5050/page/getPageContent?pageType=partners')
+          fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5050'}/page/getPageContent?pageType=landing`),
+          fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5050'}/page/getPageContent?pageType=vision`),
+          fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5050'}/page/getPageContent?pageType=story`),
+          fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5050'}/page/getPageContent?pageType=leadershipTeam`),
+          fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5050'}/page/getPageContent?pageType=investmentStrategy`),
+          fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5050'}/page/getPageContent?pageType=partners`)
         ]);
 
         const [landingData, visionData, storyData, leadershipData, investmentStrategyData, partnersData] = await Promise.all([
@@ -58,7 +58,7 @@ export default function Home() {
             },
             displayStats: landingData.data.numbers,
             features: landingData.data.items,
-            buttons: landingData.data.btnTxt.map((btn: any) => btn.buttonText)
+            buttons: landingData.data.btnTxt.map((btn: { buttonText: string }) => btn.buttonText)
           };
           console.log('Landing API Data received:', landingData.data);
           console.log('Transformed landing data:', transformedLandingData);
@@ -78,7 +78,7 @@ export default function Home() {
             },
             displayStats: visionData.data.numbers,
             features: visionData.data.items,
-            buttons: visionData.data.btnTxt.map((btn: any) => btn.buttonText)
+            buttons: visionData.data.btnTxt.map((btn: { buttonText: string }) => btn.buttonText)
           };
           console.log('Vision API Data received:', visionData.data);
           console.log('Transformed vision data:', transformedVisionData);
@@ -118,7 +118,7 @@ export default function Home() {
             },
             displayStats: [],
             features: leadershipData.data.items,
-            buttons: leadershipData.data.btnTxt.map((btn: any) => btn.buttonText)
+            buttons: leadershipData.data.btnTxt.map((btn: { buttonText: string }) => btn.buttonText)
           };
           console.log('Leadership API Data received:', leadershipData.data);
           console.log('Transformed leadership data:', transformedLeadershipData);
@@ -138,7 +138,7 @@ export default function Home() {
             },
             displayStats: investmentStrategyData.data.numbers,
             features: investmentStrategyData.data.items,
-            buttons: investmentStrategyData.data.btnTxt.map((btn: any) => btn.buttonText)
+            buttons: investmentStrategyData.data.btnTxt.map((btn: { buttonText: string }) => btn.buttonText)
           };
           console.log('Investment Strategy API Data received:', investmentStrategyData.data);
           console.log('Transformed investment strategy data:', transformedInvestmentStrategyData);

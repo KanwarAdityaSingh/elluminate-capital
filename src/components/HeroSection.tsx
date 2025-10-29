@@ -227,7 +227,7 @@ export default function HeroSection({ heroContent, visionContent, isVisible: par
           
           <div className="merged-actions">
             <Link 
-              href="/insights" 
+              href="/insights/" 
               className="btn-primary-action"
             >
               {visionContent?.buttons?.[0] || "Explore Market Insights"}

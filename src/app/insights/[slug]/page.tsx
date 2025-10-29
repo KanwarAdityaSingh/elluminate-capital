@@ -237,7 +237,7 @@ export function generateMetadata({ params }: { params: { slug: string } }) {
       title: article.title,
       type: 'article',
     },
-  } as any;
+  };
 }
 
 

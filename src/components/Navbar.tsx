@@ -108,7 +108,7 @@ const Navbar: React.FC = () => {
             <button onClick={() => scrollToSection('companies')} className="nav-link">
               Companies
             </button>
-            <Link href="/contact" className="nav-link">
+            <Link href="/contact/" className="nav-link">
               Contact Us
             </Link>
           </div>

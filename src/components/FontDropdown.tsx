@@ -49,11 +49,11 @@ const FontDropdownContent: React.FC = () => {
 
   // Filter fonts based on search term
   const filteredCategories = Object.entries(fontCategories).reduce((acc, [category, fonts]) => {
-    const filtered = fonts.filter(([key, config]) => 
+    const filtered = fonts.filter(([, config]) => 
       config.name.toLowerCase().includes(searchTerm.toLowerCase())
     );
     if (filtered.length > 0) {
-      (acc as any)[category] = filtered;
+      acc[category] = filtered;
     }
     return acc;
   }, {} as Record<string, [string, FontConfig][]>);
