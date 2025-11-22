@@ -118,6 +118,7 @@ export default function HeroSection({ heroContent, visionContent, isVisible: par
               muted
               loop
               playsInline
+              preload="metadata"
             >
               <source src="/videos/176521-855920743_small.mp4" type="video/mp4" />
             </video>
@@ -188,6 +189,7 @@ export default function HeroSection({ heroContent, visionContent, isVisible: par
             loop
             playsInline
             className="background-video"
+            preload="metadata"
           >
             <source src="/videos/mainvideo.mp4" type="video/mp4" />
             Your browser does not support the video tag.
@@ -224,16 +226,6 @@ export default function HeroSection({ heroContent, visionContent, isVisible: par
           <p className={`merged-description ${videoSectionVisible ? 'animate-fade-in-up delay-after-divider' : ''}`}>
             {visionContent?.subtitle || "Experience the power of strategic investment banking combined with comprehensive market research, cutting-edge analysis, and proven strategies that drive exceptional results across global markets."}
           </p>
-          
-          <div className="merged-actions">
-            <Link 
-              href="/insights/" 
-              className="btn-primary-action"
-            >
-              {visionContent?.buttons?.[0] || "Explore Market Insights"}
-              <ArrowRight size={22} />
-            </Link>
-          </div>
         </div>
       </section>
     </>

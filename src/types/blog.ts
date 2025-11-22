@@ -20,9 +20,3 @@ export interface Blog {
   viewCount: number;
   readTime: number;
 }
-
-export interface BlogApiResponse {
-  success: boolean;
-  message: string;
-  data: BlogType[];
-}

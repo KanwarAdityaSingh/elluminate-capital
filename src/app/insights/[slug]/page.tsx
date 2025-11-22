@@ -2,6 +2,7 @@ import React from 'react';
 import { notFound } from 'next/navigation';
 import { Calendar, User, Clock } from 'lucide-react';
 import ShareButton from '@/components/ShareButton';
+import Footer from '@/components/Footer';
 
 // Simple chart using SVG to avoid bringing a heavy charting lib
 function LineChart({ data }: { data: Array<{ x: number; y: number }> }) {
@@ -162,7 +163,7 @@ export default function ArticlePage({ params }: { params: { slug: string } }) {
       {/* Cover */}
       <section style={{ position: 'relative', height: '360px', overflow: 'hidden', background: 'var(--bg-secondary)' }}>
         {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src={article.cover} alt={article.title} style={{ width: '100%', height: '100%', objectFit: 'cover', filter: 'brightness(0.8)' }} />
+        <img src={article.cover} alt={article.title} style={{ width: '100%', height: '100%', objectFit: 'cover', filter: 'brightness(0.8)' }} loading="lazy" />
         <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to top, rgba(26,15,26,0.9), rgba(26,15,26,0.2))' }} />
         <div style={{ position: 'absolute', bottom: 24, left: '50%', transform: 'translateX(-50%)', width: 'min(1100px, 92%)' }}>
           <h1 style={{ color: 'var(--text-inverse)', fontSize: 'var(--text-5xl)', marginBottom: 8 }}>{article.title}</h1>
@@ -176,7 +177,7 @@ export default function ArticlePage({ params }: { params: { slug: string } }) {
 
       {/* Content */}
       <section style={{ padding: '40px 0', background: 'var(--bg-primary)' }}>
-        <div style={{ width: 'min(1100px, 92%)', margin: '0 auto', display: 'grid', gridTemplateColumns: '3fr 1fr', gap: 32 }}>
+        <div className="article-grid" style={{ width: 'min(1100px, 92%)', margin: '0 auto', display: 'grid', gridTemplateColumns: '3fr 1fr', gap: 32 }}>
           <article>
             {article.sections.map((s, idx) => (
               <div key={idx} style={{ marginBottom: 32 }}>
@@ -185,7 +186,7 @@ export default function ArticlePage({ params }: { params: { slug: string } }) {
                 {s.image && (
                   <figure style={{ borderRadius: 'var(--radius-xl)', overflow: 'hidden', border: '1px solid var(--border-primary)', marginBottom: 8, background: 'var(--bg-secondary)' }}>
                     {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img src={s.image} alt={s.heading} style={{ width: '100%', height: 'auto', display: 'block' }} />
+                    <img src={s.image} alt={s.heading} style={{ width: '100%', height: 'auto', display: 'block' }} loading="lazy" />
                     {s.caption && (
                       <figcaption style={{ padding: 12, color: 'var(--text-muted)', fontSize: 'var(--text-xs)' }}>{s.caption}</figcaption>
                     )}
@@ -219,6 +220,15 @@ export default function ArticlePage({ params }: { params: { slug: string } }) {
           </aside>
         </div>
       </section>
+      <style>{`
+        @media (max-width: 768px) {
+          .article-grid { grid-template-columns: 1fr !important; gap: 20px !important; }
+        }
+        @media (max-width: 480px) {
+          .article-grid { gap: 16px !important; }
+        }
+      `}</style>
+      <Footer />
     </div>
   );
 }

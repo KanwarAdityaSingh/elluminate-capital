@@ -431,11 +431,12 @@ interface ThemeProviderProps {
 
 export const ThemeProvider: React.FC<ThemeProviderProps> = ({ children }) => {
   const [theme] = useState<Theme>('dark');
-  const [fontFamily, setFontFamilyState] = useState<FontFamily>('inter');
-  const [mounted, setMounted] = useState(false);
+  const [fontFamily, setFontFamilyState] = useState<FontFamily>('montserrat');
 
   // Apply font to document
   const applyFont = React.useCallback((font: FontFamily) => {
+    if (typeof window === 'undefined') return;
+    
     const config = FONT_CONFIGS[font];
     if (config) {
       // Update CSS custom properties
@@ -447,7 +448,6 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({ children }) => {
       
       // Store in localStorage
       localStorage.setItem('fontFamily', font);
-      
     }
   }, []);
 
@@ -459,42 +459,28 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({ children }) => {
 
   // Get font config helper
   const getFontConfig = React.useCallback((font: FontFamily): FontConfig => {
-    return FONT_CONFIGS[font] || FONT_CONFIGS['inter'];
+    return FONT_CONFIGS[font] || FONT_CONFIGS['montserrat'];
   }, []);
 
   // Initialize theme and font
   useEffect(() => {
-    setMounted(true);
-    
     // Set theme
     document.documentElement.setAttribute('data-theme', 'dark');
-    localStorage.setItem('theme', 'dark');
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('theme', 'dark');
+    }
     
-    // Get font from localStorage or default to 'inter'
-    const savedFont = localStorage.getItem('fontFamily') as FontFamily;
-    const initialFont = savedFont && FONT_CONFIGS[savedFont] ? savedFont : 'inter';
+    // Get font from localStorage or default to 'montserrat'
+    const savedFont = typeof window !== 'undefined' ? localStorage.getItem('fontFamily') as FontFamily : null;
+    const initialFont = savedFont && FONT_CONFIGS[savedFont] ? savedFont : 'montserrat';
     setFontFamilyState(initialFont);
     
     // Apply initial font
     applyFont(initialFont);
   }, [applyFont]);
 
-  // Prevent hydration mismatch by not rendering until mounted
-  if (!mounted) {
-    return (
-      <div 
-        style={{ 
-          visibility: 'hidden',
-          minHeight: '100vh',
-          background: 'var(--bg-primary)',
-          color: 'var(--text-primary)',
-        }}
-      >
-        {children}
-      </div>
-    );
-  }
-
+  // Always render the same content to prevent hydration mismatch
+  // The mounted state is only used to prevent accessing localStorage during SSR
   return (
     <ThemeContext.Provider value={{ 
       theme, 

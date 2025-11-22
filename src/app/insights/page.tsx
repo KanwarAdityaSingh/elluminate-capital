@@ -1,73 +1,33 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { Calendar, User, ArrowRight } from 'lucide-react';
-import { HeroContent } from '../../types/api';
-import { useBlogData } from '../../hooks/useBlogData';
-import BlogCard from '../../components/BlogCard';
 import Footer from '../../components/Footer';
+import { insightsContent } from '../../data/pageContent';
+import PDFCard from '../../components/PDFCard';
 
 export default function InsightsPage() {
-  const [insightsContent, setInsightsContent] = useState<HeroContent | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
   const [isVisible, setIsVisible] = useState(false);
-  // Use blog data hook
-  const { 
-    blogTypes, 
-    allBlogs,
-    isLoading: blogLoading, 
-    error: blogError
-  } = useBlogData();
-
-  // Fetch insights content on component mount
-  useEffect(() => {
-    const fetchInsightsContent = async () => {
-      try {
-        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5050'}/page/getPageContent?pageType=insights`);
-        const data = await response.json();
-        
-        if (data.success && data.data) {
-          const transformedData = {
-            title: data.data.title,
-            subtitle: data.data.subtitle,
-            stats: {
-              clients: 0,
-              deals: 0,
-              years: 0,
-              assets: 0
-            },
-            displayStats: [],
-            features: [],
-            buttons: data.data.btnTxt.map((btn: { buttonText: string }) => btn.buttonText)
-          };
-          console.log('Insights API Data received:', data.data);
-          console.log('Transformed insights data:', transformedData);
-          setInsightsContent(transformedData);
-        }
-      } catch (error) {
-        console.error('Error fetching insights content:', error);
-        setInsightsContent(null);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    fetchInsightsContent();
-  }, []);
 
   // Animation effect - immediate to prevent flashing
   useEffect(() => {
     setIsVisible(true);
   }, []);
 
-  // Categories come from insights API
-  const categories = insightsContent?.buttons || [];
-  const uniqueCategories = [...new Set(['All', ...categories])].filter(Boolean);
-
-  // Debug logging
-  console.log('Insights Categories:', uniqueCategories);
-  console.log('Blog Types:', blogTypes.map(type => type.name));
-  console.log('All Blogs:', allBlogs.length);
+  // PDF data for Market Analysis section
+  const marketAnalysisPDFs = [
+    {
+      title: 'Residential Rooftop Solar Market in India',
+      excerpt: 'Comprehensive analysis of the residential rooftop solar market in India, including market trends, growth opportunities, and investment insights.',
+      pdfPath: '/blogs/Residential Rooftop Solar Market in India.pdf',
+      imageUrl: '/rooftop.png',
+    },
+    {
+      title: 'Used Tractors in India - Market Memo',
+      excerpt: 'Detailed market memorandum on the used tractors market in India, covering market dynamics, key players, and strategic opportunities.',
+      pdfPath: '/blogs/Used Tractors in india - Market Memo_vJan\'25.pdf',
+      imageUrl: '/tractor.png',
+    },
+  ];
 
   return (
     <div style={{ position: 'relative', minHeight: '100vh' }}>
@@ -131,7 +91,7 @@ export default function InsightsPage() {
                 lineHeight: '1.2',
               }}
             >
-              {insightsContent?.title || "Market Insights"}
+              {insightsContent.title}
             </h1>
             <p
               style={{
@@ -146,7 +106,7 @@ export default function InsightsPage() {
                 fontWeight: 'var(--font-weight-normal)',
               }}
             >
-              {insightsContent?.subtitle || "Stay informed with our latest research, market analysis, and investment insights from our team of financial experts."}
+              {insightsContent.subtitle}
             </p>
           </div>
 
@@ -175,67 +135,16 @@ export default function InsightsPage() {
           </div>
         </section>
 
-      {/* Categories Filter Pills */}
-      <section
-        style={{
-          padding: 'var(--space-32) var(--space-6) var(--space-8)',
-          background: 'transparent',
-        }}
-      >
-        <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
-          <div
-            style={{
-              display: 'flex',
-              gap: 'var(--space-4)',
-              flexWrap: 'wrap',
-              justifyContent: 'center',
-            }}
-          >
-            {uniqueCategories.map((category: string) => (
-              <button
-                key={category}
-                style={{
-                  padding: 'var(--space-3) var(--space-6)',
-                  background: 'transparent',
-                  color: '#ffffff',
-                  border: '1px solid rgba(255, 255, 255, 0.3)',
-                  borderRadius: 'var(--radius-full)',
-                  fontSize: 'var(--text-sm)',
-                  fontWeight: 'var(--font-weight-medium)',
-                  cursor: 'pointer',
-                  transition: 'all var(--transition-fast)',
-                  opacity: isVisible ? 1 : 0,
-                  transform: isVisible ? 'translateY(0)' : 'translateY(20px)',
-                  backdropFilter: 'blur(10px)',
-                }}
-                onMouseEnter={(e) => {
-                    e.currentTarget.style.background = 'rgba(255, 255, 255, 0.1)';
-                    e.currentTarget.style.border = '1px solid rgba(255, 255, 255, 0.5)';
-                }}
-                onMouseLeave={(e) => {
-                    e.currentTarget.style.background = 'transparent';
-                    e.currentTarget.style.border = '1px solid rgba(255, 255, 255, 0.3)';
-                }}
-              >
-                {category}
-              </button>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Blog Categories from API */}
-      {blogTypes.map((blogType, typeIndex) => (
-      <section
-          key={blogType._id}
-        style={{
-          padding: 'var(--space-20) var(--space-6)',
-          background: 'transparent',
-        }}
-      >
-        <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
-          <h2
-            style={{
+        {/* Market Analysis Section */}
+        <section
+          style={{
+            padding: 'var(--space-20) var(--space-6)',
+            background: 'transparent',
+          }}
+        >
+          <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
+            <h2
+              style={{
                 fontSize: 'var(--text-4xl)',
                 fontWeight: 'var(--font-weight-bold)',
                 color: '#ffffff',
@@ -244,10 +153,10 @@ export default function InsightsPage() {
                 textShadow: '0 2px 4px rgba(0, 0, 0, 0.3)',
                 opacity: isVisible ? 1 : 0,
                 transform: isVisible ? 'translateY(0)' : 'translateY(30px)',
-                transition: `all 0.8s ease ${0.2 + typeIndex * 0.1}s`,
+                transition: 'all 0.8s ease 0.2s',
               }}
             >
-              {blogType.name}
+              Market Analysis
             </h2>
             
             <p
@@ -259,38 +168,39 @@ export default function InsightsPage() {
                 textShadow: '0 1px 2px rgba(0, 0, 0, 0.3)',
                 opacity: isVisible ? 1 : 0,
                 transform: isVisible ? 'translateY(0)' : 'translateY(30px)',
-                transition: `all 0.8s ease ${0.3 + typeIndex * 0.1}s`,
+                transition: 'all 0.8s ease 0.3s',
               }}
             >
-              {blogType.description}
+              Comprehensive market analysis reports and insights to help you make informed decisions.
             </p>
           
-          <div
-            style={{
-              display: 'grid',
-              gridTemplateColumns: 'repeat(auto-fit, minmax(350px, 1fr))',
+            <div
+              style={{
+                display: 'grid',
+                gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))',
                 gap: 'var(--space-8)',
                 opacity: isVisible ? 1 : 0,
                 transform: isVisible ? 'translateY(0)' : 'translateY(30px)',
-                transition: `all 0.8s ease ${0.4 + typeIndex * 0.1}s`,
+                transition: 'all 0.8s ease 0.4s',
               }}
             >
-              {blogType.blogs.map((blog, blogIndex) => (
-                <BlogCard 
-                  key={blog._id} 
-                  blog={blog} 
-                  categoryName={blogType.name}
+              {marketAnalysisPDFs.map((pdf, index) => (
+                <PDFCard 
+                  key={index}
+                  title={pdf.title}
+                  excerpt={pdf.excerpt}
+                  pdfPath={pdf.pdfPath}
+                  imageUrl={pdf.imageUrl}
                 />
-            ))}
+              ))}
+            </div>
           </div>
-        </div>
-      </section>
-      ))}
+        </section>
 
         <Footer />
       </div>
 
-      <style jsx>{`
+      <style>{`
         @keyframes bounce {
           0%, 20%, 50%, 80%, 100% {
             transform: translateY(0);

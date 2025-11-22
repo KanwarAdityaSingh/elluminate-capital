@@ -1,9 +1,10 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { usePathname } from 'next/navigation';
+import { useLockBodyScroll } from '@/hooks/useLockBodyScroll';
 
 const Navbar: React.FC = () => {
   const pathname = usePathname();
@@ -11,6 +12,10 @@ const Navbar: React.FC = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isOverVideo, setIsOverVideo] = useState(false);
   const [isLogoHovered, setIsLogoHovered] = useState(false);
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const drawerRef = useRef<HTMLDivElement | null>(null);
+
+  useLockBodyScroll(isMenuOpen);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -33,6 +38,59 @@ const Navbar: React.FC = () => {
       element.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
   };
+
+  const closeMenu = () => setIsMenuOpen(false);
+
+  const handleNav = (sectionId: string) => (e?: React.MouseEvent) => {
+    if (isHomePage) {
+      if (e) e.preventDefault();
+      scrollToSection(sectionId);
+      closeMenu();
+    }
+  };
+
+  // Close on route change
+  useEffect(() => {
+    setIsMenuOpen(false);
+  }, [pathname]);
+
+  // Focus trap and ESC to close
+  useEffect(() => {
+    if (!isMenuOpen) return;
+
+    const drawer = drawerRef.current;
+    const focusable = drawer?.querySelectorAll<HTMLElement>(
+      'a[href], button:not([disabled]), [tabindex]:not([tabindex="-1"])'
+    );
+
+    const first = focusable && focusable[0];
+    const last = focusable && focusable[focusable.length - 1];
+
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        e.preventDefault();
+        closeMenu();
+      } else if (e.key === 'Tab' && focusable && focusable.length > 0) {
+        if (e.shiftKey && document.activeElement === first) {
+          e.preventDefault();
+          (last as HTMLElement).focus();
+        } else if (!e.shiftKey && document.activeElement === last) {
+          e.preventDefault();
+          (first as HTMLElement).focus();
+        }
+      }
+    };
+
+    const focusTimeout = window.setTimeout(() => {
+      first?.focus();
+    }, 0);
+
+    document.addEventListener('keydown', onKeyDown);
+    return () => {
+      window.clearTimeout(focusTimeout);
+      document.removeEventListener('keydown', onKeyDown);
+    };
+  }, [isMenuOpen]);
 
   return (
     <nav
@@ -95,13 +153,28 @@ const Navbar: React.FC = () => {
           </Link>
         </div>
 
+        {/* Right Section - Hamburger (mobile) */}
+        <div className="navbar-right show-on-mobile">
+          <button
+            aria-label={isMenuOpen ? 'Close menu' : 'Open menu'}
+            aria-controls="mobile-drawer"
+            aria-expanded={isMenuOpen}
+            className={`hamburger ${isMenuOpen ? 'active' : ''}`}
+            onClick={() => setIsMenuOpen((v) => !v)}
+          >
+            <span></span>
+            <span></span>
+            <span></span>
+          </button>
+        </div>
+
 
         {/* Center Section - Navigation Links (only on home page) */}
         {isHomePage && (
           <div className="navbar-center">
-            <button onClick={() => scrollToSection('insights')} className="nav-link">
+            <Link href="/insights/" className="nav-link">
               Insights
-            </button>
+            </Link>
             <button onClick={() => scrollToSection('story')} className="nav-link">
               Story
             </button>
@@ -114,6 +187,48 @@ const Navbar: React.FC = () => {
           </div>
         )}
       </div>
+
+      {/* Overlay */}
+      {isMenuOpen && (
+        <button className="drawer-overlay" aria-label="Close menu" onClick={closeMenu}></button>
+      )}
+
+      {/* Mobile Drawer */}
+      <aside
+        id="mobile-drawer"
+        role="dialog"
+        aria-modal="true"
+        aria-label="Main menu"
+        className={`mobile-drawer ${isMenuOpen ? 'open' : ''}`}
+      >
+        <div className="drawer" ref={drawerRef}>
+          <div className="drawer-header">
+            <Link href="/" onClick={closeMenu} className="drawer-logo">
+              <Image src="/usethis.png" alt="Elluminate Capital" width={140} height={40} priority />
+            </Link>
+            <button className="drawer-close" aria-label="Close menu" onClick={closeMenu}>
+              ×
+            </button>
+          </div>
+          <nav className="drawer-nav">
+            {isHomePage ? (
+              <>
+                <Link className="drawer-link" href="/insights/" onClick={closeMenu}>Insights</Link>
+                <button className="drawer-link" onClick={() => { scrollToSection('story'); closeMenu(); }}>Story</button>
+                <button className="drawer-link" onClick={() => { scrollToSection('companies'); closeMenu(); }}>Companies</button>
+                <Link className="drawer-link" href="/contact/" onClick={closeMenu}>Contact Us</Link>
+              </>
+            ) : (
+              <>
+                <Link className="drawer-link" href="/insights/" onClick={closeMenu}>Insights</Link>
+                <Link className="drawer-link" href="/#story" onClick={closeMenu}>Story</Link>
+                <Link className="drawer-link" href="/#companies" onClick={closeMenu}>Companies</Link>
+                <Link className="drawer-link" href="/contact/" onClick={closeMenu}>Contact Us</Link>
+              </>
+            )}
+          </nav>
+        </div>
+      </aside>
 
 
       <style jsx>{`
@@ -154,6 +269,12 @@ const Navbar: React.FC = () => {
         .navbar-left {
           position: absolute;
           left: var(--space-6);
+          top: 50%;
+          transform: translateY(-50%);
+        }
+        .navbar-right {
+          position: absolute;
+          right: var(--space-6);
           top: 50%;
           transform: translateY(-50%);
         }
@@ -228,6 +349,116 @@ const Navbar: React.FC = () => {
           border: none !important;
         }
         
+        /* Hamburger */
+        .hamburger {
+          position: relative;
+          width: 44px;
+          height: 44px;
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          border-radius: 10px;
+          background: rgba(20,20,20,0.6);
+          border: 1px solid rgba(255,255,255,0.3);
+          cursor: pointer;
+        }
+        .hamburger:focus-visible {
+          outline: 2px solid #ffffff; outline-offset: 2px;
+        }
+        .hamburger span {
+          position: absolute;
+          left: 50%;
+          width: 22px;
+          height: 2px;
+          background: #ffffff;
+          border-radius: 1px;
+          transform: translateX(-50%);
+          transition: transform 0.25s ease, opacity 0.25s ease, top 0.25s ease;
+        }
+        .hamburger span:nth-child(1) { top: 14px; }
+        .hamburger span:nth-child(2) { top: 22px; }
+        .hamburger span:nth-child(3) { top: 30px; }
+        .hamburger.active span:nth-child(1) { top: 22px; transform: translateX(-50%) rotate(45deg); }
+        .hamburger.active span:nth-child(2) { opacity: 0; }
+        .hamburger.active span:nth-child(3) { top: 22px; transform: translateX(-50%) rotate(-45deg); }
+
+        /* Drawer */
+        .drawer-overlay {
+          position: fixed;
+          inset: 0;
+          background: rgba(0,0,0,0.4);
+          z-index: calc(var(--z-fixed) - 1);
+        }
+        .mobile-drawer {
+          position: fixed;
+          top: 0;
+          right: 0;
+          bottom: 0;
+          width: 0;
+          overflow: hidden;
+          z-index: var(--z-fixed);
+          transition: width 0.3s ease;
+        }
+        .mobile-drawer.open { width: min(85vw, 360px); }
+        .drawer {
+          position: absolute;
+          top: 0;
+          right: 0;
+          width: min(85vw, 360px);
+          height: 100%;
+          background: rgba(0,0,0,0.75);
+          backdrop-filter: blur(12px);
+          border-left: 1px solid rgba(255,255,255,0.12);
+          transform: translateX(100%);
+          transition: transform 0.3s ease;
+        }
+        .mobile-drawer.open .drawer { transform: translateX(0); }
+        .drawer-header {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          padding: 20px 16px;
+          border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+        .drawer-logo { display: inline-flex; align-items: center; }
+        .drawer-close {
+          width: 36px;
+          height: 36px;
+          border-radius: 8px;
+          border: 1px solid rgba(255,255,255,0.2);
+          background: rgba(255,255,255,0.06);
+          color: #fff;
+          font-size: 22px;
+          line-height: 1;
+          cursor: pointer;
+        }
+        .drawer-nav {
+          display: flex;
+          flex-direction: column;
+          padding: 12px 12px 24px;
+          gap: 6px;
+        }
+        .drawer-link {
+          display: block;
+          width: 100%;
+          text-align: left;
+          padding: 14px 12px;
+          border-radius: 10px;
+          color: #ffffff;
+          background: transparent;
+          border: 1px solid transparent;
+          font-size: 14px;
+        }
+        .drawer-link:hover, .drawer-link:focus {
+          border-color: rgba(255,255,255,0.2);
+          background: rgba(255,255,255,0.06);
+          outline: none;
+        }
+
+        /* Hide desktop center links on small screens */
+        @media (max-width: 768px) {
+          .navbar-center { display: none; }
+        }
       `}</style>
     </nav>
   );

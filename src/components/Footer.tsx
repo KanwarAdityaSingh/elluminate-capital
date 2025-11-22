@@ -13,29 +13,16 @@ const Footer: React.FC = () => {
 
   const footerSections = [
     {
-      title: 'Services',
-      links: [
-        { name: 'Investment Advisory', href: '/services#advisory' },
-        { name: 'Capital Markets', href: '/services#capital' },
-        { name: 'M&A Advisory', href: '/services#ma' },
-        { name: 'Wealth Management', href: '/services#wealth' },
-      ],
-    },
-    {
       title: 'Company',
       links: [
-        { name: 'About Us', href: '/about/' },
-        { name: 'Our Team', href: '/about/#team' },
-        { name: 'Careers', href: '/careers/' },
+        { name: 'About Us', href: '/records/' },
+        { name: 'Our Team', href: '/#leadership' },
         { name: 'News & Insights', href: '/insights/' },
       ],
     },
     {
       title: 'Resources',
       links: [
-        { name: 'Market Reports', href: '/insights/#reports' },
-        { name: 'Research', href: '/insights/#research' },
-        { name: 'Client Portal', href: '/portal/' },
         { name: 'Contact Us', href: '/contact/' },
       ],
     },
@@ -64,6 +51,7 @@ const Footer: React.FC = () => {
         muted
         loop
         playsInline
+        preload="metadata"
         style={{
           position: 'absolute',
           top: 0,
@@ -128,8 +116,8 @@ const Footer: React.FC = () => {
                 marginBottom: 'var(--space-6)',
               }}
             >
-              Professional investment banking services with a focus on delivering exceptional 
-              value to our clients through strategic advisory and comprehensive financial solutions.
+              Elluminate Capital is a founders’ trusted partner and a name synonymous with
+              high-impact growth equity fundraising across India and Southeast Asia.
             </p>
             
             {/* Contact Info */}
@@ -137,19 +125,23 @@ const Footer: React.FC = () => {
               <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-3)' }}>
                 <Mail size={16} color="#B8956A" />
                 <span style={{ color: 'var(--text-secondary)', fontSize: 'var(--text-sm)' }}>
-                  info@elluminatecapital.com
-                </span>
-              </div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-3)' }}>
-                <Phone size={16} color="#B8956A" />
-                <span style={{ color: 'var(--text-secondary)', fontSize: 'var(--text-sm)' }}>
-                  +1 (555) 123-4567
+                info@elluminate.in
                 </span>
               </div>
               <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-3)' }}>
                 <MapPin size={16} color="#B8956A" />
                 <span style={{ color: 'var(--text-secondary)', fontSize: 'var(--text-sm)' }}>
-                  123 Financial District, New York, NY 10004
+                Bengaluru
+                <br />
+                1622, Embassy Grove, Rustam Bagh, Bengaluru, Karnataka, India
+                </span>
+              </div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-3)' }}>
+                <MapPin size={16} color="#B8956A" />
+                <span style={{ color: 'var(--text-secondary)', fontSize: 'var(--text-sm)' }}>
+                Mumbai
+                <br />
+                602, T Wing, Tower 5, Godrej Origins The Trees, Vikhroli, Mumbai, Maharashtra, India
                 </span>
               </div>
             </div>

@@ -54,7 +54,6 @@ import {
 import { ThemeProvider } from '@/contexts/ThemeContext';
 import SmoothScrollProvider from '@/components/SmoothScrollProvider';
 import Navbar from '@/components/Navbar';
-import FontDropdown from '@/components/FontDropdown';
 import './globals.css';
 
 // Sans-serif fonts
@@ -465,6 +464,7 @@ export default function RootLayout({
         style={{
           fontFamily: 'var(--font-family-primary)',
         }}
+        suppressHydrationWarning
       >
         <ThemeProvider>
           <SmoothScrollProvider>
@@ -482,16 +482,6 @@ export default function RootLayout({
               {/* Main Content */}
               <main>{children}</main>
               
-              {/* Floating Font Selector */}
-              <div style={{
-                position: 'fixed',
-                top: '20px',
-                right: '20px',
-                zIndex: 'var(--z-fixed)',
-                pointerEvents: 'auto'
-              }}>
-                <FontDropdown />
-              </div>
             </div>
           </SmoothScrollProvider>
         </ThemeProvider>

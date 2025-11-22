@@ -1,7 +1,8 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Mail, Phone, MapPin, Clock, Send, CheckCircle, Loader2 } from 'lucide-react';
+import Footer from '@/components/Footer';
+import { Mail, MapPin, Send, CheckCircle, Loader2 } from 'lucide-react';
 import emailjs from '@emailjs/browser';
 
 export default function ContactPage() {
@@ -73,27 +74,14 @@ export default function ContactPage() {
     }
   };
 
-  const offices = [
+  const locations = [
     {
-      city: 'New York',
-      address: '123 Financial District, New York, NY 10004',
-      phone: '+1 (555) 123-4567',
-      email: 'ny@elluminatecapital.com',
-      hours: 'Mon-Fri: 9:00 AM - 6:00 PM EST'
+      city: 'Mumbai',
+      address: '602, T Wing, Tower 5, Godrej Origins The Trees, Vikhroli, Mumbai'
     },
     {
-      city: 'London',
-      address: '45 Canary Wharf, London E14 5AB, UK',
-      phone: '+44 20 7123 4567',
-      email: 'london@elluminatecapital.com',
-      hours: 'Mon-Fri: 9:00 AM - 6:00 PM GMT'
-    },
-    {
-      city: 'Hong Kong',
-      address: '88 Central Plaza, Central, Hong Kong',
-      phone: '+852 2123 4567',
-      email: 'hk@elluminatecapital.com',
-      hours: 'Mon-Fri: 9:00 AM - 6:00 PM HKT'
+      city: 'Bengaluru',
+      address: '1622, Embassy Grove, Rustam Bagh, Bengaluru'
     }
   ];
 
@@ -113,6 +101,7 @@ export default function ContactPage() {
         muted
         loop
         playsInline
+        preload="metadata"
         style={{
           position: 'fixed',
           top: 0,
@@ -184,7 +173,7 @@ export default function ContactPage() {
           <div
             style={{
               display: 'grid',
-              gridTemplateColumns: 'repeat(auto-fit, minmax(400px, 1fr))',
+              gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
               gap: 'var(--space-12)',
             }}
           >
@@ -567,144 +556,100 @@ export default function ContactPage() {
                   </div>
                 </div>
 
-                <div
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: 'var(--space-4)',
-                    marginBottom: 'var(--space-4)',
-                  }}
-                >
-                  <div
+                <div style={{ marginTop: 'var(--space-8)' }}>
+                  <h3
                     style={{
-                      width: '50px',
-                      height: '50px',
-                      background: '#B8956A',
-                      borderRadius: 'var(--radius-lg)',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
+                      fontSize: 'var(--text-2xl)',
+                      fontWeight: 'var(--font-weight-bold)',
+                      color: '#FFFFFF',
+                      marginBottom: 'var(--space-6)',
+                      fontFamily: 'var(--font-family-heading)',
                     }}
                   >
-                    <Phone size={24} color="#FFFFFF" />
-                  </div>
-                  <div>
-                    <h3
-                      style={{
-                        color: '#FFFFFF',
-                        fontWeight: 'var(--font-weight-semibold)',
-                        marginBottom: 'var(--space-1)',
-                      }}
-                    >
-                      Call Us
-                    </h3>
-                    <p style={{ color: '#FFFFFF', margin: 0, opacity: 0.8 }}>
-                      +1 (555) 123-4567
-                    </p>
+                    Our Locations
+                  </h3>
+                  
+                  <div
+                    style={{
+                      display: 'grid',
+                      gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))',
+                      gap: 'var(--space-6)',
+                    }}
+                  >
+                    {locations.map((location, index) => (
+                      <div
+                        key={index}
+                        style={{
+                          background: 'rgba(184, 149, 106, 0.1)',
+                          border: '1px solid #B8956A',
+                          borderRadius: 'var(--radius-xl)',
+                          padding: 'var(--space-6)',
+                          transition: 'all var(--transition-fast)',
+                        }}
+                        onMouseEnter={(e) => {
+                          e.currentTarget.style.background = 'rgba(184, 149, 106, 0.2)';
+                          e.currentTarget.style.transform = 'translateY(-4px)';
+                        }}
+                        onMouseLeave={(e) => {
+                          e.currentTarget.style.background = 'rgba(184, 149, 106, 0.1)';
+                          e.currentTarget.style.transform = 'translateY(0)';
+                        }}
+                      >
+                        <div
+                          style={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: 'var(--space-4)',
+                            marginBottom: 'var(--space-4)',
+                          }}
+                        >
+                          <div
+                            style={{
+                              width: '50px',
+                              height: '50px',
+                              background: '#B8956A',
+                              borderRadius: 'var(--radius-lg)',
+                              display: 'flex',
+                              alignItems: 'center',
+                              justifyContent: 'center',
+                              flexShrink: 0,
+                            }}
+                          >
+                            <MapPin size={24} color="#FFFFFF" />
+                          </div>
+                          <h4
+                            style={{
+                              color: '#FFFFFF',
+                              fontWeight: 'var(--font-weight-bold)',
+                              fontSize: 'var(--text-xl)',
+                              margin: 0,
+                            }}
+                          >
+                            {location.city}
+                          </h4>
+                        </div>
+                        <p
+                          style={{
+                            color: '#FFFFFF',
+                            margin: 0,
+                            opacity: 0.9,
+                            lineHeight: '1.6',
+                            fontSize: 'var(--text-base)',
+                          }}
+                        >
+                          {location.address}
+                        </p>
+                      </div>
+                    ))}
                   </div>
                 </div>
-
-                <div
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: 'var(--space-4)',
-                    marginBottom: 'var(--space-4)',
-                  }}
-                >
-                  <div
-                    style={{
-                      width: '50px',
-                      height: '50px',
-                      background: '#B8956A',
-                      borderRadius: 'var(--radius-lg)',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                    }}
-                  >
-                    <Clock size={24} color="#FFFFFF" />
-                  </div>
-                  <div>
-                    <h3
-                      style={{
-                        color: '#FFFFFF',
-                        fontWeight: 'var(--font-weight-semibold)',
-                        marginBottom: 'var(--space-1)',
-                      }}
-                    >
-                      Business Hours
-                    </h3>
-                    <p style={{ color: '#FFFFFF', margin: 0, opacity: 0.8 }}>
-                      Mon-Fri: 9:00 AM - 6:00 PM EST
-                    </p>
-                  </div>
-                </div>
-              </div>
-
-              {/* Office Locations */}
-              <h3
-                style={{
-                  fontSize: 'var(--text-xl)',
-                  fontWeight: 'var(--font-weight-semibold)',
-                  color: '#FFFFFF',
-                  marginBottom: 'var(--space-4)',
-                }}
-              >
-                Office Locations
-              </h3>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-4)' }}>
-                {offices.map((office, index) => (
-                  <div
-                    key={index}
-                    style={{
-                      padding: 'var(--space-4)',
-                      background: 'transparent',
-                      borderRadius: 'var(--radius-lg)',
-                      border: '2px solid #B8956A',
-                    }}
-                  >
-                    <h4
-                      style={{
-                        color: '#FFFFFF',
-                        fontWeight: 'var(--font-weight-semibold)',
-                        marginBottom: 'var(--space-2)',
-                      }}
-                    >
-                      {office.city}
-                    </h4>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-2)', marginBottom: 'var(--space-1)' }}>
-                      <MapPin size={16} color="#FFFFFF" />
-                      <span style={{ color: '#FFFFFF', fontSize: 'var(--text-sm)' }}>
-                        {office.address}
-                      </span>
-                    </div>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-2)', marginBottom: 'var(--space-1)' }}>
-                      <Phone size={16} color="#FFFFFF" />
-                      <span style={{ color: '#FFFFFF', fontSize: 'var(--text-sm)' }}>
-                        {office.phone}
-                      </span>
-                    </div>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-2)', marginBottom: 'var(--space-1)' }}>
-                      <Mail size={16} color="#FFFFFF" />
-                      <span style={{ color: '#FFFFFF', fontSize: 'var(--text-sm)' }}>
-                        {office.email}
-                      </span>
-                    </div>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-2)' }}>
-                      <Clock size={16} color="#FFFFFF" />
-                      <span style={{ color: '#FFFFFF', fontSize: 'var(--text-sm)' }}>
-                        {office.hours}
-                      </span>
-                    </div>
-                  </div>
-                ))}
               </div>
             </div>
           </div>
         </div>
       </section>
       </div>
+      <Footer />
     </div>
   );
 }

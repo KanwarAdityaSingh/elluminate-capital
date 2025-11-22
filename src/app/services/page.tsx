@@ -1,6 +1,7 @@
 'use client';
 
 import React from 'react';
+import Footer from '@/components/Footer';
 import { 
   TrendingUp, 
   Building2, 
@@ -346,6 +347,7 @@ export default function ServicesPage() {
                       }}
                     >
                       <img
+                        className="service-image"
                         src={service.image}
                         alt={service.title}
                         style={{
@@ -353,6 +355,7 @@ export default function ServicesPage() {
                           height: '400px',
                           objectFit: 'cover',
                         }}
+                        loading="lazy"
                       />
                     </div>
                   </div>
@@ -568,6 +571,15 @@ export default function ServicesPage() {
           </div>
         </div>
       </section>
+      <style jsx>{`
+        @media (max-width: 768px) {
+          .service-image { height: 320px !important; }
+        }
+        @media (max-width: 480px) {
+          .service-image { height: 240px !important; }
+        }
+      `}</style>
+      <Footer />
     </div>
   );
 }

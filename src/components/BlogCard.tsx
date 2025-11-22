@@ -1,9 +1,9 @@
 'use client';
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Calendar, User, ArrowRight, Download } from 'lucide-react';
 import { Blog } from '../types/blog';
-import { BlogService } from '../services/blogService';
+import { formatDate, getReadTimeText } from '../utils/dateUtils';
 
 interface BlogCardProps {
   blog: Blog;
@@ -12,22 +12,22 @@ interface BlogCardProps {
 }
 
 export default function BlogCard({ blog, categoryName, isFeatured = false }: BlogCardProps) {
-  const formatDate = (dateString: string) => {
-    return BlogService.formatDate(dateString);
-  };
-
-  const getReadTimeText = (readTime: number) => {
-    return BlogService.getReadTimeText(readTime);
-  };
-
   // Check if this is Technology & Innovation section (4th section)
   console.log('BlogCard categoryName:', categoryName);
   const isReportStyle = categoryName === 'Technology & Innovation';
   console.log('isReportStyle:', isReportStyle, 'for category:', categoryName);
 
-  // Generate random download count for demo (only for report style)
-  const downloadCount = Math.floor(Math.random() * 5000) + 1000;
-  const fileSize = (Math.random() * 2 + 1).toFixed(1);
+  // Generate random download count and file size for demo (only for report style)
+  // Use useState/useEffect to avoid hydration mismatch
+  const [downloadCount, setDownloadCount] = useState(0);
+  const [fileSize, setFileSize] = useState('0.0');
+
+  useEffect(() => {
+    if (isReportStyle) {
+      setDownloadCount(Math.floor(Math.random() * 5000) + 1000);
+      setFileSize((Math.random() * 2 + 1).toFixed(1));
+    }
+  }, [isReportStyle]);
 
   // Generate data visualization image URL (only for report style)
   const getDataVizImage = () => {
@@ -71,6 +71,7 @@ export default function BlogCard({ blog, categoryName, isFeatured = false }: Blo
               filter: 'grayscale(30%)',
               transition: 'filter var(--transition-normal)',
             }}
+            loading="lazy"
             onMouseEnter={(e) => {
               e.currentTarget.style.filter = 'grayscale(0%)';
             }}
@@ -203,6 +204,7 @@ export default function BlogCard({ blog, categoryName, isFeatured = false }: Blo
             height: isFeatured ? '300px' : '200px',
             objectFit: 'cover',
           }}
+          loading="lazy"
         />
         <div
           style={{
