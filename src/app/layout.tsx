@@ -46,7 +46,6 @@ import {
   Spectral,
   PT_Serif,
   Source_Code_Pro,
-  Cascadia_Code,
   Roboto_Mono,
   Inconsolata,
   Courier_Prime
@@ -353,12 +352,6 @@ const sourceCodePro = Source_Code_Pro({
   display: 'swap',
 });
 
-const cascadiaCode = Cascadia_Code({
-  subsets: ['latin'],
-  variable: '--font-cascadia-code',
-  display: 'swap',
-});
-
 const robotoMono = Roboto_Mono({
   subsets: ['latin'],
   variable: '--font-roboto-mono',
@@ -407,6 +400,11 @@ export default function RootLayout({
       <head>
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        {/* Cascadia Code loaded via link so Next.js does not warn about missing font metrics */}
+        <link
+          href="https://fonts.googleapis.com/css2?family=Cascadia+Code:wght@400;700&display=swap"
+          rel="stylesheet"
+        />
       </head>
       <body
         className={`
@@ -456,7 +454,6 @@ export default function RootLayout({
           ${spectral.variable}
           ${ptSerif.variable}
           ${sourceCodePro.variable}
-          ${cascadiaCode.variable}
           ${robotoMono.variable}
           ${inconsolata.variable}
           ${courierPrime.variable}

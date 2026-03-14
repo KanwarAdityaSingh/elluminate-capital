@@ -87,15 +87,14 @@ aws cloudfront create-invalidation \
 
 ## Environment Variables
 
-If you need to use environment variables (like API URLs), you have two options:
-
-1. **Build-time variables**: Create a `.env.local` file:
+If you need to use environment variables, create a `.env.local` file:
    ```
-   NEXT_PUBLIC_API_URL=https://api.example.com
+   # Example: EmailJS configuration for contact form
+   NEXT_PUBLIC_EMAILJS_SERVICE_ID=your_service_id
+   NEXT_PUBLIC_EMAILJS_TEMPLATE_ID=your_template_id
+   NEXT_PUBLIC_EMAILJS_PUBLIC_KEY=your_public_key
    ```
    These will be embedded in the static build.
-
-2. **Runtime variables**: Use a separate API backend or Lambda functions.
 
 ## Custom Domain Setup
 

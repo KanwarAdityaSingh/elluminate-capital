@@ -1,5 +1,11 @@
 @import "../styles/themes.css";
 @import "../styles/landing.css";
+
+/* Cascadia Code: loaded via link in layout; variable required for theme font selector */
+:root {
+  --font-cascadia-code: "Cascadia Code", monospace;
+}
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;

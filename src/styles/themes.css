@@ -42,8 +42,8 @@
   --gradient-subtle: linear-gradient(180deg, #ffffff 0%, #fafafa 100%);
   
   /* Typography - Dynamic font families */
-  --font-family-primary: var(--font-inter), -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
-  --font-family-heading: var(--font-source-serif-4), Georgia, 'Times New Roman', serif;
+  --font-family-primary: var(--font-montserrat), -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+  --font-family-heading: var(--font-montserrat), -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
   --font-family-mono: var(--font-jetbrains-mono), 'SF Mono', Monaco, 'Cascadia Code', 'Roboto Mono', monospace;
   
   /* Font Weights */
